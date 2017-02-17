@@ -1,0 +1,67 @@
+{
+	"name"			: "ipub/ratchet",
+	"type"			: "library",
+	"description"	: "Extension for implementing WebSockets server side (Ratchet) & client side (Autobahn) into Nette Framework",
+	"keywords"		: ["nette", "ratchet", "websockets", "ipub", "ipublikuj", "framework", "tools"],
+	"homepage"		: "https://github.com/iPublikuj/ratchet",
+	"license"		: ["GPL-2.0", "GPL-3.0"],
+
+	"authors": [
+		{
+			"name"		: "iPublikuj:cms",
+			"email"		: "info@ipublikuj.eu",
+			"homepage"	: "http://www.ipublikuj.eu/"
+		}
+	],
+
+	"support":{
+		"email"		:"support@ipublikuj.eu",
+		"issues"	:"https://github.com/iPublikuj/ratchet/issues"
+	},
+
+	"extra": {
+		"ipub"	: {
+			"configuration" : {
+				"extensions" : {
+					"confirmationDialog" : "IPub\\Ratchet\\DI\\RatchetExtension"
+				}
+			}
+		}
+	},
+
+	"require": {
+		"php"	: ">=7.0.0",
+
+		"cboden/ratchet": "~0.3.0",
+
+		"nette/application"	: "~2.3",
+		"nette/di"			: "~2.3",
+		"nette/http"		: "~2.3",
+		"nette/utils"		: "~2.3",
+
+		"pds/skeleton"	: "@dev"
+	},
+
+	"require-dev": {
+		"nette/bootstrap"		: "~2.3",
+		"nette/mail"			: "~2.3",
+		"nette/robot-loader"	: "~2.3",
+		"nette/safe-stream"		: "~2.3",
+		"nette/tester"			: "@dev",
+
+		"tracy/tracy"	: "@dev"
+	},
+
+	"suggest": {
+		"ext-libevent": ">=0.0.5",
+		"ext-libev": "*",
+		"ext-zmq": "*",
+		"ext-amqp": "*"
+	},
+
+	"autoload": {
+		"psr-0": {
+			"IPub\\Ratchet\\": "src/"
+		}
+	}
+}
