@@ -27,8 +27,13 @@ use Nette;
  * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @author         Vít Ledvinka, frosty22 <ledvinka.vit@gmail.com>
  */
-class MessageResponse extends Nette\Object implements IResponse
+class MessageResponse implements IResponse
 {
+	/**
+	 * Implement nette smart magic
+	 */
+	use Nette\SmartObject;
+
 	/**
 	 * @var string
 	 */

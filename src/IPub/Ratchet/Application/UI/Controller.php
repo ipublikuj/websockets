@@ -23,17 +23,27 @@ use IPub;
 use IPub\Ratchet\Application;
 use IPub\Ratchet\Application\Responses;
 use IPub\Ratchet\Exceptions;
+use IPub\Ratchet\Router;
+use IPub\Ratchet\Session;
 
 /**
- * Ratchet application interface
+ * Ratchet application controller interface
  *
  * @package        iPublikuj:Ratchet!
  * @subpackage     Application
  *
  * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
+ *
+ * @property-read \stdClass $payload
+ * @property-read Nette\Security\User $user
  */
 abstract class Controller implements IController
 {
+	/**
+	 * Implement nette smart magic
+	 */
+	use Nette\SmartObject;
+
 	/**
 	 * Special parameter keys
 	 *
@@ -82,13 +92,61 @@ abstract class Controller implements IController
 	 */
 	private $name;
 
+	/**
+	 * @var string
+	 */
+	private $defaultAction = self::DEFAULT_ACTION;
+
+	/**
+	 * @var Nette\DI\Container
+	 */
+	private $context;
+
+	/**
+	 * @var Application\IControllerFactory
+	 */
+	private $controllerFactory;
+
+	/**
+	 * @var Router\IRouter
+	 */
+	private $router;
+
+	/**
+	 * @var Session\Session
+	 */
+	private $session;
+
+	/**
+	 * @var Nette\Security\User
+	 */
+	private $user;
+
+	/**
+	 * @param Nette\DI\Container|NULL $context
+	 * @param Application\IControllerFactory|NULL $controllerFactory
+	 * @param Router\IRouter|NULL $router
+	 * @param Nette\Security\User|NULL $user
+	 */
+	public function injectPrimary(
+		Nette\DI\Container $context = NULL,
+		Application\IControllerFactory $controllerFactory = NULL,
+		Router\IRouter $router = NULL,
+		Nette\Security\User $user = NULL
+	) {
+		if ($this->controllerFactory !== NULL) {
+			throw new Nette\InvalidStateException(sprintf('Method "%s" is intended for initialization and should not be called more than once.', __METHOD__));
+		}
+
+		$this->context = $context;
+		$this->controllerFactory = $controllerFactory;
+		$this->router = $router;
+		$this->user = $user;
+	}
+
 	public function __construct()
 	{
-		list(, $name) = func_get_args() + [NULL, NULL];
-
-		if (is_string($name)) {
-			$this->name = $name;
-		}
+		$this->payload = new \stdClass;
 	}
 
 	/**
@@ -103,8 +161,11 @@ abstract class Controller implements IController
 			// STARTUP
 			$this->request = $request;
 			$this->payload = $this->payload ?: new \stdClass;
+			$this->name = $request->getControllerName();
 
 			$this->initGlobalParameters();
+
+			$this->checkRequirements(new Nette\Application\UI\ComponentReflection($this));
 
 			$this->startup();
 
@@ -128,7 +189,7 @@ abstract class Controller implements IController
 	}
 
 	/**
-	 * @return string
+	 * {@inheritdoc}
 	 */
 	public function getName() : string
 	{
@@ -136,46 +197,29 @@ abstract class Controller implements IController
 	}
 
 	/**
-	 * Returns current action name
+	 * Checks authorization
 	 *
-	 * @param bool $fullyQualified
-	 *
-	 * @return string
-	 */
-	public function getAction(bool $fullyQualified = FALSE) : string
-	{
-		return $fullyQualified ? ':' . $this->getName() . ':' . $this->action : $this->action;
-	}
-
-	/**
-	 * Changes current action. Only alphanumeric characters are allowed
-	 *
-	 * @param string $action
+	 * @param $element
 	 *
 	 * @return void
 	 *
-	 * @throws Exceptions\BadRequestException
+	 * @throws Exceptions\ForbiddenRequestException
 	 */
-	public function changeAction($action)
+	public function checkRequirements($element)
 	{
-		if (is_string($action) && Nette\Utils\Strings::match($action, '#^[a-zA-Z0-9][a-zA-Z0-9_\x7f-\xff]*\z#')) {
-			$this->action = $action;
+		$user = (array) Nette\Application\UI\ComponentReflection::parseAnnotation($element, 'User');
 
-		} else {
-			throw new Exceptions\BadRequestException('Action name is not alphanumeric string.', Nette\Http\IResponse::S404_NOT_FOUND);
+		if (in_array('loggedIn', $user, TRUE) && !$this->getUser()->isLoggedIn()) {
+			throw new Exceptions\ForbiddenRequestException;
 		}
 	}
 
 	/**
-	 * Formats action method name
-	 *
-	 * @param string $action
-	 *
-	 * @return string
+	 * @return \stdClass
 	 */
-	public static function formatActionMethod($action) : string
+	public function getPayload() : \stdClass
 	{
-		return 'action' . $action;
+		return $this->payload;
 	}
 
 	/**
@@ -187,8 +231,12 @@ abstract class Controller implements IController
 	 */
 	public function sendPayload()
 	{
-		$this->sendResponse(new Responses\MessageResponse('Test message'));
-		//$this->sendResponse(new Responses\MessageResponse($this->payload));
+		if (isset($this->payload->callback)) {
+			$this->sendResponse(new Responses\CallResponse($this->payload->callback, $this->payload->data));
+
+		} else {
+			$this->sendResponse(new Responses\MessageResponse($this->payload->data));
+		}
 	}
 
 	/**
@@ -217,6 +265,83 @@ abstract class Controller implements IController
 	public function terminate()
 	{
 		throw new Exceptions\AbortException;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function setDefaultAction(string $action)
+	{
+		$this->defaultAction = $action;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function setSession(Session\Session $session)
+	{
+		$this->session = $session;
+	}
+
+	/**
+	 * Changes current action. Only alphanumeric characters are allowed
+	 *
+	 * @param string $action
+	 *
+	 * @return void
+	 *
+	 * @throws Exceptions\BadRequestException
+	 */
+	private function changeAction($action)
+	{
+		if (is_string($action) && Nette\Utils\Strings::match($action, '#^[a-zA-Z0-9][a-zA-Z0-9_\x7f-\xff]*\z#')) {
+			$this->action = $action;
+
+		} else {
+			throw new Exceptions\BadRequestException('Action name is not alphanumeric string.', Nette\Http\IResponse::S404_NOT_FOUND);
+		}
+	}
+
+	/**
+	 * @param string|NULL $namespace
+	 *
+	 * @return Nette\Http\Session|Nette\Http\SessionSection
+	 *
+	 * @throws Exceptions\InvalidStateException
+	 */
+	public function getSession(string $namespace = NULL)
+	{
+		if (!$this->session) {
+			throw new Exceptions\InvalidStateException('Service Session has not been set.');
+		}
+
+		return $namespace === NULL ? $this->session : $this->session->getSection($namespace);
+	}
+
+	/**
+	 * @return Nette\Security\User
+	 *
+	 * @throws Exceptions\InvalidStateException
+	 */
+	public function getUser() : Nette\Security\User
+	{
+		if (!$this->user) {
+			throw new Exceptions\InvalidStateException('Service User has not been set.');
+		}
+
+		return $this->user;
+	}
+
+	/**
+	 * Formats action method name
+	 *
+	 * @param string $action
+	 *
+	 * @return string
+	 */
+	private static function formatActionMethod($action) : string
+	{
+		return 'action' . $action;
 	}
 
 	/**
@@ -249,12 +374,15 @@ abstract class Controller implements IController
 	{
 		$rc = new Nette\Application\UI\ComponentReflection($this);
 
-		$rm = $rc->getMethod($method);
+		if ($rc->hasMethod($method)) {
+			$rm = $rc->getMethod($method);
 
-		if ($rm->isPublic() && !$rm->isAbstract() && !$rm->isStatic()) {
-			$rm->invokeArgs($this, $rc->combineArgs($rm, $params));
+			if ($rm->isPublic() && !$rm->isAbstract() && !$rm->isStatic()) {
+				$this->checkRequirements($rm);
+				$rm->invokeArgs($this, $rc->combineArgs($rm, $params));
 
-			return TRUE;
+				return TRUE;
+			}
 		}
 
 		return FALSE;
@@ -289,6 +417,6 @@ abstract class Controller implements IController
 		$this->params = $selfParams;
 
 		// init & validate $this->action & $this->view
-		$this->changeAction(isset($selfParams[self::ACTION_KEY]) ? $selfParams[self::ACTION_KEY] : self::DEFAULT_ACTION);
+		$this->changeAction(isset($selfParams[self::ACTION_KEY]) ? $selfParams[self::ACTION_KEY] : $this->defaultAction);
 	}
 }

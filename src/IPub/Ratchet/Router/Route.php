@@ -24,7 +24,6 @@ use Guzzle\Http;
 use IPub;
 use IPub\Ratchet\Application;
 use IPub\Ratchet\Exceptions;
-use Tracy\Debugger;
 
 /**
  * The bidirectional router for WebSockets
@@ -35,8 +34,13 @@ use Tracy\Debugger;
  * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @author         David Grudl (https://davidgrudl.com)
  */
-class Route extends Nette\Object implements IRouter
+class Route implements IRouter
 {
+	/**
+	 * Implement nette smart magic
+	 */
+	use Nette\SmartObject;
+
 	const CONTROLLER_KEY = 'controller';
 
 	const MODULE_KEY = 'module';
@@ -211,7 +215,7 @@ class Route extends Nette\Object implements IRouter
 	 */
 	public function match(Http\Message\RequestInterface $httpRequest)
 	{
-		// combine with precedence: mask (params in URL-path), fixity, query, (post,) defaults
+		// Combine with precedence: mask (params in URL-path), fixity, query, (post,) defaults
 
 		// 1) URL MASK
 		$url = new Nette\Http\UrlScript($httpRequest->getUrl());

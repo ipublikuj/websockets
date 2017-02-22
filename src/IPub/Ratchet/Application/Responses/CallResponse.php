@@ -28,8 +28,13 @@ use Nette\Utils;
  * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @author         Vít Ledvinka, frosty22 <ledvinka.vit@gmail.com>
  */
-class CallResponse extends Nette\Object implements IResponse
+class CallResponse implements IResponse
 {
+	/**
+	 * Implement nette smart magic
+	 */
+	use Nette\SmartObject;
+
 	/**
 	 * Name of method
 	 *

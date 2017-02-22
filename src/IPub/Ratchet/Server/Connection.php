@@ -32,8 +32,13 @@ use IPub\Ratchet\Application\Responses;
  * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @author         Vít Ledvinka, frosty22 <ledvinka.vit@gmail.com>
  */
-class Connection extends Nette\Object
+class Connection
 {
+	/**
+	 * Implement nette smart magic
+	 */
+	use Nette\SmartObject;
+
 	/**
 	 * @var ConnectionInterface
 	 */

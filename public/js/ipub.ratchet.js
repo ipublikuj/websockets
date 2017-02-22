@@ -54,7 +54,7 @@
             ws._send = ws.send;
 
             ws.send = function(path, data) {
-                var m = { path : path, data : data};
+                var m = { route : path, data : data};
                 return this._send( JSON.stringify(m) );
             }
 

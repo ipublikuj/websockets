@@ -17,6 +17,7 @@ declare(strict_types = 1);
 namespace IPub\Ratchet\Application;
 
 use Nette;
+use Nette\Utils;
 
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
@@ -28,6 +29,7 @@ use IPub;
 use IPub\Ratchet\Application\UI;
 use IPub\Ratchet\Exceptions;
 use IPub\Ratchet\Storage;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 /**
  * Application which run on server and provide creating controllers
@@ -49,7 +51,24 @@ final class MessageApplication extends Application implements MessageComponentIn
 		$request = $from->WebSocket->request;
 
 		$url = $request->getUrl(TRUE);
+		// Import message data into route
 		$url->getQuery()->add('data', $msg);
+
+		try {
+			/** @var \stdClass $data */
+			$data = Utils\Json::decode($msg);
+
+			// Override route if is set in message
+			if (isset($data->route)) {
+				$url->setPath('/' . ltrim($data->route, '/'));
+
+				$url->getQuery()->remove('data');
+				$url->getQuery()->add('data', $data->data);
+			}
+
+		} catch (Utils\JsonException $ex) {
+			// Nothing to do here
+		}
 
 		$request->setUrl($url);
 
@@ -67,7 +86,9 @@ final class MessageApplication extends Application implements MessageComponentIn
 		}
 
 		/** @var UI\IMessageController $controller */
-		$controller = $this->controllerFactory->createController($controllerName);
+		$controller = $this->controllerFactory->createController($from, $controllerName);
+
+		$controller->setDefaultAction('message');
 
 		$response = $controller->run($appRequest);
 

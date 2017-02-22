@@ -19,6 +19,8 @@ namespace IPub\Ratchet\Application;
 use Nette;
 use Nette\Utils;
 
+use Ratchet\ConnectionInterface;
+
 use IPub;
 use IPub\Ratchet\Application\UI;
 use IPub\Ratchet\Exceptions;
@@ -31,8 +33,13 @@ use IPub\Ratchet\Exceptions;
  *
  * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  */
-class ControllerFactory extends Nette\Object implements IControllerFactory
+class ControllerFactory implements IControllerFactory
 {
+	/**
+	 * Implement nette smart magic
+	 */
+	use Nette\SmartObject;
+
 	/**
 	 * @var array[] of module => splited mask
 	 */
@@ -56,21 +63,24 @@ class ControllerFactory extends Nette\Object implements IControllerFactory
 	 */
 	public function __construct(callable $factory = NULL)
 	{
-		$this->factory = $factory ?: function ($class) {
-			return new $class;
+		$this->factory = $factory ?: function (ConnectionInterface $connection, string $class) {
+			/** @var UI\IController $controller */
+			$controller = new $class;
+
+			if (isset($connection->session)) {
+				$controller->setSession($connection->session);
+			}
+
+			return $controller;
 		};
 	}
 
 	/**
-	 * Creates new controller instance
-	 *
-	 * @param string $name
-	 *
-	 * @return UI\IController
+	 * {@inheritdoc}
 	 */
-	public function createController(string $name) : UI\IController
+	public function createController(ConnectionInterface $connection, string $name) : UI\IController
 	{
-		return call_user_func($this->factory, $this->getControllerClass($name));
+		return call_user_func_array($this->factory, [$connection, $this->getControllerClass($name)]);
 	}
 
 	/**

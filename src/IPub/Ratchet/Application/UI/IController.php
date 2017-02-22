@@ -19,6 +19,7 @@ namespace IPub\Ratchet\Application\UI;
 use IPub;
 use IPub\Ratchet\Application;
 use IPub\Ratchet\Application\Responses;
+use IPub\Ratchet\Session;
 
 /**
  * Ratchet controller interface
@@ -36,4 +37,23 @@ interface IController
 	 * @return Responses\IResponse
 	 */
 	function run(Application\Request $request) : Responses\IResponse;
+
+	/**
+	 * @return string
+	 */
+	function getName() : string;
+
+	/**
+	 * @param string $action
+	 *
+	 * @return void
+	 */
+	function setDefaultAction(string $action);
+
+	/**
+	 * @param Session\Session $session
+	 *
+	 * @return void
+	 */
+	function setSession(Session\Session $session);
 }

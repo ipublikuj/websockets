@@ -36,8 +36,13 @@ use IPub\Ratchet\Storage;
  *
  * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  */
-abstract class Application extends Nette\Object implements IApplication
+abstract class Application implements IApplication
 {
+	/**
+	 * Implement nette smart magic
+	 */
+	use Nette\SmartObject;
+
 	/**
 	 * @var Router\IRouter
 	 */

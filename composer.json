@@ -39,7 +39,8 @@
 		"nette/http"		: "~2.3",
 		"nette/utils"		: "~2.3",
 
-		"pds/skeleton"	: "@dev"
+		"pds/skeleton"	: "@dev",
+		"kdyby/redis": "^3.3"
 	},
 
 	"require-dev": {

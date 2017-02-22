@@ -36,8 +36,13 @@ use IPub\Ratchet\Server;
  * @method onOpen(Server\Connection $client)
  * @method onClose(Server\Connection $client)
  */
-final class Connections extends Nette\Object implements \IteratorAggregate
+final class Connections implements \IteratorAggregate
 {
+	/**
+	 * Implement nette smart magic
+	 */
+	use Nette\SmartObject;
+
 	/**
 	 * @var \Closure
 	 */

@@ -49,6 +49,7 @@ final class RatchetExtension extends DI\CompilerExtension
 			'address'  => '0.0.0.0',
 			'type'     => 'message',    // message|wamp
 		],
+		'session' => TRUE,
 		'routes'  => [],
 		'mapping' => [],
 	];
@@ -67,11 +68,19 @@ final class RatchetExtension extends DI\CompilerExtension
 
 		$controllerFactory = $builder->addDefinition($this->prefix('controllerFactory'))
 			->setClass(Application\IControllerFactory::class)
-			->setFactory(Application\ControllerFactory::class);
+			->setFactory(Application\ControllerFactory::class, [new Nette\DI\Statement(
+				Application\ControllerFactoryCallback::class
+			)]);
 
 		if ($configuration['mapping']) {
 			$controllerFactory->addSetup('setMapping', [$configuration['mapping']]);
 		}
+
+		$builder->addDefinition($this->prefix('session.factory'))
+			->setClass(Ratchet\Session\SessionFactory::class)
+			->setArguments([
+				'handler' => $builder->getDefinition($builder->getByType(\SessionHandlerInterface::class))
+			]);
 
 		$builder->addDefinition($this->prefix('storage.connection'))
 			->setClass(Storage\Connections::class);
@@ -102,7 +111,8 @@ final class RatchetExtension extends DI\CompilerExtension
 				$loop,
 				$configuration['server']['httpHost'],
 				$configuration['server']['port'],
-				$configuration['server']['address']
+				$configuration['server']['address'],
+				$configuration['session'],
 			]);
 
 	}
@@ -151,6 +161,17 @@ final class RatchetExtension extends DI\CompilerExtension
 					$router->addSetup('offsetSet', [NULL, $factory]);
 				}
 			}
+		}
+
+		$allControllers = [];
+
+		foreach ($builder->findByType(Application\UI\IController::class) as $def) {
+			$allControllers[$def->getClass()] = $def;
+		}
+
+		foreach ($allControllers as $def) {
+			$def->addTag(Nette\DI\Extensions\InjectExtension::TAG_INJECT)
+				->addTag('ipub.ratchet.controller', $def->getClass());
 		}
 	}
 

@@ -28,10 +28,14 @@ use Nette;
  *
  * @property string $controllerName
  * @property array $parameters
- * @property string|NULL $method
  */
-class Request extends Nette\Object
+class Request implements IRequest
 {
+	/**
+	 * Implement nette smart magic
+	 */
+	use Nette\SmartObject;
+
 	/**
 	 * @var string
 	 */
@@ -53,11 +57,7 @@ class Request extends Nette\Object
 	}
 
 	/**
-	 * Sets the controller name
-	 *
-	 * @param string
-	 *
-	 * @return void
+	 * {@inheritdoc}
 	 */
 	public function setControllerName(string $name)
 	{
@@ -65,9 +65,7 @@ class Request extends Nette\Object
 	}
 
 	/**
-	 * Retrieve the controller name
-	 *
-	 * @return string
+	 * {@inheritdoc}
 	 */
 	public function getControllerName() : string
 	{
@@ -75,11 +73,7 @@ class Request extends Nette\Object
 	}
 
 	/**
-	 * Sets variables provided to the controller
-	 *
-	 * @param array $params
-	 *
-	 * @return void
+	 * {@inheritdoc}
 	 */
 	public function setParameters(array $params)
 	{
@@ -87,9 +81,7 @@ class Request extends Nette\Object
 	}
 
 	/**
-	 * Returns all variables provided to the controller (usually via URL)
-	 *
-	 * @return array
+	 * {@inheritdoc}
 	 */
 	public function getParameters() : array
 	{
@@ -97,11 +89,7 @@ class Request extends Nette\Object
 	}
 
 	/**
-	 * Returns a parameter provided to the controller
-	 *
-	 * @param string $key
-	 *
-	 * @return mixed
+	 * {@inheritdoc}
 	 */
 	public function getParameter(string $key)
 	{

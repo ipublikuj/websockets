@@ -27,7 +27,7 @@ use IPub;
 use IPub\Ratchet\Application;
 use IPub\Ratchet\Exceptions;
 use IPub\Ratchet\Router;
-use IPub\Ratchet\Server\Http;
+use IPub\Ratchet\Session;
 
 /**
  * Ratchet server for Nette - run instead of Nette application
@@ -37,8 +37,13 @@ use IPub\Ratchet\Server\Http;
  *
  * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  */
-final class Server extends Nette\Object
+final class Server
 {
+	/**
+	 * Implement nette smart magic
+	 */
+	use Nette\SmartObject;
+
 	/**
 	 * @var string
 	 */
@@ -70,6 +75,8 @@ final class Server extends Nette\Object
 	 * @param string $httpHost
 	 * @param int $port
 	 * @param string $address
+	 * @param bool $useSession
+	 * @param Session\SessionFactory $sessionFactory
 	 *
 	 * @throws Exceptions\InvalidArgumentException
 	 */
@@ -78,7 +85,9 @@ final class Server extends Nette\Object
 		LoopInterface $loop,
 		string $httpHost = 'localhost',
 		int $port = 8080,
-		string $address = '127.0.0.1'
+		string $address = '127.0.0.1',
+		bool $useSession = FALSE,
+		Session\SessionFactory $sessionFactory
 	) {
 		$this->loop = $loop;
 
@@ -89,10 +98,20 @@ final class Server extends Nette\Object
 		$socket->listen($port, $address);
 
 		if ($application instanceof Ratchet\MessageComponentInterface) {
-			$component = new Ratchet\WebSocket\WsServer($application);
+			if ($useSession) {
+				$component = new Ratchet\WebSocket\WsServer(new Session\Provider($application, $sessionFactory));
+
+			} else {
+				$component = new Ratchet\WebSocket\WsServer($application);
+			}
 
 		} elseif ($application instanceof Ratchet\Wamp\WampServerInterface) {
-			$component = new Ratchet\WebSocket\WsServer(new Ratchet\Wamp\WampServer($application));
+			if ($useSession) {
+				$component = new Ratchet\WebSocket\WsServer(new Session\Provider(new Ratchet\Wamp\WampServer($application), $sessionFactory));
+
+			} else {
+				$component = new Ratchet\WebSocket\WsServer(new Ratchet\Wamp\WampServer($application));
+			}
 
 		} else {
 			throw new Exceptions\InvalidArgumentException('Invalid application provided to Ratchet server.');
