@@ -36,7 +36,7 @@ class Provider implements MessageComponentInterface, WebSocket\WsServerInterface
 	/**
 	 * @var MessageComponentInterface
 	 */
-	private $app;
+	private $application;
 
 	/**
 	 * @var SessionFactory
@@ -44,15 +44,30 @@ class Provider implements MessageComponentInterface, WebSocket\WsServerInterface
 	private $sessionFactory;
 
 	/**
-	 * @param MessageComponentInterface $app
+	 * @var Http\Session|SwitchableSession
+	 */
+	private $session;
+
+	/**
+	 * @var Nette\Security\User
+	 */
+	private $user;
+
+	/**
+	 * @param MessageComponentInterface $application
 	 * @param SessionFactory $sessionFactory
+	 * @param Http\Session $session
 	 */
 	public function __construct(
-		MessageComponentInterface $app,
-		SessionFactory $sessionFactory
+		MessageComponentInterface $application,
+		SessionFactory $sessionFactory,
+		Http\Session $session,
+		Nette\Security\User $user
 	) {
-		$this->app = $app;
+		$this->application = $application;
 		$this->sessionFactory = $sessionFactory;
+		$this->session = $session;
+		$this->user = $user;
 	}
 
 	/**
@@ -61,9 +76,9 @@ class Provider implements MessageComponentInterface, WebSocket\WsServerInterface
 	public function onOpen(ConnectionInterface $conn)
 	{
 		$conn->session = $this->sessionFactory->create($conn);
-		$conn->session->start();
+		$conn->user = clone $this->user;
 
-		return $this->app->onOpen($conn);
+		return $this->application->onOpen($conn);
 	}
 
 	/**
@@ -71,7 +86,13 @@ class Provider implements MessageComponentInterface, WebSocket\WsServerInterface
 	 */
 	public function onMessage(ConnectionInterface $from, $msg)
 	{
-		return $this->app->onMessage($from, $msg);
+		$this->session->attach($from);
+
+		if (!$this->session->isStarted()) {
+			$this->session->start();
+		}
+
+		return $this->application->onMessage($from, $msg);
 	}
 
 	/**
@@ -79,9 +100,9 @@ class Provider implements MessageComponentInterface, WebSocket\WsServerInterface
 	 */
 	public function onClose(ConnectionInterface $conn)
 	{
-		$conn->session->close();
+		$this->session->detach($conn);
 
-		return $this->app->onClose($conn);
+		return $this->application->onClose($conn);
 	}
 
 	/**
@@ -89,7 +110,7 @@ class Provider implements MessageComponentInterface, WebSocket\WsServerInterface
 	 */
 	public function onError(ConnectionInterface $conn, \Exception $e)
 	{
-		return $this->app->onError($conn, $e);
+		return $this->application->onError($conn, $e);
 	}
 
 	/**
@@ -97,8 +118,8 @@ class Provider implements MessageComponentInterface, WebSocket\WsServerInterface
 	 */
 	public function getSubProtocols()
 	{
-		if ($this->app instanceof WebSocket\WsServerInterface) {
-			return $this->app->getSubProtocols();
+		if ($this->application instanceof WebSocket\WsServerInterface) {
+			return $this->application->getSubProtocols();
 
 		} else {
 			return [];

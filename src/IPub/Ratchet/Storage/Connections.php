@@ -16,6 +16,7 @@ declare(strict_types = 1);
 
 namespace IPub\Ratchet\Storage;
 
+use Doctrine\Common\Cache\CacheProvider;
 use Nette;
 
 use Ratchet\ConnectionInterface;
@@ -58,7 +59,7 @@ final class Connections implements \IteratorAggregate
 	 */
 	private $clients;
 
-	public function __construct()
+	public function __construct(CacheProvider $cacheProvider)
 	{
 		$this->clients = new \SplObjectStorage;
 	}

@@ -25,6 +25,7 @@ use Ratchet\ConnectionInterface;
 use IPub;
 use IPub\Ratchet\Exceptions;
 use IPub\Ratchet\Router;
+use IPub\Ratchet\Session;
 use IPub\Ratchet\Storage;
 
 /**
@@ -98,7 +99,7 @@ abstract class Application implements IApplication
 	 */
 	public function onError(ConnectionInterface $conn, \Exception $ex)
 	{
-		echo "An error has occurred: {$ex->getMessage()}\n";
+		echo "An error has occurred: ". $ex->getFile() . $ex->getLine() ."\n";
 
 		$code = $ex->getCode();
 

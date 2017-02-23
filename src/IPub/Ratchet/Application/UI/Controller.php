@@ -17,6 +17,8 @@ declare(strict_types = 1);
 namespace IPub\Ratchet\Application\UI;
 
 use Nette;
+use Nette\Http;
+use Nette\Security as NS;
 use Nette\Utils;
 
 use IPub;
@@ -24,7 +26,6 @@ use IPub\Ratchet\Application;
 use IPub\Ratchet\Application\Responses;
 use IPub\Ratchet\Exceptions;
 use IPub\Ratchet\Router;
-use IPub\Ratchet\Session;
 
 /**
  * Ratchet application controller interface
@@ -35,7 +36,8 @@ use IPub\Ratchet\Session;
  * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  *
  * @property-read \stdClass $payload
- * @property-read Nette\Security\User $user
+ * @property-read NS\User $user
+ * @property-read Http\Session $session
  */
 abstract class Controller implements IController
 {
@@ -113,12 +115,12 @@ abstract class Controller implements IController
 	private $router;
 
 	/**
-	 * @var Session\Session
+	 * @var Http\Session
 	 */
 	private $session;
 
 	/**
-	 * @var Nette\Security\User
+	 * @var NS\User
 	 */
 	private $user;
 
@@ -126,13 +128,15 @@ abstract class Controller implements IController
 	 * @param Nette\DI\Container|NULL $context
 	 * @param Application\IControllerFactory|NULL $controllerFactory
 	 * @param Router\IRouter|NULL $router
-	 * @param Nette\Security\User|NULL $user
+	 * @param NS\User|NULL $user
+	 * @param Http\Session|NULL $session
 	 */
 	public function injectPrimary(
 		Nette\DI\Container $context = NULL,
 		Application\IControllerFactory $controllerFactory = NULL,
 		Router\IRouter $router = NULL,
-		Nette\Security\User $user = NULL
+		NS\User $user = NULL,
+		Http\Session $session = NULL
 	) {
 		if ($this->controllerFactory !== NULL) {
 			throw new Nette\InvalidStateException(sprintf('Method "%s" is intended for initialization and should not be called more than once.', __METHOD__));
@@ -142,6 +146,7 @@ abstract class Controller implements IController
 		$this->controllerFactory = $controllerFactory;
 		$this->router = $router;
 		$this->user = $user;
+		$this->session = $session;
 	}
 
 	public function __construct()
@@ -276,14 +281,6 @@ abstract class Controller implements IController
 	}
 
 	/**
-	 * {@inheritdoc}
-	 */
-	public function setSession(Session\Session $session)
-	{
-		$this->session = $session;
-	}
-
-	/**
 	 * Changes current action. Only alphanumeric characters are allowed
 	 *
 	 * @param string $action
@@ -305,7 +302,7 @@ abstract class Controller implements IController
 	/**
 	 * @param string|NULL $namespace
 	 *
-	 * @return Nette\Http\Session|Nette\Http\SessionSection
+	 * @return Http\Session|Http\SessionSection
 	 *
 	 * @throws Exceptions\InvalidStateException
 	 */

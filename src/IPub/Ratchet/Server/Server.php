@@ -76,7 +76,7 @@ final class Server
 	 * @param int $port
 	 * @param string $address
 	 * @param bool $useSession
-	 * @param Session\SessionFactory $sessionFactory
+	 * @param Session\ProviderFactory $providerFactory
 	 *
 	 * @throws Exceptions\InvalidArgumentException
 	 */
@@ -87,7 +87,7 @@ final class Server
 		int $port = 8080,
 		string $address = '127.0.0.1',
 		bool $useSession = FALSE,
-		Session\SessionFactory $sessionFactory
+		Session\ProviderFactory $providerFactory
 	) {
 		$this->loop = $loop;
 
@@ -99,7 +99,7 @@ final class Server
 
 		if ($application instanceof Ratchet\MessageComponentInterface) {
 			if ($useSession) {
-				$component = new Ratchet\WebSocket\WsServer(new Session\Provider($application, $sessionFactory));
+				$component = new Ratchet\WebSocket\WsServer($providerFactory->create($application));
 
 			} else {
 				$component = new Ratchet\WebSocket\WsServer($application);
@@ -107,7 +107,7 @@ final class Server
 
 		} elseif ($application instanceof Ratchet\Wamp\WampServerInterface) {
 			if ($useSession) {
-				$component = new Ratchet\WebSocket\WsServer(new Session\Provider(new Ratchet\Wamp\WampServer($application), $sessionFactory));
+				$component = new Ratchet\WebSocket\WsServer($providerFactory->create(new Ratchet\Wamp\WampServer($application)));
 
 			} else {
 				$component = new Ratchet\WebSocket\WsServer(new Ratchet\Wamp\WampServer($application));

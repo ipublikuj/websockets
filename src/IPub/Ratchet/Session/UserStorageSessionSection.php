@@ -1,6 +1,6 @@
 <?php
 /**
- * SessionSection.php
+ * UserStorageSessionSection.php
  *
  * @copyright      More in license.md
  * @license        http://www.ipublikuj.eu
@@ -9,7 +9,7 @@
  * @subpackage     Session
  * @since          1.0.0
  *
- * @date           21.02.17
+ * @date           23.02.17
  */
 
 declare(strict_types = 1);
@@ -23,14 +23,14 @@ use IPub;
 use IPub\Ratchet\Exceptions;
 
 /**
- * WebSocket connection session section
+ * WebSocket connection session section for user storage
  *
  * @package        iPublikuj:Ratchet!
  * @subpackage     Session
  *
  * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  */
-class SessionSection extends Http\SessionSection
+class UserStorageSessionSection extends Http\SessionSection
 {
 	/**
 	 * @var string
@@ -38,15 +38,15 @@ class SessionSection extends Http\SessionSection
 	private $name;
 
 	/**
-	 * @var Session
+	 * @var SwitchableSession
 	 */
 	private $session;
 
 	/**
-	 * @param Session $session
-	 * @param string $name
+	 * @param SwitchableSession $session
+	 * @param $name
 	 */
-	public function __construct(Session $session, $name)
+	public function __construct(SwitchableSession $session, $name)
 	{
 		parent::__construct($session, $name);
 
@@ -69,12 +69,10 @@ class SessionSection extends Http\SessionSection
 	 * @param mixed $value
 	 *
 	 * @return void
-	 *
-	 * @throws Exceptions\NotImplementedException
 	 */
 	public function __set($name, $value)
 	{
-		//throw new Exceptions\NotImplementedException;
+		//
 	}
 
 	/**
@@ -109,6 +107,8 @@ class SessionSection extends Http\SessionSection
 	 * @param string $name
 	 *
 	 * @return void
+	 *
+	 * @throws Exceptions\NotImplementedException
 	 */
 	public function __unset($name)
 	{
@@ -149,6 +149,8 @@ class SessionSection extends Http\SessionSection
 	 */
 	protected function start() : array
 	{
+		$this->session->start();
+
 		return $this->session->getData($this->name);
 	}
 }

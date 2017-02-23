@@ -67,10 +67,6 @@ class ControllerFactory implements IControllerFactory
 			/** @var UI\IController $controller */
 			$controller = new $class;
 
-			if (isset($connection->session)) {
-				$controller->setSession($connection->session);
-			}
-
 			return $controller;
 		};
 	}

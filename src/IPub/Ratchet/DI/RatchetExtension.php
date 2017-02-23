@@ -18,6 +18,7 @@ namespace IPub\Ratchet\DI;
 
 use Nette;
 use Nette\DI;
+use Nette\Http;
 use Nette\PhpGenerator as Code;
 
 use React;
@@ -27,6 +28,7 @@ use IPub\Ratchet;
 use IPub\Ratchet\Application;
 use IPub\Ratchet\Router;
 use IPub\Ratchet\Server;
+use IPub\Ratchet\Session;
 use IPub\Ratchet\Storage;
 
 /**
@@ -76,8 +78,13 @@ final class RatchetExtension extends DI\CompilerExtension
 			$controllerFactory->addSetup('setMapping', [$configuration['mapping']]);
 		}
 
+		$builder->addDefinition($this->prefix('session.provider'))
+			->setClass(Session\Provider::class)
+			->setImplement(Session\ProviderFactory::class);
+
+		// Sessions
 		$builder->addDefinition($this->prefix('session.factory'))
-			->setClass(Ratchet\Session\SessionFactory::class)
+			->setClass(Session\SessionFactory::class)
 			->setArguments([
 				'handler' => $builder->getDefinition($builder->getByType(\SessionHandlerInterface::class))
 			]);
@@ -173,6 +180,16 @@ final class RatchetExtension extends DI\CompilerExtension
 			$def->addTag(Nette\DI\Extensions\InjectExtension::TAG_INJECT)
 				->addTag('ipub.ratchet.controller', $def->getClass());
 		}
+
+		// Sessions switcher
+		$original = $builder->getDefinition($originalSessionServiceName = $builder->getByType(Http\Session::class) ?: 'session');
+		$builder->removeDefinition($originalSessionServiceName);
+		$builder->addDefinition($this->prefix('session.session.original'), $original)
+			->setAutowired(FALSE);
+
+		$builder->addDefinition($originalSessionServiceName)
+			->setClass(Http\Session::class)
+			->setFactory(Session\SwitchableSession::class, [$this->prefix('@session.session.original')]);
 	}
 
 	/**

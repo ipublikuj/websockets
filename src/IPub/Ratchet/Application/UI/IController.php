@@ -49,11 +49,4 @@ interface IController
 	 * @return void
 	 */
 	function setDefaultAction(string $action);
-
-	/**
-	 * @param Session\Session $session
-	 *
-	 * @return void
-	 */
-	function setSession(Session\Session $session);
 }

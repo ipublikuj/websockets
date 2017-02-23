@@ -59,10 +59,6 @@ class ControllerFactoryCallback
 
 			$this->container->callInjects($controller);
 
-			if (isset($connection->session)) {
-				$controller->setSession($connection->session);
-			}
-
 			return $controller;
 		}
 
