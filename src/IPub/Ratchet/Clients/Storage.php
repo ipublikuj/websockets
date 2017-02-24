@@ -25,6 +25,7 @@ use Ratchet\ConnectionInterface;
 use IPub;
 use IPub\Ratchet\Clients\Drivers;
 use IPub\Ratchet\Exceptions;
+use Ratchet\Server\IoConnection;
 
 /**
  * Storage for manage all connections
@@ -79,7 +80,11 @@ final class Storage implements IStorage
 	 */
 	public static function getStorageId(ConnectionInterface $connection) : int
 	{
-		return $connection->resourceId;
+		if ($connection instanceof IoConnection) {
+			return $connection->resourceId;
+		}
+
+		throw new Exceptions\InvalidStateException('Provided connection is not instance of \Ratchet\Server\IoConnection');
 	}
 
 	/**

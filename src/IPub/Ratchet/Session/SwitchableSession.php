@@ -20,6 +20,7 @@ use Nette;
 use Nette\Http;
 use Nette\Utils;
 
+use Ratchet\Server\IoConnection;
 use Ratchet\Session as RSession;
 use Ratchet\ConnectionInterface;
 
@@ -120,16 +121,10 @@ final class SwitchableSession extends Http\Session
 	}
 
 	/**
-	 * @param ConnectionInterface $connection
-	 *
 	 * @return void
 	 */
-	public function detach(ConnectionInterface $connection)
+	public function detach()
 	{
-		if (isset($connection->session)) {
-			$connection->session->close();
-		}
-
 		if ($this->attached) {
 			$this->close();
 
@@ -154,6 +149,7 @@ final class SwitchableSession extends Http\Session
 	{
 		if (!$this->attached) {
 			$this->systemSession->start();
+
 			return;
 		}
 
@@ -453,9 +449,15 @@ final class SwitchableSession extends Http\Session
 
 	/**
 	 * @return int
+	 *
+	 * @throws Exceptions\InvalidStateException
 	 */
 	private function getConnectionId() : int
 	{
-		return $this->connection->resourceId;
+		if ($this->connection instanceof IoConnection) {
+			return $this->connection->resourceId;
+		}
+
+		throw new Exceptions\InvalidStateException('Session connection is not instance of \Ratchet\Server\IoConnection');
 	}
 }

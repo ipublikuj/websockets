@@ -78,10 +78,12 @@ class Provider implements MessageComponentInterface, WebSocket\WsServerInterface
 	 */
 	public function onMessage(ConnectionInterface $from, $msg)
 	{
-		$this->session->attach($from);
+		if ($this->session instanceof SwitchableSession) {
+			$this->session->attach($from);
 
-		if (!$this->session->isStarted()) {
-			$this->session->start();
+			if (!$this->session->isStarted()) {
+				$this->session->start();
+			}
 		}
 
 		return $this->application->onMessage($from, $msg);
@@ -92,7 +94,9 @@ class Provider implements MessageComponentInterface, WebSocket\WsServerInterface
 	 */
 	public function onClose(ConnectionInterface $conn)
 	{
-		$this->session->detach($conn);
+		if ($this->session instanceof SwitchableSession) {
+			$this->session->detach();
+		}
 
 		return $this->application->onClose($conn);
 	}
