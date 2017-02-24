@@ -23,7 +23,7 @@
 		"ipub"	: {
 			"configuration" : {
 				"extensions" : {
-					"confirmationDialog" : "IPub\\Ratchet\\DI\\RatchetExtension"
+					"ratchet" : "IPub\\Ratchet\\DI\\RatchetExtension"
 				}
 			}
 		}
@@ -34,13 +34,14 @@
 
 		"cboden/ratchet": "~0.3.0",
 
-		"nette/application"	: "~2.3",
-		"nette/di"			: "~2.3",
-		"nette/http"		: "~2.3",
-		"nette/utils"		: "~2.3",
+		"nette/application"	: "~2.4",
+		"nette/di"			: "~2.4",
+		"nette/http"		: "~2.4",
+		"nette/reflection"	: "~2.4",
+		"nette/security"	: "~2.4",
+		"nette/utils"		: "~2.4",
 
-		"pds/skeleton"	: "@dev",
-		"kdyby/redis": "^3.3"
+		"pds/skeleton"	: "@dev"
 	},
 
 	"require-dev": {
