@@ -23,10 +23,11 @@ use Guzzle\Http\Message;
 use Ratchet\ConnectionInterface;
 
 use IPub;
+use IPub\Ratchet\Clients;
 use IPub\Ratchet\Exceptions;
 use IPub\Ratchet\Router;
 use IPub\Ratchet\Session;
-use IPub\Ratchet\Storage;
+use Tracy\Debugger;
 
 /**
  * Application which run on server and provide creating controllers
@@ -55,23 +56,23 @@ abstract class Application implements IApplication
 	protected $controllerFactory;
 
 	/**
-	 * @var Storage\Connections
+	 * @var Clients\IStorage
 	 */
-	protected $connectionStorage;
+	protected $clientsStorage;
 
 	/**
 	 * @param Router\IRouter $router
 	 * @param IControllerFactory $controllerFactory
-	 * @param Storage\Connections $connection
+	 * @param Clients\IStorage $clientsStorage
 	 */
 	public function __construct(
 		Router\IRouter $router,
 		IControllerFactory $controllerFactory,
-		Storage\Connections $connection
+		Clients\IStorage $clientsStorage
 	) {
 		$this->router = $router;
 		$this->controllerFactory = $controllerFactory;
-		$this->connectionStorage = $connection;
+		$this->clientsStorage = $clientsStorage;
 	}
 
 	/**
@@ -79,7 +80,7 @@ abstract class Application implements IApplication
 	 */
 	public function onOpen(ConnectionInterface $conn)
 	{
-		$this->connectionStorage->addClient($conn);
+		$this->clientsStorage->addClient($this->clientsStorage->getStorageId($conn), $conn);
 
 		echo "New connection! ({$conn->resourceId})\n";
 	}
@@ -89,7 +90,7 @@ abstract class Application implements IApplication
 	 */
 	public function onClose(ConnectionInterface $conn)
 	{
-		$this->connectionStorage->removeClient($conn);
+		$this->clientsStorage->removeClient($this->clientsStorage->getStorageId($conn));
 
 		echo "Connection {$conn->resourceId} has disconnected\n";
 	}
@@ -99,6 +100,8 @@ abstract class Application implements IApplication
 	 */
 	public function onError(ConnectionInterface $conn, \Exception $ex)
 	{
+		Debugger::log($ex);
+
 		echo "An error has occurred: ". $ex->getFile() . $ex->getLine() ."\n";
 
 		$code = $ex->getCode();

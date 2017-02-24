@@ -21,15 +21,17 @@ use Nette\DI;
 use Nette\Http;
 use Nette\PhpGenerator as Code;
 
+use Ratchet\Session\Serialize\HandlerInterface;
 use React;
 
 use IPub;
 use IPub\Ratchet;
 use IPub\Ratchet\Application;
+use IPub\Ratchet\Clients;
 use IPub\Ratchet\Router;
 use IPub\Ratchet\Server;
 use IPub\Ratchet\Session;
-use IPub\Ratchet\Storage;
+use IPub\Ratchet\Users;
 
 /**
  * Ratchet extension container
@@ -45,6 +47,12 @@ final class RatchetExtension extends DI\CompilerExtension
 	 * @var array
 	 */
 	private $defaults = [
+		'clients' => [
+			'storage' => [
+				'driver' => '@clients.driver.memory',
+				'ttl'    => 0,
+			],
+		],
 		'server'  => [
 			'httpHost' => 'localhost',
 			'port'     => 8888,
@@ -68,7 +76,11 @@ final class RatchetExtension extends DI\CompilerExtension
 		// Get extension configuration
 		$configuration = $this->getConfig($this->defaults);
 
-		$controllerFactory = $builder->addDefinition($this->prefix('controllerFactory'))
+		/**
+		 * CONTROLLERS
+		 */
+
+		$controllerFactory = $builder->addDefinition($this->prefix('controllers.factory'))
 			->setClass(Application\IControllerFactory::class)
 			->setFactory(Application\ControllerFactory::class, [new Nette\DI\Statement(
 				Application\ControllerFactoryCallback::class
@@ -78,31 +90,62 @@ final class RatchetExtension extends DI\CompilerExtension
 			$controllerFactory->addSetup('setMapping', [$configuration['mapping']]);
 		}
 
+		/**
+		 * SESSION
+		 */
+
 		$builder->addDefinition($this->prefix('session.provider'))
 			->setClass(Session\Provider::class)
 			->setImplement(Session\ProviderFactory::class);
 
-		// Sessions
-		$builder->addDefinition($this->prefix('session.factory'))
-			->setClass(Session\SessionFactory::class)
-			->setArguments([
-				'handler' => $builder->getDefinition($builder->getByType(\SessionHandlerInterface::class))
-			]);
+		$builder->addDefinition($this->prefix('session.serializer'))
+			->setClass(HandlerInterface::class)
+			->setFactory(Session\SessionSerializerFactory::class . '::create');
 
-		$builder->addDefinition($this->prefix('storage.connection'))
-			->setClass(Storage\Connections::class);
+		/**
+		 * USERS
+		 */
+
+		$builder->addDefinition($this->prefix('users.repository'))
+			->setClass(Users\Repository::class);
+
+		/**
+		 * CLIENTS
+		 */
+
+		$builder->addDefinition($this->prefix('clients.driver.memory'))
+			->setClass(Clients\Drivers\InMemory::class);
+
+		$storageDriver = $configuration['clients']['storage']['driver'] === '@clients.driver.memory' ?
+			$builder->getDefinition($this->prefix('clients.driver.memory')) :
+			$builder->getDefinition($configuration['clients']['storage']['driver']);
+
+		$builder->addDefinition($this->prefix('clients.storage'))
+			->setClass(Clients\Storage::class)
+			->setArguments([
+				'ttl' => $configuration['clients']['storage']['ttl'],
+			])
+			->addSetup('?->setStorageDriver(?)', ['@' . $this->prefix('clients.storage'), $storageDriver]);
+
+		/**
+		 * ROUTING
+		 */
 
 		// Http routes collector
 		$builder->addDefinition($this->prefix('router'))
 			->setClass(Router\IRouter::class)
 			->setFactory(Router\RouteList::class);
 
+		/**
+		 * SERVER
+		 */
+
 		if ($configuration['server']['type'] === 'wamp') {
-			$application = $builder->addDefinition($this->prefix('application'))
+			$application = $builder->addDefinition($this->prefix('server.application'))
 				->setClass(Application\PubSubApplication::class);
 
 		} else {
-			$application = $builder->addDefinition($this->prefix('application'))
+			$application = $builder->addDefinition($this->prefix('server.application'))
 				->setClass(Application\MessageApplication::class);
 		}
 
@@ -121,7 +164,6 @@ final class RatchetExtension extends DI\CompilerExtension
 				$configuration['server']['address'],
 				$configuration['session'],
 			]);
-
 	}
 
 	/**
@@ -184,12 +226,12 @@ final class RatchetExtension extends DI\CompilerExtension
 		// Sessions switcher
 		$original = $builder->getDefinition($originalSessionServiceName = $builder->getByType(Http\Session::class) ?: 'session');
 		$builder->removeDefinition($originalSessionServiceName);
-		$builder->addDefinition($this->prefix('session.session.original'), $original)
+		$builder->addDefinition($this->prefix('session.original'), $original)
 			->setAutowired(FALSE);
 
 		$builder->addDefinition($originalSessionServiceName)
 			->setClass(Http\Session::class)
-			->setFactory(Session\SwitchableSession::class, [$this->prefix('@session.session.original')]);
+			->setFactory(Session\SwitchableSession::class, [$this->prefix('@session.original')]);
 	}
 
 	/**

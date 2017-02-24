@@ -20,11 +20,11 @@ use Nette;
 use Nette\Http;
 use Nette\Utils;
 
+use Ratchet\Session as RSession;
 use Ratchet\ConnectionInterface;
 
 use IPub;
 use IPub\Ratchet\Exceptions;
-use Tracy\Debugger;
 
 /**
  * WebSocket session switcher
@@ -47,16 +47,56 @@ final class SwitchableSession extends Http\Session
 	private $connection;
 
 	/**
+	 * Has been session started?
+	 *
+	 * @var bool
+	 */
+	private $started = FALSE;
+
+	/**
+	 * @var array
+	 */
+	private $data = [];
+
+	/**
+	 * @var array
+	 */
+	private $sections = [];
+
+	/**
 	 * @var bool
 	 */
 	private $attached = FALSE;
 
 	/**
-	 * @param Http\Session $session
+	 * @var \SessionHandlerInterface|NULL
 	 */
-	public function __construct(Http\Session $session)
-	{
+	private $handler;
+
+	/**
+	 * @var NullHandler
+	 */
+	private $nullHandler;
+
+	/**
+	 * @var RSession\Serialize\HandlerInterface
+	 */
+	private $serializer;
+
+	/**
+	 * @param Http\Session $session
+	 * @param RSession\Serialize\HandlerInterface $serializer
+	 * @param \SessionHandlerInterface|NULL $handler
+	 */
+	public function __construct(
+		Http\Session $session,
+		RSession\Serialize\HandlerInterface $serializer,
+		\SessionHandlerInterface $handler = NULL
+	) {
 		$this->systemSession = $session;
+		$this->handler = $handler;
+		$this->nullHandler = new NullHandler;
+		$this->serializer = $serializer;
 	}
 
 	/**
@@ -73,11 +113,8 @@ final class SwitchableSession extends Http\Session
 			throw new Exceptions\LogicException('Session is already started, please close it first and then you can disabled it.');
 		}
 
-		if (!isset($connection->session)) {
-			throw new Exceptions\InvalidArgumentException(sprintf('Connection "%s" is without session.', $connection->resourceId));
-		}
-
 		$this->attached = TRUE;
+		$this->started = FALSE;
 
 		$this->connection = $connection;
 	}
@@ -93,7 +130,9 @@ final class SwitchableSession extends Http\Session
 			$connection->session->close();
 		}
 
-		if ($this->attached && $connection->resourceId === $this->connection->resourceId) {
+		if ($this->attached) {
+			$this->close();
+
 			$this->attached = FALSE;
 
 			$this->connection = NULL;
@@ -115,10 +154,65 @@ final class SwitchableSession extends Http\Session
 	{
 		if (!$this->attached) {
 			$this->systemSession->start();
+			return;
+		}
+
+		if ($this->started) {
+			return;
+		}
+
+		$this->started = TRUE;
+
+		if (!isset($this->connection->WebSocket) || ($id = $this->connection->WebSocket->request->getCookie($this->systemSession->getName())) === NULL) {
+			$handler = $this->nullHandler;
+			$id = '';
 
 		} else {
-			$this->getConnectionSession()->start();
+			$handler = $this->handler;
 		}
+
+		$handler->open(session_save_path(), $this->systemSession->getName());
+
+		$rawData = $handler->read($id);
+
+		$data = $this->serializer->unserialize($rawData);
+
+		/* structure:
+			__NF: Data, Meta, Time
+				DATA: section->variable = data
+				META: section->variable = Timestamp
+		*/
+		$nf = &$data['__NF'];
+
+		if (!is_array($nf)) {
+			$nf = [];
+		}
+
+		// regenerate empty session
+		if (empty($nf['Time'])) {
+			$nf['Time'] = time();
+		}
+
+		// process meta metadata
+		if (isset($nf['META'])) {
+			$now = time();
+			// expire section variables
+			foreach ($nf['META'] as $section => $metadata) {
+				if (is_array($metadata)) {
+					foreach ($metadata as $variable => $value) {
+						if (!empty($value['T']) && $now > $value['T']) {
+							if ($variable === '') { // expire whole section
+								unset($nf['META'][$section], $nf['DATA'][$section]);
+								continue 2;
+							}
+							unset($nf['META'][$section][$variable], $nf['DATA'][$section][$variable]);
+						}
+					}
+				}
+			}
+		}
+
+		$this->data[$this->getConnectionId()] = $data;
 	}
 
 	/**
@@ -130,7 +224,7 @@ final class SwitchableSession extends Http\Session
 			return $this->systemSession->isStarted();
 		}
 
-		return $this->getConnectionSession()->isStarted();
+		return $this->started;
 	}
 
 	/**
@@ -142,7 +236,9 @@ final class SwitchableSession extends Http\Session
 			$this->systemSession->close();
 
 		} else {
-			$this->getConnectionSession()->close();
+			$this->started = FALSE;
+
+			$this->handler->close();
 		}
 	}
 
@@ -155,7 +251,13 @@ final class SwitchableSession extends Http\Session
 			$this->systemSession->destroy();
 
 		} else {
-			$this->getConnectionSession()->destroy();
+			if (!$this->started) {
+				throw new Exceptions\InvalidStateException('Session is not started.');
+			}
+
+			$this->started = FALSE;
+
+			$this->data = [];
 		}
 	}
 
@@ -168,7 +270,7 @@ final class SwitchableSession extends Http\Session
 			return $this->systemSession->exists();
 		}
 
-		return $this->getConnectionSession()->exists();
+		return $this->started;
 	}
 
 	/**
@@ -178,10 +280,9 @@ final class SwitchableSession extends Http\Session
 	{
 		if (!$this->attached) {
 			$this->systemSession->regenerateId();
-
-		} else {
-			$this->getConnectionSession()->regenerateId();
 		}
+
+		// For WS session nothing to do
 	}
 
 	/**
@@ -193,7 +294,7 @@ final class SwitchableSession extends Http\Session
 			return $this->systemSession->getId();
 		}
 
-		return $this->getConnectionSession()->getId();
+		return $this->connection->WebSocket->request->getCookie($this->systemSession->getName());
 	}
 
 	/**
@@ -205,12 +306,7 @@ final class SwitchableSession extends Http\Session
 			return $this->systemSession->getSection($section, $class);
 		}
 
-		if (Utils\Strings::startsWith($section, 'Nette.Http.UserStorage')) {
-			return new UserStorageSessionSection($this, $section);
-
-		} else {
-			return $this->getConnectionSession()->getSection($section, $class);
-		}
+		return new SessionSection($this, $section);
 	}
 
 	/**
@@ -222,19 +318,19 @@ final class SwitchableSession extends Http\Session
 			return $this->systemSession->hasSection($section);
 		}
 
-		return $this->getConnectionSession()->hasSection($section);
+		return isset($this->sections[$this->getConnectionId()][$section]);
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getIterator()
+	public function getIterator() : \ArrayIterator
 	{
 		if (!$this->attached) {
 			return $this->systemSession->getIterator();
 		}
 
-		return $this->getConnectionSession()->getIterator();
+		return new \ArrayIterator(array_keys($this->sections[$this->getConnectionId()]));
 	}
 
 	/**
@@ -246,7 +342,26 @@ final class SwitchableSession extends Http\Session
 			$this->systemSession->clean();
 
 		} else {
-			$this->getConnectionSession()->clean();
+			if (!$this->started || empty($this->data[$this->getConnectionId()])) {
+				return;
+			}
+
+			$nf = &$this->data[$this->getConnectionId()]['__NF'];
+			if (isset($nf['META']) && is_array($nf['META'])) {
+				foreach ($nf['META'] as $name => $foo) {
+					if (empty($nf['META'][$name])) {
+						unset($nf['META'][$name]);
+					}
+				}
+			}
+
+			if (empty($nf['META'])) {
+				unset($nf['META']);
+			}
+
+			if (empty($nf['DATA'])) {
+				unset($nf['DATA']);
+			}
 		}
 	}
 
@@ -323,24 +438,24 @@ final class SwitchableSession extends Http\Session
 	}
 
 	/**
-	 * @param string $sectionName
+	 * @param string $section
 	 *
 	 * @return array
 	 */
-	public function getData(string $sectionName) : array
+	public function getData(string $section) : array
 	{
 		if (!$this->attached) {
-			return $_SESSION['DATA'][$sectionName];
+			return $_SESSION['DATA'][$section];
 		}
 
-		return $this->getConnectionSession()->getData($sectionName);
+		return isset($this->data[$this->getConnectionId()]['__NF']['DATA'][$section]) ? $this->data[$this->getConnectionId()]['__NF']['DATA'][$section] : [];
 	}
 
 	/**
-	 * @return Session
+	 * @return int
 	 */
-	private function getConnectionSession() : Session
+	private function getConnectionId() : int
 	{
-		return $this->connection->session;
+		return $this->connection->resourceId;
 	}
 }

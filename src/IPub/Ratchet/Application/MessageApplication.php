@@ -27,9 +27,8 @@ use Guzzle\Http\Message;
 
 use IPub;
 use IPub\Ratchet\Application\UI;
+use IPub\Ratchet\Clients;
 use IPub\Ratchet\Exceptions;
-use IPub\Ratchet\Storage;
-use Symfony\Component\HttpFoundation\Session\Session;
 
 /**
  * Application which run on server and provide creating controllers
@@ -92,8 +91,8 @@ final class MessageApplication extends Application implements MessageComponentIn
 
 		$response = $controller->run($appRequest);
 
-		/** @var IPub\Ratchet\Server\Connection $connection */
-		foreach ($this->connectionStorage as $connection) {
+		/** @var Clients\Client $connection */
+		foreach ($this->clientsStorage as $connection) {
 			$connection->send($response);
 		}
 	}

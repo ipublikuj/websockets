@@ -39,11 +39,6 @@ class Provider implements MessageComponentInterface, WebSocket\WsServerInterface
 	private $application;
 
 	/**
-	 * @var SessionFactory
-	 */
-	private $sessionFactory;
-
-	/**
 	 * @var Http\Session|SwitchableSession
 	 */
 	private $session;
@@ -55,17 +50,15 @@ class Provider implements MessageComponentInterface, WebSocket\WsServerInterface
 
 	/**
 	 * @param MessageComponentInterface $application
-	 * @param SessionFactory $sessionFactory
 	 * @param Http\Session $session
+	 * @param Nette\Security\User $user
 	 */
 	public function __construct(
 		MessageComponentInterface $application,
-		SessionFactory $sessionFactory,
 		Http\Session $session,
 		Nette\Security\User $user
 	) {
 		$this->application = $application;
-		$this->sessionFactory = $sessionFactory;
 		$this->session = $session;
 		$this->user = $user;
 	}
@@ -75,7 +68,6 @@ class Provider implements MessageComponentInterface, WebSocket\WsServerInterface
 	 */
 	public function onOpen(ConnectionInterface $conn)
 	{
-		$conn->session = $this->sessionFactory->create($conn);
 		$conn->user = clone $this->user;
 
 		return $this->application->onOpen($conn);
