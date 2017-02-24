@@ -2,10 +2,14 @@ language: php
 
 env:
   - NETTE=default
-  - NETTE=~2.3.0
+  - NETTE=~3.0.0
 
 php:
   - 7.0
+
+matrix:
+  allow_failures:
+    - env: NETTE=~3.0.0
 
 before_install:
   - composer self-update
