@@ -53,7 +53,7 @@ class ControllerFactoryCallback
 		if (count($services) > 1) {
 			throw new Exceptions\InvalidControllerException(sprintf('Multiple services of type "%s" found: %s.', $class, implode(', ', $services)));
 
-		} elseif (!$services) {
+		} elseif ($services === []) {
 			/** @var UI\IController $controller */
 			$controller = $this->container->createInstance($class);
 
