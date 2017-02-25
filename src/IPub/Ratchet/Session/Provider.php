@@ -69,7 +69,7 @@ class Provider implements Application\IApplication, WebSocket\WsServerInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onOpen(Clients\Client $client)
+	public function onOpen(Clients\IClient $client)
 	{
 		$client->setUser(clone $this->user);
 
@@ -79,7 +79,7 @@ class Provider implements Application\IApplication, WebSocket\WsServerInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onMessage(Clients\Client $from, $msg)
+	public function onMessage(Clients\IClient $from, string $message)
 	{
 		if ($this->session instanceof SwitchableSession) {
 			$this->session->attach($from);
@@ -89,13 +89,13 @@ class Provider implements Application\IApplication, WebSocket\WsServerInterface
 			}
 		}
 
-		return $this->application->onMessage($from, $msg);
+		return $this->application->onMessage($from, $message);
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onClose(Clients\Client $client)
+	public function onClose(Clients\IClient $client)
 	{
 		if ($this->session instanceof SwitchableSession) {
 			$this->session->detach();
@@ -107,7 +107,7 @@ class Provider implements Application\IApplication, WebSocket\WsServerInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onError(Clients\Client $client, \Exception $ex)
+	public function onError(Clients\IClient $client, \Exception $ex)
 	{
 		return $this->application->onError($client, $ex);
 	}
