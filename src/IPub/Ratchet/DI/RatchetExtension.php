@@ -142,19 +142,21 @@ final class RatchetExtension extends DI\CompilerExtension
 
 		if ($configuration['server']['type'] === 'wamp') {
 			$application = $builder->addDefinition($this->prefix('server.application'))
-				->setClass(Application\PubSubApplication::class);
+				->setClass(Application\WampApplication::class);
 
 		} else {
 			$application = $builder->addDefinition($this->prefix('server.application'))
 				->setClass(Application\MessageApplication::class);
 		}
 
-		// React event loop
 		$loop = $builder->addDefinition($this->prefix('server.loop'))
 			->setClass(React\EventLoop\LoopInterface::class)
 			->setFactory('React\EventLoop\Factory::create');
 
-		// Ratchet server
+		$builder->addDefinition($this->prefix('server.wrapper'))
+			->setClass(Server\Wrapper::class)
+			->setImplement(Server\WrapperFactory::class);
+
 		$builder->addDefinition($this->prefix('server.server'))
 			->setClass(Server\Server::class, [
 				$application,

@@ -42,11 +42,4 @@ interface IController
 	 * @return string
 	 */
 	function getName() : string;
-
-	/**
-	 * @param string $action
-	 *
-	 * @return void
-	 */
-	function setDefaultAction(string $action);
 }

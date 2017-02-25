@@ -18,8 +18,6 @@ namespace IPub\Ratchet\Application;
 
 use Nette;
 
-use Ratchet\ConnectionInterface;
-
 use IPub;
 use IPub\Ratchet\Application\UI;
 use IPub\Ratchet\Exceptions;
@@ -40,13 +38,12 @@ class ControllerFactoryCallback
 	}
 
 	/**
-	 * @param ConnectionInterface $connection
 	 * @param string $class
 	 *
 	 * @return UI\IController
 	 * @throws Exceptions\InvalidControllerException
 	 */
-	public function __invoke(ConnectionInterface $connection, string $class) : UI\IController
+	public function __invoke(string $class) : UI\IController
 	{
 		$services = array_keys($this->container->findByTag('ipub.ratchet.controller'), $class);
 

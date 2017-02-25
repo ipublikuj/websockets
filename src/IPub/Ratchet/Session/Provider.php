@@ -18,10 +18,13 @@ namespace IPub\Ratchet\Session;
 
 use Nette;
 use Nette\Http;
+use Nette\Security as NS;
 
-use Ratchet\MessageComponentInterface;
-use Ratchet\ConnectionInterface;
 use Ratchet\WebSocket;
+
+use IPub;
+use IPub\Ratchet\Application;
+use IPub\Ratchet\Clients;
 
 /**
  * This component will allow access to session data from your Nette Framework website for each user connected
@@ -31,10 +34,10 @@ use Ratchet\WebSocket;
  *
  * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  */
-class Provider implements MessageComponentInterface, WebSocket\WsServerInterface
+class Provider implements Application\IApplication, WebSocket\WsServerInterface
 {
 	/**
-	 * @var MessageComponentInterface
+	 * @var Application\IApplication
 	 */
 	private $application;
 
@@ -49,14 +52,14 @@ class Provider implements MessageComponentInterface, WebSocket\WsServerInterface
 	private $user;
 
 	/**
-	 * @param MessageComponentInterface $application
+	 * @param Application\IApplication $application
 	 * @param Http\Session $session
-	 * @param Nette\Security\User $user
+	 * @param NS\User $user
 	 */
 	public function __construct(
-		MessageComponentInterface $application,
+		Application\IApplication $application,
 		Http\Session $session,
-		Nette\Security\User $user
+		NS\User $user
 	) {
 		$this->application = $application;
 		$this->session = $session;
@@ -66,17 +69,17 @@ class Provider implements MessageComponentInterface, WebSocket\WsServerInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onOpen(ConnectionInterface $conn)
+	public function onOpen(Clients\Client $client)
 	{
-		$conn->user = clone $this->user;
+		$client->setUser(clone $this->user);
 
-		return $this->application->onOpen($conn);
+		return $this->application->onOpen($client);
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onMessage(ConnectionInterface $from, $msg)
+	public function onMessage(Clients\Client $from, $msg)
 	{
 		if ($this->session instanceof SwitchableSession) {
 			$this->session->attach($from);
@@ -92,21 +95,21 @@ class Provider implements MessageComponentInterface, WebSocket\WsServerInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onClose(ConnectionInterface $conn)
+	public function onClose(Clients\Client $client)
 	{
 		if ($this->session instanceof SwitchableSession) {
 			$this->session->detach();
 		}
 
-		return $this->application->onClose($conn);
+		return $this->application->onClose($client);
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onError(ConnectionInterface $conn, \Exception $e)
+	public function onError(Clients\Client $client, \Exception $ex)
 	{
-		return $this->application->onError($conn, $e);
+		return $this->application->onError($client, $ex);
 	}
 
 	/**
@@ -121,5 +124,4 @@ class Provider implements MessageComponentInterface, WebSocket\WsServerInterface
 			return [];
 		}
 	}
-
 }

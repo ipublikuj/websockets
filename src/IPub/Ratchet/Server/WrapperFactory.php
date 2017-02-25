@@ -1,38 +1,38 @@
 <?php
 /**
- * ProviderFactory.php
+ * WrapperFactory.php
  *
  * @copyright      More in license.md
  * @license        http://www.ipublikuj.eu
  * @author         Adam Kadlec http://www.ipublikuj.eu
  * @package        iPublikuj:Ratchet!
- * @subpackage     Session
+ * @subpackage     Server
  * @since          1.0.0
  *
- * @date           23.02.17
+ * @date           25.02.17
  */
 
 declare(strict_types = 1);
 
-namespace IPub\Ratchet\Session;
+namespace IPub\Ratchet\Server;
 
 use IPub;
 use IPub\Ratchet\Application;
 
 /**
- * Session component provider factory
+ * Ratchet server wrapper factory
  *
  * @package        iPublikuj:Ratchet!
- * @subpackage     Session
+ * @subpackage     Server
  *
  * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  */
-interface ProviderFactory
+interface WrapperFactory
 {
 	/**
 	 * @param Application\IApplication $application
 	 *
-	 * @return Provider
+	 * @return Wrapper
 	 */
-	function create(Application\IApplication $application) : Provider;
+	function create(Application\IApplication $application) : Wrapper;
 }

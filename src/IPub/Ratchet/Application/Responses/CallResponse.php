@@ -64,4 +64,12 @@ class CallResponse implements IResponse
 	{
 		return Utils\Json::encode((object) ['type' => 'call', 'name' => $this->name, 'data' => $this->data]);
 	}
+
+	/**
+	 * @return string
+	 */
+	public function __toString()
+	{
+		return $this->create();
+	}
 }

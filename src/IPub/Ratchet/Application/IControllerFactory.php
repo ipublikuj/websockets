@@ -16,12 +16,9 @@ declare(strict_types = 1);
 
 namespace IPub\Ratchet\Application;
 
-use Ratchet\ConnectionInterface;
-
 use IPub;
 use IPub\Ratchet\Application\UI;
 use IPub\Ratchet\Exceptions;
-
 
 /**
  * Responsible for creating a new instance of given controller
@@ -47,10 +44,9 @@ interface IControllerFactory
 	/**
 	 * Creates new controller instance
 	 *
-	 * @param ConnectionInterface $connection
 	 * @param string $name
 	 *
 	 * @return UI\IController
 	 */
-	function createController(ConnectionInterface $connection, string $name) : UI\IController;
+	function createController(string $name) : UI\IController;
 }

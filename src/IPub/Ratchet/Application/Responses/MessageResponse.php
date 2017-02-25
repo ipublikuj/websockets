@@ -54,4 +54,12 @@ class MessageResponse implements IResponse
 	{
 		return $this->data;
 	}
+
+	/**
+	 * @return string
+	 */
+	public function __toString()
+	{
+		return $this->create();
+	}
 }

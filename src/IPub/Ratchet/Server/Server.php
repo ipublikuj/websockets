@@ -70,23 +70,23 @@ final class Server
 	private $flashServer;
 
 	/**
-	 * @param Ratchet\MessageComponentInterface|Ratchet\Wamp\WampServerInterface $application
+	 * @param Application\IApplication $application
 	 * @param LoopInterface $loop
 	 * @param string $httpHost
 	 * @param int $port
 	 * @param string $address
 	 * @param bool $useSession
+	 * @param WrapperFactory $wrapperFactory
 	 * @param Session\ProviderFactory $providerFactory
-	 *
-	 * @throws Exceptions\InvalidArgumentException
 	 */
 	public function __construct(
-		$application,
+		Application\IApplication $application,
 		LoopInterface $loop,
 		string $httpHost = 'localhost',
 		int $port = 8080,
 		string $address = '127.0.0.1',
 		bool $useSession = FALSE,
+		WrapperFactory $wrapperFactory,
 		Session\ProviderFactory $providerFactory
 	) {
 		$this->loop = $loop;
@@ -97,25 +97,24 @@ final class Server
 		$socket = new React\Socket\Server($this->loop);
 		$socket->listen($port, $address);
 
-		if ($application instanceof Ratchet\MessageComponentInterface) {
+		//if ($application instanceof Ratchet\MessageComponentInterface) {
 			if ($useSession) {
-				$component = new Ratchet\WebSocket\WsServer($providerFactory->create($application));
-
-			} else {
-				$component = new Ratchet\WebSocket\WsServer($application);
+				$application = $providerFactory->create($application);
 			}
-
+/*
 		} elseif ($application instanceof Ratchet\Wamp\WampServerInterface) {
 			if ($useSession) {
-				$component = new Ratchet\WebSocket\WsServer($providerFactory->create(new Ratchet\Wamp\WampServer($application)));
+				$application = $providerFactory->create(new Ratchet\Wamp\WampServer($application));
 
 			} else {
-				$component = new Ratchet\WebSocket\WsServer(new Ratchet\Wamp\WampServer($application));
+				$application = new Ratchet\Wamp\WampServer($application);
 			}
 
 		} else {
 			throw new Exceptions\InvalidArgumentException('Invalid application provided to Ratchet server.');
 		}
+*/
+		$component = new Ratchet\WebSocket\WsServer($wrapperFactory->create($application));
 
 		$this->server = new Ratchet\Server\IoServer(
 			new Ratchet\Http\HttpServer($component),

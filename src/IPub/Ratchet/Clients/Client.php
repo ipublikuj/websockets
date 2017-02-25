@@ -18,6 +18,9 @@ namespace IPub\Ratchet\Clients;
 
 use Nette;
 use Nette\Security as NS;
+use Nette\Utils;
+
+use Guzzle\Http\Message;
 
 use Ratchet\ConnectionInterface;
 
@@ -46,29 +49,86 @@ class Client
 	private $connection;
 
 	/**
+	 * @var NS\User|NULL
+	 */
+	private $user;
+
+	/**
+	 * @var Utils\ArrayHash
+	 */
+	private $parameters;
+
+	/**
 	 * @param ConnectionInterface $connection
 	 */
 	public function __construct(ConnectionInterface $connection)
 	{
 		$this->connection = $connection;
+		$this->parameters = new Utils\ArrayHash;
 	}
 
 	/**
-	 * @return void
+	 * @return int
 	 */
-	public function close()
+	public function getId() : int
 	{
-		$this->connection->close();
+		return $this->connection->resourceId;
 	}
 
 	/**
-	 * @param Responses\IResponse $response
+	 * @param string $key
+	 * @param mixed $value
 	 *
 	 * @return void
 	 */
-	public function send(Responses\IResponse $response)
+	public function addParameter(string $key, $value)
 	{
-		$this->connection->send($response->create());
+		$this->parameters->offsetSet($key, $value);
+	}
+
+	/**
+	 * @param string $key
+	 * @param mixed|NULL $default
+	 *
+	 * @return mixed|NULL
+	 */
+	public function getParameter(string $key, $default = NULL)
+	{
+		return $this->parameters->offsetExists($key) ? $this->parameters->offsetGet($key) : $default;
+	}
+
+	/**
+	 * @param int|NULL $code
+	 *
+	 * @return void
+	 */
+	public function close(int $code = NULL)
+	{
+		$this->connection->close($code);
+	}
+
+	/**
+	 * @param Responses\IResponse|string $response
+	 *
+	 * @return void
+	 */
+	public function send($response)
+	{
+		if ($response instanceof Responses\IResponse) {
+			$response = $response->create();
+		}
+
+		$this->connection->send((string) $response);
+	}
+
+	/**
+	 * @param NS\User $user
+	 *
+	 * @return void
+	 */
+	public function setUser(NS\User $user)
+	{
+		$this->user = $user;
 	}
 
 	/**
@@ -76,6 +136,24 @@ class Client
 	 */
 	public function getUser()
 	{
-		return isset($this->connection->user) ? $this->connection->user : NULL;
+		return $this->user;
+	}
+
+	/**
+	 * @param Message\RequestInterface $request
+	 *
+	 * @return void
+	 */
+	public function setRequest(Message\RequestInterface $request)
+	{
+		$this->connection->WebSocket->request = $request;
+	}
+
+	/**
+	 * @return Message\RequestInterface
+	 */
+	public function getRequest() : Message\RequestInterface
+	{
+		return $this->connection->WebSocket->request;
 	}
 }

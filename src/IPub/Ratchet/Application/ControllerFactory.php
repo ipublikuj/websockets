@@ -19,8 +19,6 @@ namespace IPub\Ratchet\Application;
 use Nette;
 use Nette\Utils;
 
-use Ratchet\ConnectionInterface;
-
 use IPub;
 use IPub\Ratchet\Application\UI;
 use IPub\Ratchet\Exceptions;
@@ -63,7 +61,7 @@ class ControllerFactory implements IControllerFactory
 	 */
 	public function __construct(callable $factory = NULL)
 	{
-		$this->factory = $factory ?: function (ConnectionInterface $connection, string $class) {
+		$this->factory = $factory ?: function (string $class) {
 			/** @var UI\IController $controller */
 			$controller = new $class;
 
@@ -74,9 +72,9 @@ class ControllerFactory implements IControllerFactory
 	/**
 	 * {@inheritdoc}
 	 */
-	public function createController(ConnectionInterface $connection, string $name) : UI\IController
+	public function createController(string $name) : UI\IController
 	{
-		return call_user_func_array($this->factory, [$connection, $this->getControllerClass($name)]);
+		return call_user_func_array($this->factory, [$this->getControllerClass($name)]);
 	}
 
 	/**

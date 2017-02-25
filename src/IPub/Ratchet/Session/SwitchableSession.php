@@ -20,11 +20,10 @@ use Nette;
 use Nette\Http;
 use Nette\Utils;
 
-use Ratchet\Server\IoConnection;
 use Ratchet\Session as RSession;
-use Ratchet\ConnectionInterface;
 
 use IPub;
+use IPub\Ratchet\Clients;
 use IPub\Ratchet\Exceptions;
 
 /**
@@ -43,9 +42,9 @@ final class SwitchableSession extends Http\Session
 	private $systemSession;
 
 	/**
-	 * @var ConnectionInterface|NULL
+	 * @var Clients\Client|NULL
 	 */
-	private $connection;
+	private $client;
 
 	/**
 	 * Has been session started?
@@ -101,14 +100,14 @@ final class SwitchableSession extends Http\Session
 	}
 
 	/**
-	 * @param ConnectionInterface $connection
+	 * @param Clients\Client $client
 	 *
 	 * @return void
 	 *
 	 * @throws Exceptions\InvalidArgumentException
 	 * @throws Exceptions\LogicException
 	 */
-	public function attach(ConnectionInterface $connection)
+	public function attach(Clients\Client $client)
 	{
 		if ($this->systemSession->isStarted()) {
 			throw new Exceptions\LogicException('Session is already started, please close it first and then you can disabled it.');
@@ -117,7 +116,7 @@ final class SwitchableSession extends Http\Session
 		$this->attached = TRUE;
 		$this->started = FALSE;
 
-		$this->connection = $connection;
+		$this->client = $client;
 	}
 
 	/**
@@ -130,7 +129,7 @@ final class SwitchableSession extends Http\Session
 
 			$this->attached = FALSE;
 
-			$this->connection = NULL;
+			$this->client = NULL;
 		}
 	}
 
@@ -159,7 +158,7 @@ final class SwitchableSession extends Http\Session
 
 		$this->started = TRUE;
 
-		if (!isset($this->connection->WebSocket) || ($id = $this->connection->WebSocket->request->getCookie($this->systemSession->getName())) === NULL) {
+		if (($id = $this->client->getRequest()->getCookie($this->systemSession->getName())) === NULL) {
 			$handler = $this->nullHandler;
 			$id = '';
 
@@ -290,7 +289,7 @@ final class SwitchableSession extends Http\Session
 			return $this->systemSession->getId();
 		}
 
-		return $this->connection->WebSocket->request->getCookie($this->systemSession->getName());
+		return $this->client->getRequest()->getCookie($this->systemSession->getName());
 	}
 
 	/**
@@ -454,10 +453,6 @@ final class SwitchableSession extends Http\Session
 	 */
 	private function getConnectionId() : int
 	{
-		if ($this->connection instanceof IoConnection) {
-			return $this->connection->resourceId;
-		}
-
-		throw new Exceptions\InvalidStateException('Session connection is not instance of \Ratchet\Server\IoConnection');
+		return $this->client->getId();
 	}
 }

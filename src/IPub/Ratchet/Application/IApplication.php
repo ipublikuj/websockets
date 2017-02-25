@@ -16,7 +16,8 @@ declare(strict_types = 1);
 
 namespace IPub\Ratchet\Application;
 
-use Ratchet\ConnectionInterface;
+use IPub;
+use IPub\Ratchet\Clients;
 
 /**
  * Ratchet application interface
@@ -29,24 +30,42 @@ use Ratchet\ConnectionInterface;
 interface IApplication
 {
 	/**
-	 * @param ConnectionInterface $conn
+	 * When a new connection is opened it will be passed to this method
 	 *
-	 * @return void
+	 * @param Clients\Client $client
+	 *
+	 * @return mixed
 	 */
-	public function onOpen(ConnectionInterface $conn);
+	function onOpen(Clients\Client $client);
 
 	/**
-	 * @param ConnectionInterface $conn
+	 * This is called before or after a socket is closed (depends on how it's closed)
+	 * SendMessage to $client will not result in an error if it has already been closed
 	 *
-	 * @return void
+	 * @param Clients\Client $client
+	 *
+	 * @return mixed
 	 */
-	public function onClose(ConnectionInterface $conn);
+	function onClose(Clients\Client $client);
 
 	/**
-	 * @param ConnectionInterface $conn
+	 * If there is an error with one of the sockets, or somewhere in the application where an Exception is thrown,
+	 * the Exception is sent back down the stack, handled by the Server and bubbled back up the application through this method
+	 *
+	 * @param Clients\Client $client
 	 * @param \Exception $ex
 	 *
-	 * @return void
+	 * @return mixed
 	 */
-	public function onError(ConnectionInterface $conn, \Exception $ex);
+	function onError(Clients\Client $client, \Exception $ex);
+
+	/**
+	 * Triggered when a client sends data through the socket
+	 *
+	 * @param Clients\Client $from
+	 * @param mixed $msg
+	 *
+	 * @return mixed
+	 */
+	function onMessage(Clients\Client $from, $msg);
 }

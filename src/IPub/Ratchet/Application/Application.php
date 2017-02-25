@@ -20,13 +20,14 @@ use Nette;
 
 use Guzzle\Http\Message;
 
-use Ratchet\ConnectionInterface;
-
 use IPub;
+use IPub\Ratchet\Application\Responses;
+use IPub\Ratchet\Application\UI;
 use IPub\Ratchet\Clients;
 use IPub\Ratchet\Exceptions;
 use IPub\Ratchet\Router;
 use IPub\Ratchet\Session;
+
 use Tracy\Debugger;
 
 /**
@@ -78,27 +79,23 @@ abstract class Application implements IApplication
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onOpen(ConnectionInterface $conn)
+	public function onOpen(Clients\Client $client)
 	{
-		$this->clientsStorage->addClient($this->clientsStorage->getStorageId($conn), $conn);
-
-		echo "New connection! ({$conn->resourceId})\n";
+		echo "New connection! ({$client->getId()})\n";
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onClose(ConnectionInterface $conn)
+	public function onClose(Clients\Client $client)
 	{
-		$this->clientsStorage->removeClient($this->clientsStorage->getStorageId($conn));
-
-		echo "Connection {$conn->resourceId} has disconnected\n";
+		echo "Connection {$client->getId()} has disconnected\n";
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onError(ConnectionInterface $conn, \Exception $ex)
+	public function onError(Clients\Client $client, \Exception $ex)
 	{
 		Debugger::log($ex);
 
@@ -107,31 +104,66 @@ abstract class Application implements IApplication
 		$code = $ex->getCode();
 
 		if ($code >= 400 && $code < 600) {
-			$this->close($conn, $code);
+			$this->close($client, $code);
 
 		} else {
-			$conn->close();
+			$client->close();
+		}
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function onMessage(Clients\Client $from, $msg)
+	{
+		$appRequest = $this->router->match($from->getRequest());
+
+		if ($appRequest === NULL) {
+			throw new Exceptions\BadRequestException('Invalid message - router cant create request.');
+		}
+
+		if (is_array($msg)) {
+			$appRequest->setParameters(array_merge($appRequest->getParameters(), $msg));
+		}
+
+		$appRequest->setParameters(array_merge($appRequest->getParameters(), ['client' => $from]));
+
+		$controllerName = $appRequest->getControllerName();
+		$controllerClass = $this->controllerFactory->getControllerClass($controllerName);
+
+		if (!is_subclass_of($controllerClass, UI\IController::class)) {
+			throw new Exceptions\BadRequestException(sprintf('%s must be implementation of %s.', $controllerClass, UI\IController::class));
+		}
+
+		/** @var UI\IController $controller */
+		$controller = $this->controllerFactory->createController($controllerName);
+
+		$response = $controller->run($appRequest);
+
+		/** @var Clients\Client $connection */
+		foreach ($this->clientsStorage as $connection) {
+			$connection->send($response);
 		}
 	}
 
 	/**
 	 * Close a connection with an HTTP response
 	 *
-	 * @param ConnectionInterface $conn
+	 * @param Clients\Client $client
 	 * @param int $code HTTP status code
 	 * @param array $additionalHeaders
 	 *
 	 * @return void
 	 */
-	protected function close(ConnectionInterface $conn, int $code = 400, array $additionalHeaders = [])
+	protected function close(Clients\Client $client, int $code = 400, array $additionalHeaders = [])
 	{
 		$headers = array_merge([
 			'X-Powered-By' => \Ratchet\VERSION
 		], $additionalHeaders);
 
-		$response = new Message\Response($code, $headers);
+		$response = new Responses\ErrorResponse($code, $headers);
 
-		$conn->send((string) $response);
-		$conn->close();
+		$client->send($response);
+		$client->close();
 	}
 }
