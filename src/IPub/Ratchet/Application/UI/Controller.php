@@ -52,6 +52,7 @@ abstract class Controller implements IController
 	 * @internal
 	 */
 	const ACTION_KEY = 'action';
+	const SIGNAL_KEY = 'signal';
 	const DEFAULT_ACTION = 'default';
 
 	/**
@@ -88,6 +89,11 @@ abstract class Controller implements IController
 	 * @var string
 	 */
 	private $action;
+
+	/**
+	 * @var string|NULL
+	 */
+	private $signal;
 
 	/**
 	 * @var string
@@ -153,6 +159,9 @@ abstract class Controller implements IController
 	 * @param Application\Request $request
 	 *
 	 * @return Responses\IResponse
+	 *
+	 * @throws Exceptions\BadSignalException
+	 * @throws Exceptions\ForbiddenRequestException
 	 * @throws Exceptions\InvalidStateException
 	 */
 	public function run(Application\Request $request) : Responses\IResponse
@@ -173,6 +182,14 @@ abstract class Controller implements IController
 				$class = (new \ReflectionClass($this))->getMethod('startup')->getDeclaringClass()->getName();
 
 				throw new Exceptions\InvalidStateException(sprintf('Method %s::startup() or its descendant doesn\'t call parent::startup().', $class));
+			}
+
+			if ($this->signal !== NULL) {
+				if (!$this->tryCall($this->formatSignalMethod($this->signal), $this->params)) {
+					$class = get_class($this);
+
+					throw new Exceptions\BadSignalException(sprintf('There is no handler for signal "%s" in class "%s".', $this->signal, $class));
+				}
 			}
 
 			// calls $this->action<Action>()
@@ -330,6 +347,18 @@ abstract class Controller implements IController
 	}
 
 	/**
+	 * Formats signal handler method name -> case sensitivity doesn't matter
+	 *
+	 * @param string $signal
+	 *
+	 * @return string
+	 */
+	private static function formatSignalMethod($signal) : string
+	{
+		return $signal == NULL ? NULL : 'handle' . $signal; // intentionally ==
+	}
+
+	/**
 	 * @return void
 	 */
 	protected function startup()
@@ -403,5 +432,9 @@ abstract class Controller implements IController
 
 		// init & validate $this->action & $this->view
 		$this->changeAction(isset($selfParams[self::ACTION_KEY]) ? $selfParams[self::ACTION_KEY] : self::DEFAULT_ACTION);
+
+		if (isset($selfParams[self::SIGNAL_KEY])) {
+			$this->signal = $selfParams[self::SIGNAL_KEY];
+		}
 	}
 }

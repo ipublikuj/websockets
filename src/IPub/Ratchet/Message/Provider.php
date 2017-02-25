@@ -1,12 +1,12 @@
 <?php
 /**
- * MessageApplication.php
+ * Provider.php
  *
  * @copyright      More in license.md
  * @license        http://www.ipublikuj.eu
  * @author         Adam Kadlec http://www.ipublikuj.eu
  * @package        iPublikuj:Ratchet!
- * @subpackage     Application
+ * @subpackage     Message
  * @since          1.0.0
  *
  * @date           14.02.17
@@ -14,12 +14,13 @@
 
 declare(strict_types = 1);
 
-namespace IPub\Ratchet\Application;
+namespace IPub\Ratchet\Message;
 
 use Nette;
 use Nette\Utils;
 
 use IPub;
+use IPub\Ratchet\Application;
 use IPub\Ratchet\Application\UI;
 use IPub\Ratchet\Clients;
 
@@ -28,16 +29,16 @@ use IPub\Ratchet\Clients;
  * with correctly params - convert message => controller
  *
  * @package        iPublikuj:Ratchet!
- * @subpackage     Application
+ * @subpackage     Message
  *
  * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  */
-final class MessageApplication extends Application
+final class Provider extends Application\Application
 {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onMessage(Clients\Client $from, $msg)
+	public function onMessage(Clients\IClient $from, string $message)
 	{
 		$request = $from->getRequest();
 
@@ -45,14 +46,14 @@ final class MessageApplication extends Application
 
 		try {
 			/** @var \stdClass $data */
-			$data = Utils\Json::decode($msg);
+			$data = Utils\Json::decode($message);
 
 			// Override route if is set in message
 			if (isset($data->route)) {
 				$url->setPath(rtrim($url->getPath(), '/') . '/' . ltrim($data->route, '/'));
 
 				// Override data
-				$msg = $data->data;
+				$message = $data->data;
 			}
 
 		} catch (Utils\JsonException $ex) {
@@ -68,8 +69,13 @@ final class MessageApplication extends Application
 
 		$from->setRequest($request);
 
-		parent::onMessage($from, [
-			'data' => $msg,
+		$response = $this->processMessage($from, [
+			'data' => $message,
 		]);
+
+		/** @var Clients\IClient $client */
+		foreach ($this->clientsStorage as $client) {
+			$client->send($response);
+		}
 	}
 }

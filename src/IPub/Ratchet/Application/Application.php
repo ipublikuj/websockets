@@ -79,7 +79,7 @@ abstract class Application implements IApplication
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onOpen(Clients\Client $client)
+	public function onOpen(Clients\IClient $client)
 	{
 		echo "New connection! ({$client->getId()})\n";
 	}
@@ -87,7 +87,7 @@ abstract class Application implements IApplication
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onClose(Clients\Client $client)
+	public function onClose(Clients\IClient $client)
 	{
 		echo "Connection {$client->getId()} has disconnected\n";
 	}
@@ -95,7 +95,7 @@ abstract class Application implements IApplication
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onError(Clients\Client $client, \Exception $ex)
+	public function onError(Clients\IClient $client, \Exception $ex)
 	{
 		Debugger::log($ex);
 
@@ -114,7 +114,19 @@ abstract class Application implements IApplication
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onMessage(Clients\Client $from, $msg)
+	public function onMessage(Clients\IClient $from, string $message)
+	{
+		// 
+	}
+
+	/**
+	 * @param Clients\IClient $from
+	 * @param array $parameters
+	 *
+	 * @return Responses\IResponse
+	 * @throws Exceptions\BadRequestException
+	 */
+	protected function processMessage(Clients\IClient $from, array $parameters)
 	{
 		$appRequest = $this->router->match($from->getRequest());
 
@@ -122,10 +134,7 @@ abstract class Application implements IApplication
 			throw new Exceptions\BadRequestException('Invalid message - router cant create request.');
 		}
 
-		if (is_array($msg)) {
-			$appRequest->setParameters(array_merge($appRequest->getParameters(), $msg));
-		}
-
+		$appRequest->setParameters(array_merge($appRequest->getParameters(), $parameters));
 		$appRequest->setParameters(array_merge($appRequest->getParameters(), ['client' => $from]));
 
 		$controllerName = $appRequest->getControllerName();
@@ -138,24 +147,19 @@ abstract class Application implements IApplication
 		/** @var UI\IController $controller */
 		$controller = $this->controllerFactory->createController($controllerName);
 
-		$response = $controller->run($appRequest);
-
-		/** @var Clients\Client $connection */
-		foreach ($this->clientsStorage as $client) {
-			$client->send($response);
-		}
+		return $controller->run($appRequest);
 	}
 
 	/**
 	 * Close a connection with an HTTP response
 	 *
-	 * @param Clients\Client $client
+	 * @param Clients\IClient $client
 	 * @param int $code HTTP status code
 	 * @param array $additionalHeaders
 	 *
 	 * @return void
 	 */
-	protected function close(Clients\Client $client, int $code = 400, array $additionalHeaders = [])
+	protected function close(Clients\IClient $client, int $code = 400, array $additionalHeaders = [])
 	{
 		$headers = array_merge([
 			'X-Powered-By' => \Ratchet\VERSION

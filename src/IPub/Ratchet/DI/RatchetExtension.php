@@ -28,10 +28,12 @@ use IPub;
 use IPub\Ratchet;
 use IPub\Ratchet\Application;
 use IPub\Ratchet\Clients;
+use IPub\Ratchet\Message;
 use IPub\Ratchet\Router;
 use IPub\Ratchet\Server;
 use IPub\Ratchet\Session;
 use IPub\Ratchet\Users;
+use IPub\Ratchet\WAMP;
 
 /**
  * Ratchet extension container
@@ -57,7 +59,7 @@ final class RatchetExtension extends DI\CompilerExtension
 			'httpHost' => 'localhost',
 			'port'     => 8888,
 			'address'  => '0.0.0.0',
-			'type'     => 'message',    // message|wamp
+			'type'     => 'message',    // message|wampv1
 		],
 		'session' => TRUE,
 		'routes'  => [],
@@ -140,13 +142,13 @@ final class RatchetExtension extends DI\CompilerExtension
 		 * SERVER
 		 */
 
-		if ($configuration['server']['type'] === 'wamp') {
+		if ($configuration['server']['type'] === 'wampv1') {
 			$application = $builder->addDefinition($this->prefix('server.application'))
-				->setClass(Application\WampApplication::class);
+				->setClass(WAMP\V1\Provider::class);
 
 		} else {
 			$application = $builder->addDefinition($this->prefix('server.application'))
-				->setClass(Application\MessageApplication::class);
+				->setClass(Message\Provider::class);
 		}
 
 		$loop = $builder->addDefinition($this->prefix('server.loop'))

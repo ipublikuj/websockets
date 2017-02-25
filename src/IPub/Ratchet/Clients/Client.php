@@ -34,9 +34,8 @@ use IPub\Ratchet\Application\Responses;
  * @subpackage     Clients
  *
  * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
- * @author         Vít Ledvinka, frosty22 <ledvinka.vit@gmail.com>
  */
-class Client
+class Client implements IClient
 {
 	/**
 	 * Implement nette smart magic
@@ -68,7 +67,7 @@ class Client
 	}
 
 	/**
-	 * @return int
+	 * {@inheritdoc}
 	 */
 	public function getId() : int
 	{
@@ -76,10 +75,7 @@ class Client
 	}
 
 	/**
-	 * @param string $key
-	 * @param mixed $value
-	 *
-	 * @return void
+	 * {@inheritdoc}
 	 */
 	public function addParameter(string $key, $value)
 	{
@@ -87,10 +83,7 @@ class Client
 	}
 
 	/**
-	 * @param string $key
-	 * @param mixed|NULL $default
-	 *
-	 * @return mixed|NULL
+	 * {@inheritdoc}
 	 */
 	public function getParameter(string $key, $default = NULL)
 	{
@@ -98,9 +91,7 @@ class Client
 	}
 
 	/**
-	 * @param int|NULL $code
-	 *
-	 * @return void
+	 * {@inheritdoc}
 	 */
 	public function close(int $code = NULL)
 	{
@@ -108,9 +99,7 @@ class Client
 	}
 
 	/**
-	 * @param Responses\IResponse|string $response
-	 *
-	 * @return void
+	 * {@inheritdoc}
 	 */
 	public function send($response)
 	{
@@ -122,9 +111,7 @@ class Client
 	}
 
 	/**
-	 * @param NS\User $user
-	 *
-	 * @return void
+	 * {@inheritdoc}
 	 */
 	public function setUser(NS\User $user)
 	{
@@ -132,7 +119,7 @@ class Client
 	}
 
 	/**
-	 * @return NS\User|NULL
+	 * {@inheritdoc}
 	 */
 	public function getUser()
 	{
@@ -140,9 +127,7 @@ class Client
 	}
 
 	/**
-	 * @param Message\RequestInterface $request
-	 *
-	 * @return void
+	 * {@inheritdoc}
 	 */
 	public function setRequest(Message\RequestInterface $request)
 	{
@@ -150,7 +135,7 @@ class Client
 	}
 
 	/**
-	 * @return Message\RequestInterface
+	 * {@inheritdoc}
 	 */
 	public function getRequest() : Message\RequestInterface
 	{

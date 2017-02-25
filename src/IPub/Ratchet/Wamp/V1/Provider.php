@@ -1,12 +1,12 @@
 <?php
 /**
- * WampApplication.php
+ * Provider.php
  *
  * @copyright      More in license.md
  * @license        http://www.ipublikuj.eu
  * @author         Adam Kadlec http://www.ipublikuj.eu
  * @package        iPublikuj:Ratchet!
- * @subpackage     Application
+ * @subpackage     WAMP
  * @since          1.0.0
  *
  * @date           14.02.17
@@ -14,7 +14,7 @@
 
 declare(strict_types = 1);
 
-namespace IPub\Ratchet\Application;
+namespace IPub\Ratchet\WAMP\V1;
 
 use Nette;
 use Nette\Utils;
@@ -24,22 +24,21 @@ use Ratchet\WebSocket;
 use Guzzle\Http\Message;
 
 use IPub;
+use IPub\Ratchet\Application;
 use IPub\Ratchet\Application\UI;
 use IPub\Ratchet\Clients;
 use IPub\Ratchet\Exceptions;
-use IPub\Ratchet\Wamp;
-
 
 /**
  * Application which run on server and provide creating controllers
  * with correctly params - convert message => control
  *
  * @package        iPublikuj:Ratchet!
- * @subpackage     Application
+ * @subpackage     WAMP
  *
  * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  */
-final class WampApplication extends Application implements WebSocket\WsServerInterface
+final class Provider extends Application\Application implements WebSocket\WsServerInterface
 {
 	const MSG_WELCOME = 0;
 	const MSG_PREFIX = 1;
@@ -64,7 +63,7 @@ final class WampApplication extends Application implements WebSocket\WsServerInt
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onOpen(Clients\Client $client)
+	public function onOpen(Clients\IClient $client)
 	{
 		$client->addParameter('wampId', str_replace('.', '', uniqid((string) mt_rand(), TRUE)));
 
@@ -84,10 +83,22 @@ final class WampApplication extends Application implements WebSocket\WsServerInt
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onMessage(Clients\Client $client, $msg)
+	public function onClose(Clients\IClient $client)
+	{
+		parent::onClose($client);
+
+		foreach ($this->topicLookup as $topic) {
+			$this->cleanTopic($topic, $client);
+		}
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function onMessage(Clients\IClient $client, string $message)
 	{
 		try {
-			$json = Utils\Json::decode($msg);
+			$json = Utils\Json::decode($message);
 
 			if ($json === NULL || !is_array($json) || $json !== array_values($json)) {
 				throw new Exceptions\InvalidArgumentException('Invalid WAMP message format');
@@ -99,25 +110,43 @@ final class WampApplication extends Application implements WebSocket\WsServerInt
 					$prefixes[$json[1]] = $json[2];
 
 					$client->addParameter('prefixes', $prefixes);
+
+					$client->send(Utils\Json::encode([self::MSG_PREFIX, $json[1], (string) $json[2]]));
 					break;
 
+				// RPC action
 				case static::MSG_CALL:
 					array_shift($json);
-					$callID = array_shift($json);
+
+					$rpcId = array_shift($json);
 					$topic = array_shift($json);
 
-					if (count($json) == 1 && is_array($json[0])) {
+					if (count($json) === 1 && is_array($json[0])) {
 						$json = $json[0];
 					}
 
 					$client = $this->modifyRequest($client, $this->getTopic($topic), 'call');
 
-					parent::onMessage($client, [
-						'rpcId' => $callID,
-						'args' => $json,
-					]);
+					try {
+						$response = $this->processMessage($client, [
+							'rpcId' => $rpcId,
+							'args'  => $json,
+						]);
+
+						$client->send(Utils\Json::encode([self::MSG_CALL_RESULT, $rpcId, $response]));
+
+					} catch (\Exception $ex) {
+						$data = [self::MSG_CALL_ERROR, $rpcId, $topic, $ex->getMessage(), [
+							'code'   => $ex->getCode(),
+							'rpc'    => $topic,
+							'params' => $json,
+						]];
+
+						$client->send(Utils\Json::encode($data));
+					}
 					break;
 
+				// Subscribe to topic
 				case static::MSG_SUBSCRIBE:
 					$topic = $this->getTopic($json[1]);
 
@@ -137,11 +166,12 @@ final class WampApplication extends Application implements WebSocket\WsServerInt
 
 					$client = $this->modifyRequest($client, $topic, 'subscribe');
 
-					parent::onMessage($client, [
+					$this->processMessage($client, [
 						'topic' => $topic,
 					]);
 					break;
 
+				// Unsubscribe from topic
 				case static::MSG_UNSUBSCRIBE:
 					$topic = $this->getTopic($json[1]);
 
@@ -157,11 +187,12 @@ final class WampApplication extends Application implements WebSocket\WsServerInt
 
 					$client = $this->modifyRequest($client, $topic, 'unsubscribe');
 
-					parent::onMessage($client, [
+					$this->processMessage($client, [
 						'topic' => $topic,
 					]);
 					break;
 
+				// Publish to topic
 				case static::MSG_PUBLISH:
 					$topic = $this->getTopic($json[1]);
 
@@ -182,7 +213,7 @@ final class WampApplication extends Application implements WebSocket\WsServerInt
 
 					$client = $this->modifyRequest($client, $topic, 'publish');
 
-					parent::onMessage($client, [
+					$this->processMessage($client, [
 						'topic'    => $topic,
 						'event'    => $event,
 						'exclude'  => $exclude,
@@ -202,18 +233,6 @@ final class WampApplication extends Application implements WebSocket\WsServerInt
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onClose(Clients\Client $client)
-	{
-		parent::onClose($client);
-
-		foreach ($this->topicLookup as $topic) {
-			$this->cleanTopic($topic, $client);
-		}
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
 	public function getSubProtocols()
 	{
 		return ['wamp'];
@@ -222,24 +241,24 @@ final class WampApplication extends Application implements WebSocket\WsServerInt
 	/**
 	 * @param string $topic
 	 *
-	 * @return Wamp\Topic
+	 * @return ITopic
 	 */
-	private function getTopic(string $topic) : Wamp\Topic
+	private function getTopic(string $topic) : ITopic
 	{
 		if (!array_key_exists($topic, $this->topicLookup)) {
-			$this->topicLookup[$topic] = new Wamp\Topic($topic);
+			$this->topicLookup[$topic] = new Topic($topic);
 		}
 
 		return $this->topicLookup[$topic];
 	}
 
 	/**
-	 * @param Wamp\Topic $topic
-	 * @param Clients\Client $client
+	 * @param ITopic $topic
+	 * @param Clients\IClient $client
 	 *
 	 * @return void
 	 */
-	private function cleanTopic(Wamp\Topic $topic, Clients\Client $client)
+	private function cleanTopic(ITopic $topic, Clients\IClient $client)
 	{
 		$subscribedTopics = $client->getParameter('subscribedTopics', new \SplObjectStorage());
 
@@ -255,13 +274,13 @@ final class WampApplication extends Application implements WebSocket\WsServerInt
 	}
 
 	/**
-	 * @param Clients\Client $client
-	 * @param Wamp\Topic $topic
+	 * @param Clients\IClient $client
+	 * @param ITopic $topic
 	 * @param string $action
 	 *
-	 * @return Clients\Client
+	 * @return Clients\IClient
 	 */
-	private function modifyRequest(Clients\Client $client, Wamp\Topic $topic, string $action) : Clients\Client
+	private function modifyRequest(Clients\IClient $client, ITopic $topic, string $action) : Clients\IClient
 	{
 		$request = $client->getRequest();
 
