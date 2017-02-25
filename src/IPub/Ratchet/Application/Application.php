@@ -141,8 +141,8 @@ abstract class Application implements IApplication
 		$response = $controller->run($appRequest);
 
 		/** @var Clients\Client $connection */
-		foreach ($this->clientsStorage as $connection) {
-			$connection->send($response);
+		foreach ($this->clientsStorage as $client) {
+			$client->send($response);
 		}
 	}
 

@@ -97,23 +97,10 @@ final class Server
 		$socket = new React\Socket\Server($this->loop);
 		$socket->listen($port, $address);
 
-		//if ($application instanceof Ratchet\MessageComponentInterface) {
-			if ($useSession) {
-				$application = $providerFactory->create($application);
-			}
-/*
-		} elseif ($application instanceof Ratchet\Wamp\WampServerInterface) {
-			if ($useSession) {
-				$application = $providerFactory->create(new Ratchet\Wamp\WampServer($application));
-
-			} else {
-				$application = new Ratchet\Wamp\WampServer($application);
-			}
-
-		} else {
-			throw new Exceptions\InvalidArgumentException('Invalid application provided to Ratchet server.');
+		if ($useSession) {
+			$application = $providerFactory->create($application);
 		}
-*/
+
 		$component = new Ratchet\WebSocket\WsServer($wrapperFactory->create($application));
 
 		$this->server = new Ratchet\Server\IoServer(

@@ -121,7 +121,7 @@ class RatchetController implements UI\IController
 		if (is_string($response)) {
 			$response = new Responses\MessageResponse($response);
 
-		} elseif (!$response instanceof Responses\IResponse::class) {
+		} elseif (!$response instanceof Responses\IResponse) {
 			$response = new Responses\CallResponse($response->callback, $response->data);
 		}
 
