@@ -21,6 +21,8 @@ use Nette\DI;
 use Nette\Http;
 use Nette\PhpGenerator as Code;
 
+use Kdyby\Console;
+
 use Ratchet\Session\Serialize\HandlerInterface;
 use React;
 
@@ -28,6 +30,7 @@ use IPub;
 use IPub\Ratchet;
 use IPub\Ratchet\Application;
 use IPub\Ratchet\Clients;
+use IPub\Ratchet\Commands;
 use IPub\Ratchet\Message;
 use IPub\Ratchet\Router;
 use IPub\Ratchet\Server;
@@ -192,12 +195,26 @@ final class RatchetExtension extends DI\CompilerExtension
 			$configuration['server']['address']
 		);
 
+		$builder->addDefinition($this->prefix('server.printer'))
+			->setClass(Server\OutputPrinter::class);
+
 		$builder->addDefinition($this->prefix('server.server'))
 			->setClass(Server\Server::class, [
 				$application,
 				$loop,
 				$configuration,
 			]);
+
+		// Define all console commands
+		$commands = [
+			'server' => Commands\ServerCommand::class,
+		];
+
+		foreach ($commands as $name => $cmd) {
+			$builder->addDefinition($this->prefix('commands' . lcfirst($name)))
+				->setClass($cmd)
+				->addTag(Console\DI\ConsoleExtension::TAG_COMMAND);
+		}
 	}
 
 	/**

@@ -41,7 +41,9 @@
 		"nette/security"	: "~2.4",
 		"nette/utils"		: "~2.4",
 
-		"pds/skeleton"	: "@dev",
+		"kdyby/console"	: "~2.6",
+
+		"pds/skeleton"	: "^1.0",
 
 		"psr/log"	: "~1.0"
 	},
@@ -67,5 +69,7 @@
 		"psr-0": {
 			"IPub\\Ratchet\\": "src/"
 		}
-	}
+	},
+
+	"bin": ["bin/ratchet-server", "bin/ratchet-server.php"]
 }

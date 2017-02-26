@@ -30,6 +30,7 @@ use IPub\Ratchet\Clients;
 use IPub\Ratchet\Entities;
 use IPub\Ratchet\Exceptions;
 use IPub\Ratchet\Router;
+use IPub\Ratchet\Server;
 use IPub\Ratchet\WAMP;
 
 /**
@@ -65,17 +66,19 @@ final class Provider extends Application\Application implements WebSocket\WsServ
 
 	/**
 	 * @param Topics\IStorage $topicsStorage
+	 * @param Server\OutputPrinter $printer
 	 * @param Router\IRouter $router
 	 * @param Controller\IControllerFactory $controllerFactory
 	 * @param Clients\IStorage $clientsStorage
 	 */
 	public function __construct(
 		WAMP\V1\Topics\IStorage $topicsStorage,
+		Server\OutputPrinter $printer,
 		Router\IRouter $router,
 		Controller\IControllerFactory $controllerFactory,
 		Clients\IStorage $clientsStorage
 	) {
-		parent::__construct($router, $controllerFactory, $clientsStorage);
+		parent::__construct($printer, $router, $controllerFactory, $clientsStorage);
 
 		$this->topicsStorage = $topicsStorage;
 	}
@@ -185,7 +188,7 @@ final class Provider extends Application\Application implements WebSocket\WsServ
 
 					$client->addParameter('subscribedTopics', $subscribedTopics);
 
-					echo "Connection {$client->getId()} has subscribed to {$topic->getId()}\n";
+					$this->printer->success(sprintf('Connection %s has subscribed to %s', $client->getId(), $topic->getId()));
 
 					$client = $this->modifyRequest($client, $topic, 'subscribe');
 
@@ -206,7 +209,7 @@ final class Provider extends Application\Application implements WebSocket\WsServ
 
 					$this->cleanTopic($topic, $client);
 
-					echo "Connection {$client->getId()} has unsubscribed from {$topic->getId()}\n";
+					$this->printer->success(sprintf('Connection %s has unsubscribed from %s', $client->getId(), $topic->getId()));
 
 					$client = $this->modifyRequest($client, $topic, 'unsubscribe');
 

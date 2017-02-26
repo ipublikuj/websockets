@@ -104,10 +104,15 @@
          * @param {String} data
          */
         send: function (path, data) {
-            var send = {
-                route: path,
-                data: data
-            };
+            if (!data) {
+                send = path;
+
+            } else {
+                var send = {
+                    route: path,
+                    data: data
+                };
+            }
 
             return this.connection.send(JSON.stringify(send));
         },

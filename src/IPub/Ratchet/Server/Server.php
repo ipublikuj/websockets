@@ -59,17 +59,25 @@ final class Server
 	private $flashServer;
 
 	/**
+	 * @var OutputPrinter
+	 */
+	private $printer;
+
+	/**
 	 * @param Wrapper $application
 	 * @param EventLoop\LoopInterface $loop
 	 * @param Configuration $configuration
+	 * @param OutputPrinter $printer
 	 */
 	public function __construct(
 		Wrapper $application,
 		EventLoop\LoopInterface $loop,
-		Configuration $configuration
+		Configuration $configuration,
+		OutputPrinter $printer
 	) {
 		$this->loop = $loop;
 		$this->configuration = $configuration;
+		$this->printer = $printer;
 
 		$socket = new React\Socket\Server($this->loop);
 		$socket->listen($configuration->getPort(), $configuration->getAddress());
@@ -105,6 +113,9 @@ final class Server
 	 */
 	public function run()
 	{
+		$this->printer->note('Starting IPub\WebSocket');
+		$this->printer->note(sprintf('Launching Ratchet WS Server on: %s:%s', $this->configuration->getHttpHost(), $this->configuration->getPort()));
+
 		$this->server->run();
 	}
 }

@@ -68,6 +68,8 @@ final class Provider extends Application\Application
 
 		$from->setRequest($request);
 
+		$this->printer->success(sprintf('New message was recieved from %s', $from->getId()));
+
 		$response = $this->processMessage($from, [
 			'data' => $message,
 		]);

@@ -1,0 +1,3 @@
+extensions:
+	packages: IPub\Ratchet\DI\RatchetExtension
+	console: Kdyby\Console\DI\ConsoleExtension

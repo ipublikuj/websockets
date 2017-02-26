@@ -27,6 +27,7 @@ use IPub\Ratchet\Clients;
 use IPub\Ratchet\Entities;
 use IPub\Ratchet\Exceptions;
 use IPub\Ratchet\Router;
+use IPub\Ratchet\Server;
 
 use Tracy\Debugger;
 
@@ -47,6 +48,11 @@ abstract class Application implements IApplication
 	use Nette\SmartObject;
 
 	/**
+	 * @var Server\OutputPrinter
+	 */
+	protected $printer;
+
+	/**
 	 * @var Router\IRouter
 	 */
 	protected $router;
@@ -62,15 +68,18 @@ abstract class Application implements IApplication
 	protected $clientsStorage;
 
 	/**
+	 * @param Server\OutputPrinter $printer
 	 * @param Router\IRouter $router
 	 * @param Controller\IControllerFactory $controllerFactory
 	 * @param Clients\IStorage $clientsStorage
 	 */
 	public function __construct(
+		Server\OutputPrinter $printer,
 		Router\IRouter $router,
 		Controller\IControllerFactory $controllerFactory,
 		Clients\IStorage $clientsStorage
 	) {
+		$this->printer = $printer;
 		$this->router = $router;
 		$this->controllerFactory = $controllerFactory;
 		$this->clientsStorage = $clientsStorage;
@@ -81,7 +90,7 @@ abstract class Application implements IApplication
 	 */
 	public function onOpen(Entities\Clients\IClient $client)
 	{
-		echo "New connection! ({$client->getId()})\n";
+		$this->printer->success(sprintf('New connection! (%s)', $client->getId()));
 	}
 
 	/**
@@ -89,7 +98,7 @@ abstract class Application implements IApplication
 	 */
 	public function onClose(Entities\Clients\IClient $client)
 	{
-		echo "Connection {$client->getId()} has disconnected\n";
+		$this->printer->success(sprintf('Connection %s has disconnected', $client->getId()));
 	}
 
 	/**
@@ -99,7 +108,7 @@ abstract class Application implements IApplication
 	{
 		Debugger::log($ex);
 
-		echo "An error has occurred: ". $ex->getFile() . $ex->getLine() ."\n";
+		$this->printer->error(sprintf('An error (%s) has occurred: %s', $ex->getCode(), $ex->getMessage()));
 
 		$code = $ex->getCode();
 
