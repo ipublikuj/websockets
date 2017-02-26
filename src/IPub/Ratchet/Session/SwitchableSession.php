@@ -18,12 +18,11 @@ namespace IPub\Ratchet\Session;
 
 use Nette;
 use Nette\Http;
-use Nette\Utils;
 
 use Ratchet\Session as RSession;
 
 use IPub;
-use IPub\Ratchet\Clients;
+use IPub\Ratchet\Entities;
 use IPub\Ratchet\Exceptions;
 
 /**
@@ -42,7 +41,7 @@ final class SwitchableSession extends Http\Session
 	private $systemSession;
 
 	/**
-	 * @var Clients\Client|NULL
+	 * @var Entities\Clients\IClient|NULL
 	 */
 	private $client;
 
@@ -100,14 +99,14 @@ final class SwitchableSession extends Http\Session
 	}
 
 	/**
-	 * @param Clients\Client $client
+	 * @param Entities\Clients\IClient $client
 	 *
 	 * @return void
 	 *
 	 * @throws Exceptions\InvalidArgumentException
 	 * @throws Exceptions\LogicException
 	 */
-	public function attach(Clients\Client $client)
+	public function attach(Entities\Clients\IClient $client)
 	{
 		if ($this->systemSession->isStarted()) {
 			throw new Exceptions\LogicException('Session is already started, please close it first and then you can disabled it.');

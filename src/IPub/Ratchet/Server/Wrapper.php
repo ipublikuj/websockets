@@ -24,6 +24,7 @@ use Ratchet\WebSocket;
 
 use IPub;
 use IPub\Ratchet\Application;
+use IPub\Ratchet\Entities;
 use IPub\Ratchet\Clients;
 
 /**
@@ -122,9 +123,9 @@ final class Wrapper implements MessageComponentInterface, WebSocket\WsServerInte
 	/**
 	 * @param ConnectionInterface $connection
 	 *
-	 * @return Clients\Client
+	 * @return Entities\Clients\IClient
 	 */
-	private function getConnectionClient(ConnectionInterface $connection)
+	private function getConnectionClient(ConnectionInterface $connection) : Entities\Clients\IClient
 	{
 		$storageId = $this->clientsStorage->getStorageId($connection);
 

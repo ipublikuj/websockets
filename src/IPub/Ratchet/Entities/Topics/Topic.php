@@ -6,7 +6,7 @@
  * @license        http://www.ipublikuj.eu
  * @author         Adam Kadlec http://www.ipublikuj.eu
  * @package        iPublikuj:Ratchet!
- * @subpackage     WAMP
+ * @subpackage     Entities
  * @since          1.0.0
  *
  * @date           25.02.17
@@ -14,27 +14,32 @@
 
 declare(strict_types = 1);
 
-namespace IPub\Ratchet\WAMP\V1;
+namespace IPub\Ratchet\Entities\Topics;
 
 use Nette;
 use Nette\Utils;
 
 use IPub;
-use IPub\Ratchet\Application;
 use IPub\Ratchet\Application\Responses;
-use IPub\Ratchet\Clients;
+use IPub\Ratchet\Entities;
 use IPub\Ratchet\Exceptions;
+use IPub\Ratchet\WAMP;
 
 /**
  * A topic/channel containing connections that have subscribed to it
  *
  * @package        iPublikuj:Ratchet!
- * @subpackage     WAMP
+ * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  */
 final class Topic implements ITopic
 {
+	/**
+	 * Implement nette smart magic
+	 */
+	use Nette\SmartObject;
+
 	/**
 	 * If true the TopicManager will destroy this object if it's ever empty of connections
 	 *
@@ -72,14 +77,6 @@ final class Topic implements ITopic
 	/**
 	 * {@inheritdoc}
 	 */
-	public function __toString()
-	{
-		return $this->getId();
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
 	public function broadcast($msg, array $exclude = [], array $eligible = [])
 	{
 		if (!is_string($msg) && !$msg instanceof Responses\IResponse) {
@@ -88,24 +85,24 @@ final class Topic implements ITopic
 
 		$useEligible = (bool) count($eligible);
 
-		/** @var Clients\Client $client */
+		/** @var Entities\Clients\IClient $client */
 		foreach ($this->subscribers as $client) {
-			if (in_array($client->getParameter('wampId'), $exclude)) {
+			if (in_array($client->getParameter('subscribedTopics'), $exclude)) {
 				continue;
 			}
 
-			if ($useEligible && !in_array($client->getParameter('wampId'), $eligible)) {
+			if ($useEligible && !in_array($client->getParameter('subscribedTopics'), $eligible)) {
 				continue;
 			}
 
-			$client->send(Utils\Json::encode([Provider::MSG_EVENT, $this->id, $msg]));
+			$client->send(Utils\Json::encode([WAMP\V1\Provider::MSG_EVENT, $this->id, $msg]));
 		}
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function has(Clients\Client $client) : bool
+	public function has(Entities\Clients\IClient $client) : bool
 	{
 		return $this->subscribers->contains($client);
 	}
@@ -113,7 +110,7 @@ final class Topic implements ITopic
 	/**
 	 * {@inheritdoc}
 	 */
-	public function add(Clients\Client $client)
+	public function add(Entities\Clients\IClient $client)
 	{
 		$this->subscribers->attach($client);
 	}
@@ -121,7 +118,7 @@ final class Topic implements ITopic
 	/**
 	 * {@inheritdoc}
 	 */
-	public function remove(Clients\Client $client)
+	public function remove(Entities\Clients\IClient $client)
 	{
 		if ($this->subscribers->contains($client)) {
 			$this->subscribers->detach($client);
@@ -166,5 +163,13 @@ final class Topic implements ITopic
 	public function isAutoDeleteEnabled() : bool
 	{
 		return $this->autoDelete;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function __toString()
+	{
+		return $this->getId();
 	}
 }

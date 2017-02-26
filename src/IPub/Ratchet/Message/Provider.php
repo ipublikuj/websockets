@@ -21,8 +21,7 @@ use Nette\Utils;
 
 use IPub;
 use IPub\Ratchet\Application;
-use IPub\Ratchet\Application\UI;
-use IPub\Ratchet\Clients;
+use IPub\Ratchet\Entities;
 
 /**
  * Application which run on server and provide creating controllers
@@ -38,7 +37,7 @@ final class Provider extends Application\Application
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onMessage(Clients\IClient $from, string $message)
+	public function onMessage(Entities\Clients\IClient $from, string $message)
 	{
 		$request = $from->getRequest();
 
@@ -73,7 +72,7 @@ final class Provider extends Application\Application
 			'data' => $message,
 		]);
 
-		/** @var Clients\IClient $client */
+		/** @var Entities\Clients\IClient $client */
 		foreach ($this->clientsStorage as $client) {
 			$client->send($response);
 		}

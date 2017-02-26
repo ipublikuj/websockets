@@ -24,7 +24,7 @@ use Ratchet\WebSocket;
 
 use IPub;
 use IPub\Ratchet\Application;
-use IPub\Ratchet\Clients;
+use IPub\Ratchet\Entities;
 
 /**
  * This component will allow access to session data from your Nette Framework website for each user connected
@@ -69,7 +69,7 @@ class Provider implements Application\IApplication, WebSocket\WsServerInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onOpen(Clients\IClient $client)
+	public function onOpen(Entities\Clients\IClient $client)
 	{
 		$client->setUser(clone $this->user);
 
@@ -79,7 +79,7 @@ class Provider implements Application\IApplication, WebSocket\WsServerInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onMessage(Clients\IClient $from, string $message)
+	public function onMessage(Entities\Clients\IClient $from, string $message)
 	{
 		if ($this->session instanceof SwitchableSession) {
 			$this->session->attach($from);
@@ -95,7 +95,7 @@ class Provider implements Application\IApplication, WebSocket\WsServerInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onClose(Clients\IClient $client)
+	public function onClose(Entities\Clients\IClient $client)
 	{
 		if ($this->session instanceof SwitchableSession) {
 			$this->session->detach();
@@ -107,7 +107,7 @@ class Provider implements Application\IApplication, WebSocket\WsServerInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onError(Clients\IClient $client, \Exception $ex)
+	public function onError(Entities\Clients\IClient $client, \Exception $ex)
 	{
 		return $this->application->onError($client, $ex);
 	}

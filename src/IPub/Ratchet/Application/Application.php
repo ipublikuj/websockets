@@ -24,9 +24,9 @@ use IPub;
 use IPub\Ratchet\Application\Responses;
 use IPub\Ratchet\Application\UI;
 use IPub\Ratchet\Clients;
+use IPub\Ratchet\Entities;
 use IPub\Ratchet\Exceptions;
 use IPub\Ratchet\Router;
-use IPub\Ratchet\Session;
 
 use Tracy\Debugger;
 
@@ -79,7 +79,7 @@ abstract class Application implements IApplication
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onOpen(Clients\IClient $client)
+	public function onOpen(Entities\Clients\IClient $client)
 	{
 		echo "New connection! ({$client->getId()})\n";
 	}
@@ -87,7 +87,7 @@ abstract class Application implements IApplication
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onClose(Clients\IClient $client)
+	public function onClose(Entities\Clients\IClient $client)
 	{
 		echo "Connection {$client->getId()} has disconnected\n";
 	}
@@ -95,7 +95,7 @@ abstract class Application implements IApplication
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onError(Clients\IClient $client, \Exception $ex)
+	public function onError(Entities\Clients\IClient $client, \Exception $ex)
 	{
 		Debugger::log($ex);
 
@@ -114,19 +114,20 @@ abstract class Application implements IApplication
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onMessage(Clients\IClient $from, string $message)
+	public function onMessage(Entities\Clients\IClient $from, string $message)
 	{
 		// 
 	}
 
 	/**
-	 * @param Clients\IClient $from
+	 * @param Entities\Clients\IClient $from
 	 * @param array $parameters
 	 *
-	 * @return Responses\IResponse
+	 * @return Responses\IResponse|NULL
+	 *
 	 * @throws Exceptions\BadRequestException
 	 */
-	protected function processMessage(Clients\IClient $from, array $parameters)
+	protected function processMessage(Entities\Clients\IClient $from, array $parameters)
 	{
 		$appRequest = $this->router->match($from->getRequest());
 
@@ -153,13 +154,13 @@ abstract class Application implements IApplication
 	/**
 	 * Close a connection with an HTTP response
 	 *
-	 * @param Clients\IClient $client
+	 * @param Entities\Clients\IClient $client
 	 * @param int $code HTTP status code
 	 * @param array $additionalHeaders
 	 *
 	 * @return void
 	 */
-	protected function close(Clients\IClient $client, int $code = 400, array $additionalHeaders = [])
+	protected function close(Entities\Clients\IClient $client, int $code = 400, array $additionalHeaders = [])
 	{
 		$headers = array_merge([
 			'X-Powered-By' => \Ratchet\VERSION

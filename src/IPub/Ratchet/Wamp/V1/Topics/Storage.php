@@ -6,7 +6,7 @@
  * @license        http://www.ipublikuj.eu
  * @author         Adam Kadlec http://www.ipublikuj.eu
  * @package        iPublikuj:Ratchet!
- * @subpackage     Storage
+ * @subpackage     WAMP
  * @since          1.0.0
  *
  * @date           14.02.17
@@ -14,24 +14,22 @@
 
 declare(strict_types = 1);
 
-namespace IPub\Ratchet\Clients;
+namespace IPub\Ratchet\WAMP\V1\Topics;
 
 use Nette;
 
 use Psr\Log;
 
-use Ratchet\ConnectionInterface;
-
 use IPub;
-use IPub\Ratchet\Clients\Drivers;
 use IPub\Ratchet\Entities;
 use IPub\Ratchet\Exceptions;
+use IPub\Ratchet\WAMP\V1\Topics\Drivers;
 
 /**
- * Storage for manage all connections
+ * Storage for manage all topics
  *
  * @package        iPublikuj:Ratchet!
- * @subpackage     Storage
+ * @subpackage     WAMP
  *
  * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  */
@@ -78,15 +76,15 @@ final class Storage implements IStorage
 	/**
 	 * {@inheritdoc}
 	 */
-	public static function getStorageId(ConnectionInterface $connection) : int
+	public static function getStorageId(Entities\Topics\ITopic $topic) : string
 	{
-		return $connection->resourceId;
+		return $topic->getId();
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getClient(int $identifier) : Entities\Clients\IClient
+	public function getTopic(string $identifier) : Entities\Topics\ITopic
 	{
 		try {
 			$result = $this->driver->fetch($identifier);
@@ -95,10 +93,10 @@ final class Storage implements IStorage
 			throw new Exceptions\StorageException(sprintf('Driver %s failed', get_class($this)), $ex->getCode(), $ex);
 		}
 
-		$this->logger->debug('GET CLIENT ' . $identifier);
+		$this->logger->debug('GET TOPIC ' . $identifier);
 
 		if ($result === FALSE) {
-			throw new Exceptions\ClientNotFoundException(sprintf('Client %s not found', $identifier));
+			throw new Exceptions\TopicNotFoundException(sprintf('Topic %s not found', $identifier));
 		}
 
 		return $result;
@@ -107,36 +105,30 @@ final class Storage implements IStorage
 	/**
 	 * {@inheritdoc}
 	 */
-	public function addClient(int $identifier, ConnectionInterface $connection)
+	public function addTopic(string $identifier, Entities\Topics\ITopic $topic)
 	{
-		$client = new Entities\Clients\Client($connection);
-
 		$context = [
-			'user' => $client->getUser(),
+			'topic' => $identifier,
 		];
-
-		if ($client->getUser() instanceof Nette\Security\User) {
-			$context['userId'] = $client->getUser()->getId();
-		}
 
 		$this->logger->debug(sprintf('INSERT CLIENT ' . $identifier), $context);
 
 		try {
-			$result = $this->driver->save($identifier, $client, $this->ttl);
+			$result = $this->driver->save($identifier, $topic, $this->ttl);
 
 		} catch (\Exception $ex) {
 			throw new Exceptions\StorageException(sprintf('Driver %s failed', get_class($this)), $ex->getCode(), $ex);
 		}
 
 		if ($result === FALSE) {
-			throw new Exceptions\StorageException('Unable add client');
+			throw new Exceptions\StorageException('Unable add topic');
 		}
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function hasClient(int $identifier) : bool
+	public function hasTopic(string $identifier) : bool
 	{
 		try {
 			$result = $this->driver->contains($identifier);
@@ -151,9 +143,9 @@ final class Storage implements IStorage
 	/**
 	 * {@inheritdoc}
 	 */
-	public function removeClient(int $identifier) : bool
+	public function removeTopic(string $identifier) : bool
 	{
-		$this->logger->debug('REMOVE CLIENT ' . $identifier);
+		$this->logger->debug('REMOVE TOPIC ' . $identifier);
 
 		try {
 			$result = $this->driver->delete($identifier);
@@ -166,7 +158,7 @@ final class Storage implements IStorage
 	}
 
 	/**
-	 * @return Entities\Clients\IClient[]|\ArrayIterator
+	 * @return Entities\Topics\ITopic[]|\ArrayIterator
 	 */
 	public function getIterator() : \ArrayIterator
 	{

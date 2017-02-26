@@ -197,6 +197,8 @@ abstract class Controller implements IController
 
 			$this->sendPayload();
 
+			return new Responses\NullResponse();
+
 		} catch (Exceptions\AbortException $ex) {
 			// SHUTDOWN
 			$this->shutdown($this->response);

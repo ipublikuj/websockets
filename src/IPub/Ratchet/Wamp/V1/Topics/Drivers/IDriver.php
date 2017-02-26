@@ -6,61 +6,62 @@
  * @license        http://www.ipublikuj.eu
  * @author         Adam Kadlec http://www.ipublikuj.eu
  * @package        iPublikuj:Ratchet!
- * @subpackage     Clients
+ * @subpackage     WAMP
  * @since          1.0.0
  *
- * @date           23.02.17
+ * @date           26.02.17
  */
 
 declare(strict_types = 1);
 
-namespace IPub\Ratchet\Clients\Drivers;
+namespace IPub\Ratchet\WAMP\V1\Topics\Drivers;
 
 use IPub;
 use IPub\Ratchet\Entities;
+use IPub\Ratchet\WAMP;
 
 /**
- * Clients storage driver interface
+ * Topics storage driver interface
  *
  * @package        iPublikuj:Ratchet!
- * @subpackage     Clients
+ * @subpackage     WAMP
  *
  * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  */
 interface IDriver
 {
 	/**
-	 * @param int $id
+	 * @param string $id
 	 *
-	 * @return Entities\Clients\IClient|bool
+	 * @return Entities\Topics\ITopic|bool
 	 */
-	function fetch(int $id);
+	function fetch(string $id);
 
 	/**
-	 * @return Entities\Clients\IClient[]
+	 * @return Entities\Topics\ITopic[]
 	 */
 	function fetchAll() : array;
 
 	/**
-	 * @param int $id
+	 * @param string $id
 	 *
 	 * @return bool
 	 */
-	function contains(int $id) : bool;
+	function contains(string $id) : bool;
 
 	/**
-	 * @param int $id
+	 * @param string $id
 	 * @param mixed $data
 	 * @param int $lifeTime
 	 *
 	 * @return bool True if saved, false otherwise
 	 */
-	function save(int $id, $data, int $lifeTime = 0) : bool;
+	function save(string $id, $data, int $lifeTime = 0) : bool;
 
 	/**
-	 * @param int $id
+	 * @param string $id
 	 *
 	 * @return bool TRUE if the cache entry was successfully deleted, FALSE otherwise
 	 */
-	function delete(int $id) : bool;
+	function delete(string $id) : bool;
 }

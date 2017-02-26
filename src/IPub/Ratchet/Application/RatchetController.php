@@ -75,9 +75,9 @@ class RatchetController implements UI\IController
 	/**
 	 * Gets the context
 	 *
-	 * @return Nette\DI\Container
+	 * @return DI\Container
 	 */
-	public function getContext()
+	public function getContext() : DI\Container
 	{
 		return $this->context;
 	}
@@ -88,6 +88,7 @@ class RatchetController implements UI\IController
 	 * @return Responses\IResponse
 	 *
 	 * @throws Exceptions\BadRequestException
+	 * @throws Exceptions\InvalidStateException
 	 */
 	public function run(Application\Request $request) : Responses\IResponse
 	{
@@ -121,8 +122,11 @@ class RatchetController implements UI\IController
 		if (is_string($response)) {
 			$response = new Responses\MessageResponse($response);
 
-		} elseif (!$response instanceof Responses\IResponse) {
+		} elseif ($response instanceof \stdClass && isset($response->callback) && isset($response->data)) {
 			$response = new Responses\CallResponse($response->callback, $response->data);
+
+		} elseif (!$response instanceof Responses\IResponse) {
+			throw new Exceptions\InvalidStateException('Returned value from micro controller is no valid.');
 		}
 
 		return $response;
@@ -137,9 +141,9 @@ class RatchetController implements UI\IController
 	}
 
 	/**
-	 * @return Nette\Application\Request
+	 * @return Application\Request
 	 */
-	public function getRequest()
+	public function getRequest() : Application\Request
 	{
 		return $this->request;
 	}

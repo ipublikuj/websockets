@@ -6,7 +6,7 @@
  * @license        http://www.ipublikuj.eu
  * @author         Adam Kadlec http://www.ipublikuj.eu
  * @package        iPublikuj:Ratchet!
- * @subpackage     Clients
+ * @subpackage     Entities
  * @since          1.0.0
  *
  * @date           14.02.17
@@ -14,7 +14,7 @@
 
 declare(strict_types = 1);
 
-namespace IPub\Ratchet\Clients;
+namespace IPub\Ratchet\Entities\Clients;
 
 use Nette;
 use Nette\Security as NS;
@@ -29,7 +29,7 @@ use IPub\Ratchet\Application\Responses;
  * Single client connection interface
  *
  * @package        iPublikuj:Ratchet!
- * @subpackage     Clients
+ * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  */

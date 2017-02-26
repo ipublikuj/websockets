@@ -27,7 +27,10 @@ use IPub;
 use IPub\Ratchet\Application;
 use IPub\Ratchet\Application\UI;
 use IPub\Ratchet\Clients;
+use IPub\Ratchet\Entities;
 use IPub\Ratchet\Exceptions;
+use IPub\Ratchet\Router;
+use IPub\Ratchet\WAMP;
 
 /**
  * Application which run on server and provide creating controllers
@@ -56,21 +59,38 @@ final class Provider extends Application\Application implements WebSocket\WsServ
 	private $subscriptions;
 
 	/**
-	 * @var array
+	 * @var Topics\IStorage
 	 */
-	private $topicLookup = [];
+	private $topicsStorage;
+
+	/**
+	 * @param Topics\IStorage $topicsStorage
+	 * @param Router\IRouter $router
+	 * @param Application\IControllerFactory $controllerFactory
+	 * @param Clients\IStorage $clientsStorage
+	 */
+	public function __construct(
+		WAMP\V1\Topics\IStorage $topicsStorage,
+		Router\IRouter $router,
+		Application\IControllerFactory $controllerFactory,
+		Clients\IStorage $clientsStorage
+	) {
+		parent::__construct($router, $controllerFactory, $clientsStorage);
+
+		$this->topicsStorage = $topicsStorage;
+	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onOpen(Clients\IClient $client)
+	public function onOpen(Entities\Clients\IClient $client)
 	{
-		$client->addParameter('wampId', str_replace('.', '', uniqid((string) mt_rand(), TRUE)));
+		$client->addParameter('wampSession', str_replace('.', '', uniqid((string) mt_rand(), TRUE)));
 
 		// Send welcome handshake
 		$client->send(Utils\Json::encode([
 			self::MSG_WELCOME,
-			$client->getParameter('wampId'),
+			$client->getParameter('wampSession'),
 			1,
 			\Ratchet\VERSION
 		]));
@@ -83,11 +103,11 @@ final class Provider extends Application\Application implements WebSocket\WsServ
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onClose(Clients\IClient $client)
+	public function onClose(Entities\Clients\IClient $client)
 	{
 		parent::onClose($client);
 
-		foreach ($this->topicLookup as $topic) {
+		foreach ($this->topicsStorage as $topic) {
 			$this->cleanTopic($topic, $client);
 		}
 	}
@@ -95,7 +115,7 @@ final class Provider extends Application\Application implements WebSocket\WsServ
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onMessage(Clients\IClient $client, string $message)
+	public function onMessage(Entities\Clients\IClient $client, string $message)
 	{
 		try {
 			$json = Utils\Json::decode($message);
@@ -156,7 +176,10 @@ final class Provider extends Application\Application implements WebSocket\WsServ
 						return;
 					}
 
-					$this->topicLookup[$topic->getId()]->add($client);
+					$topic = $this->topicsStorage->getTopic($topic->getId());
+					$topic->add($client);
+
+					$this->topicsStorage->addTopic($topic->getId(), $topic);
 
 					$subscribedTopics->attach($topic);
 
@@ -200,7 +223,7 @@ final class Provider extends Application\Application implements WebSocket\WsServ
 
 					if (!is_array($exclude)) {
 						if ((bool) $exclude === TRUE) {
-							$exclude = [$client->getParameter('wampId')];
+							$exclude = [$client->getParameter('wampSession')];
 
 						} else {
 							$exclude = [];
@@ -241,24 +264,24 @@ final class Provider extends Application\Application implements WebSocket\WsServ
 	/**
 	 * @param string $topic
 	 *
-	 * @return ITopic
+	 * @return Entities\Topics\ITopic
 	 */
-	private function getTopic(string $topic) : ITopic
+	private function getTopic(string $topic) : Entities\Topics\ITopic
 	{
-		if (!array_key_exists($topic, $this->topicLookup)) {
-			$this->topicLookup[$topic] = new Topic($topic);
+		if (!$this->topicsStorage->hasTopic($topic)) {
+			$this->topicsStorage->addTopic($topic, new Entities\Topics\Topic($topic));
 		}
 
-		return $this->topicLookup[$topic];
+		return $this->topicsStorage->getTopic($topic);
 	}
 
 	/**
-	 * @param ITopic $topic
-	 * @param Clients\IClient $client
+	 * @param Entities\Topics\ITopic $topic
+	 * @param Entities\Clients\IClient $client
 	 *
 	 * @return void
 	 */
-	private function cleanTopic(ITopic $topic, Clients\IClient $client)
+	private function cleanTopic(Entities\Topics\ITopic $topic, Entities\Clients\IClient $client)
 	{
 		$subscribedTopics = $client->getParameter('subscribedTopics', new \SplObjectStorage());
 
@@ -266,21 +289,24 @@ final class Provider extends Application\Application implements WebSocket\WsServ
 			$subscribedTopics->detach($topic);
 		}
 
-		$this->topicLookup[$topic->getId()]->remove($client);
+		$topic = $this->topicsStorage->getTopic($topic->getId());
+		$topic->remove($client);
+
+		$this->topicsStorage->addTopic($topic->getId(), $topic);
 
 		if ($topic->isAutoDeleteEnabled() && $topic->count() === 0) {
-			unset($this->topicLookup[$topic->getId()]);
+			$this->topicsStorage->removeTopic($topic->getId());
 		}
 	}
 
 	/**
-	 * @param Clients\IClient $client
-	 * @param ITopic $topic
+	 * @param Entities\Clients\IClient $client
+	 * @param Entities\Topics\ITopic $topic
 	 * @param string $action
 	 *
-	 * @return Clients\IClient
+	 * @return Entities\Clients\IClient
 	 */
-	private function modifyRequest(Clients\IClient $client, ITopic $topic, string $action) : Clients\IClient
+	private function modifyRequest(Entities\Clients\IClient $client, Entities\Topics\ITopic $topic, string $action) : Entities\Clients\IClient
 	{
 		$request = $client->getRequest();
 

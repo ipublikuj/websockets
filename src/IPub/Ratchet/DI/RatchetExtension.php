@@ -59,7 +59,16 @@ final class RatchetExtension extends DI\CompilerExtension
 			'httpHost' => 'localhost',
 			'port'     => 8888,
 			'address'  => '0.0.0.0',
-			'type'     => 'message',    // message|wampv1
+			'type'     => 'wamp',    // message|wamp
+		],
+		'wamp'    => [
+			'version' => 'v1',    // v1|v2
+			'topics'  => [
+				'storage' => [
+					'driver' => '@wamp.topics.driver.memory',
+					'ttl'    => 0,
+				],
+			],
 		],
 		'session' => TRUE,
 		'routes'  => [],
@@ -142,7 +151,21 @@ final class RatchetExtension extends DI\CompilerExtension
 		 * SERVER
 		 */
 
-		if ($configuration['server']['type'] === 'wampv1') {
+		if ($configuration['server']['type'] === 'wamp' && $configuration['wamp']['version'] === 'v1') {
+			$builder->addDefinition($this->prefix('wamp.v1.topics.driver.memory'))
+				->setClass(WAMP\V1\Topics\Drivers\InMemory::class);
+
+			$storageDriver = $configuration['wamp']['topics']['storage']['driver'] === '@wamp.topics.driver.memory' ?
+				$builder->getDefinition($this->prefix('wamp.v1.topics.driver.memory')) :
+				$builder->getDefinition($configuration['wamp']['topics']['storage']['driver']);
+
+			$builder->addDefinition($this->prefix('wamp.v1.topics.storage'))
+				->setClass(WAMP\V1\Topics\Storage::class)
+				->setArguments([
+					'ttl' => $configuration['wamp']['topics']['storage']['ttl'],
+				])
+				->addSetup('?->setStorageDriver(?)', ['@' . $this->prefix('wamp.v1.topics.storage'), $storageDriver]);
+
 			$application = $builder->addDefinition($this->prefix('server.application'))
 				->setClass(WAMP\V1\Provider::class);
 

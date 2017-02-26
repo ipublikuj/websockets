@@ -22,6 +22,7 @@ use Ratchet\ConnectionInterface;
 
 use IPub;
 use IPub\Ratchet\Clients\Drivers;
+use IPub\Ratchet\Entities;
 
 /**
  * Storage for manage all connections
@@ -50,9 +51,9 @@ interface IStorage extends \IteratorAggregate
 	/**
 	 * @param int $identifier
 	 *
-	 * @return Client
+	 * @return Entities\Clients\IClient
 	 */
-	function getClient(int $identifier) : Client;
+	function getClient(int $identifier) : Entities\Clients\IClient;
 
 	/**
 	 * @param int $identifier
