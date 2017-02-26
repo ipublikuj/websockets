@@ -227,6 +227,8 @@ final class RatchetExtension extends DI\CompilerExtension
 
 		// Get container builder
 		$builder = $this->getContainerBuilder();
+		// Get extension configuration
+		$configuration = $this->getConfig($this->defaults);
 
 		/**
 		 * ROUTER CREATION
@@ -287,15 +289,17 @@ final class RatchetExtension extends DI\CompilerExtension
 		 * SESSION
 		 */
 
-		// Sessions switcher
-		$original = $builder->getDefinition($originalSessionServiceName = $builder->getByType(Http\Session::class) ?: 'session');
-		$builder->removeDefinition($originalSessionServiceName);
-		$builder->addDefinition($this->prefix('session.original'), $original)
-			->setAutowired(FALSE);
+		if ($configuration['session']) {
+			// Sessions switcher
+			$original = $builder->getDefinition($originalSessionServiceName = $builder->getByType(Http\Session::class) ?: 'session');
+			$builder->removeDefinition($originalSessionServiceName);
+			$builder->addDefinition($this->prefix('session.original'), $original)
+				->setAutowired(FALSE);
 
-		$builder->addDefinition($originalSessionServiceName)
-			->setClass(Http\Session::class)
-			->setFactory(Session\SwitchableSession::class, [$this->prefix('@session.original')]);
+			$builder->addDefinition($originalSessionServiceName)
+				->setClass(Http\Session::class)
+				->setFactory(Session\SwitchableSession::class, [$this->prefix('@session.original')]);
+		}
 	}
 
 	/**
