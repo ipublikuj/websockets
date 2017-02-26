@@ -19,6 +19,8 @@ namespace IPub\Ratchet\Message;
 use Nette;
 use Nette\Utils;
 
+use Guzzle\Http\Message;
+
 use IPub;
 use IPub\Ratchet\Application;
 use IPub\Ratchet\Entities;
@@ -37,10 +39,8 @@ final class Provider extends Application\Application
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onMessage(Entities\Clients\IClient $from, string $message)
+	public function onMessage(Entities\Clients\IClient $from, Message\RequestInterface $request, string $message)
 	{
-		$request = $from->getRequest();
-
 		$url = $request->getUrl(TRUE);
 
 		try {
@@ -66,11 +66,9 @@ final class Provider extends Application\Application
 
 		$request->setUrl($url);
 
-		$from->setRequest($request);
-
 		$this->printer->success(sprintf('New message was recieved from %s', $from->getId()));
 
-		$response = $this->processMessage($from, [
+		$response = $this->processMessage($from, $request, [
 			'data' => $message,
 		]);
 

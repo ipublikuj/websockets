@@ -22,6 +22,8 @@ use Nette\Security as NS;
 
 use Ratchet\WebSocket;
 
+use Guzzle\Http\Message;
+
 use IPub;
 use IPub\Ratchet\Application;
 use IPub\Ratchet\Entities;
@@ -69,47 +71,47 @@ class Provider implements Application\IApplication, WebSocket\WsServerInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onOpen(Entities\Clients\IClient $client)
+	public function onOpen(Entities\Clients\IClient $client, Message\RequestInterface $request)
 	{
 		$client->setUser(clone $this->user);
 
-		return $this->application->onOpen($client);
+		return $this->application->onOpen($client, $request);
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onMessage(Entities\Clients\IClient $from, string $message)
+	public function onMessage(Entities\Clients\IClient $from, Message\RequestInterface $request, string $message)
 	{
 		if ($this->session instanceof SwitchableSession) {
-			$this->session->attach($from);
+			$this->session->attach($from, $request);
 
 			if (!$this->session->isStarted()) {
 				$this->session->start();
 			}
 		}
 
-		return $this->application->onMessage($from, $message);
+		return $this->application->onMessage($from, $request, $message);
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onClose(Entities\Clients\IClient $client)
+	public function onClose(Entities\Clients\IClient $client, Message\RequestInterface $request)
 	{
 		if ($this->session instanceof SwitchableSession) {
 			$this->session->detach();
 		}
 
-		return $this->application->onClose($client);
+		return $this->application->onClose($client, $request);
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onError(Entities\Clients\IClient $client, \Exception $ex)
+	public function onError(Entities\Clients\IClient $client, Message\RequestInterface $request, \Exception $ex)
 	{
-		return $this->application->onError($client, $ex);
+		return $this->application->onError($client, $request, $ex);
 	}
 
 	/**

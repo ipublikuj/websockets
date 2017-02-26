@@ -22,6 +22,8 @@ use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
 use Ratchet\WebSocket;
 
+use Guzzle\Http\Message;
+
 use IPub;
 use IPub\Ratchet\Application;
 use IPub\Ratchet\Entities;
@@ -74,7 +76,7 @@ final class Wrapper implements MessageComponentInterface, WebSocket\WsServerInte
 
 		$this->clientsStorage->addClient($storageId, $connection);
 
-		return $this->application->onOpen($this->getConnectionClient($connection));
+		return $this->application->onOpen($this->getConnectionClient($connection), $this->getRequest($connection));
 	}
 
 	/**
@@ -88,15 +90,15 @@ final class Wrapper implements MessageComponentInterface, WebSocket\WsServerInte
 
 		$this->clientsStorage->removeClient($storageId);
 
-		return $this->application->onClose($client);
+		return $this->application->onClose($client, $this->getRequest($connection));
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onError(ConnectionInterface $connection, \Exception $e)
+	public function onError(ConnectionInterface $connection, \Exception $ex)
 	{
-		return $this->application->onError($this->getConnectionClient($connection), $e);
+		return $this->application->onError($this->getConnectionClient($connection), $this->getRequest($connection), $ex);
 	}
 
 	/**
@@ -104,7 +106,7 @@ final class Wrapper implements MessageComponentInterface, WebSocket\WsServerInte
 	 */
 	public function onMessage(ConnectionInterface $from, $msg)
 	{
-		return $this->application->onMessage($this->getConnectionClient($from), $msg);
+		return $this->application->onMessage($this->getConnectionClient($from), $this->getRequest($from), $msg);
 	}
 
 	/**
@@ -130,5 +132,15 @@ final class Wrapper implements MessageComponentInterface, WebSocket\WsServerInte
 		$storageId = $this->clientsStorage->getStorageId($connection);
 
 		return $this->clientsStorage->getClient($storageId);
+	}
+
+	/**
+	 * @param ConnectionInterface $connection
+	 *
+	 * @return Message\RequestInterface
+	 */
+	private function getRequest(ConnectionInterface $connection) : Message\RequestInterface
+	{
+		return clone $connection->WebSocket->request;
 	}
 }

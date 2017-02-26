@@ -53,6 +53,11 @@ class Client implements IClient
 	private $user;
 
 	/**
+	 * @var int
+	 */
+	private $id;
+
+	/**
 	 * @var Utils\ArrayHash
 	 */
 	private $parameters;
@@ -63,6 +68,7 @@ class Client implements IClient
 	public function __construct(ConnectionInterface $connection)
 	{
 		$this->connection = $connection;
+		$this->id = $connection->resourceId;
 		$this->parameters = new Utils\ArrayHash;
 	}
 
@@ -71,7 +77,7 @@ class Client implements IClient
 	 */
 	public function getId() : int
 	{
-		return $this->connection->resourceId;
+		return $this->id;
 	}
 
 	/**
@@ -124,21 +130,5 @@ class Client implements IClient
 	public function getUser()
 	{
 		return $this->user;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function setRequest(Message\RequestInterface $request)
-	{
-		$this->connection->WebSocket->request = $request;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getRequest() : Message\RequestInterface
-	{
-		return $this->connection->WebSocket->request;
 	}
 }

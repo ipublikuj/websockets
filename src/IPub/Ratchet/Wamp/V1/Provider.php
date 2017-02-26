@@ -32,6 +32,7 @@ use IPub\Ratchet\Exceptions;
 use IPub\Ratchet\Router;
 use IPub\Ratchet\Server;
 use IPub\Ratchet\WAMP;
+use Tracy\Debugger;
 
 /**
  * Application which run on server and provide creating controllers
@@ -86,7 +87,7 @@ final class Provider extends Application\Application implements WebSocket\WsServ
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onOpen(Entities\Clients\IClient $client)
+	public function onOpen(Entities\Clients\IClient $client, Message\RequestInterface $request)
 	{
 		$client->addParameter('wampSession', str_replace('.', '', uniqid((string) mt_rand(), TRUE)));
 
@@ -100,15 +101,15 @@ final class Provider extends Application\Application implements WebSocket\WsServ
 
 		$this->subscriptions = new \SplObjectStorage;
 
-		parent::onOpen($client);
+		parent::onOpen($client, $request);
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onClose(Entities\Clients\IClient $client)
+	public function onClose(Entities\Clients\IClient $client, Message\RequestInterface $request)
 	{
-		parent::onClose($client);
+		parent::onClose($client, $request);
 
 		foreach ($this->topicsStorage as $topic) {
 			$this->cleanTopic($topic, $client);
@@ -118,7 +119,7 @@ final class Provider extends Application\Application implements WebSocket\WsServ
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onMessage(Entities\Clients\IClient $client, string $message)
+	public function onMessage(Entities\Clients\IClient $client, Message\RequestInterface $request, string $message)
 	{
 		try {
 			$json = Utils\Json::decode($message);
@@ -148,10 +149,10 @@ final class Provider extends Application\Application implements WebSocket\WsServ
 						$json = $json[0];
 					}
 
-					$client = $this->modifyRequest($client, $this->getTopic($topic), 'call');
+					$request = $this->modifyRequest($request, $this->getTopic($topic), 'call');
 
 					try {
-						$response = $this->processMessage($client, [
+						$response = $this->processMessage($client, $request, [
 							'rpcId' => $rpcId,
 							'args'  => $json,
 						]);
@@ -188,13 +189,13 @@ final class Provider extends Application\Application implements WebSocket\WsServ
 
 					$client->addParameter('subscribedTopics', $subscribedTopics);
 
-					$this->printer->success(sprintf('Connection %s has subscribed to %s', $client->getId(), $topic->getId()));
+					$request = $this->modifyRequest($request, $topic, 'subscribe');
 
-					$client = $this->modifyRequest($client, $topic, 'subscribe');
-
-					$this->processMessage($client, [
+					$this->processMessage($client, $request, [
 						'topic' => $topic,
 					]);
+
+					$this->printer->success(sprintf('Connection %s has subscribed to %s', $client->getId(), $topic->getId()));
 					break;
 
 				// Unsubscribe from topic
@@ -209,13 +210,13 @@ final class Provider extends Application\Application implements WebSocket\WsServ
 
 					$this->cleanTopic($topic, $client);
 
-					$this->printer->success(sprintf('Connection %s has unsubscribed from %s', $client->getId(), $topic->getId()));
+					$request = $this->modifyRequest($request, $topic, 'unsubscribe');
 
-					$client = $this->modifyRequest($client, $topic, 'unsubscribe');
-
-					$this->processMessage($client, [
+					$this->processMessage($client, $request, [
 						'topic' => $topic,
 					]);
+
+					$this->printer->success(sprintf('Connection %s has unsubscribed from %s', $client->getId(), $topic->getId()));
 					break;
 
 				// Publish to topic
@@ -237,14 +238,16 @@ final class Provider extends Application\Application implements WebSocket\WsServ
 
 					$event = $json[2];
 
-					$client = $this->modifyRequest($client, $topic, 'publish');
+					$request = $this->modifyRequest($request, $topic, 'publish');
 
-					$this->processMessage($client, [
+					$this->processMessage($client, $request, [
 						'topic'    => $topic,
 						'event'    => $event,
 						'exclude'  => $exclude,
 						'eligible' => $eligible,
 					]);
+
+					$this->printer->success(sprintf('Connection %s has published to %s topic', $client->getId(), $topic->getId()));
 					break;
 
 				default:
@@ -252,6 +255,9 @@ final class Provider extends Application\Application implements WebSocket\WsServ
 			}
 
 		} catch (\Exception $ex) {
+			Debugger::log($ex);
+			$this->printer->error(sprintf('An error (%s) has occurred: %s', $ex->getCode(), $ex->getMessage()));
+
 			$client->close(1007);
 		}
 	}
@@ -303,16 +309,14 @@ final class Provider extends Application\Application implements WebSocket\WsServ
 	}
 
 	/**
-	 * @param Entities\Clients\IClient $client
+	 * @param Message\RequestInterface $request
 	 * @param Entities\Topics\ITopic $topic
 	 * @param string $action
 	 *
-	 * @return Entities\Clients\IClient
+	 * @return Message\RequestInterface
 	 */
-	private function modifyRequest(Entities\Clients\IClient $client, Entities\Topics\ITopic $topic, string $action) : Entities\Clients\IClient
+	private function modifyRequest(Message\RequestInterface $request, Entities\Topics\ITopic $topic, string $action) : Message\RequestInterface
 	{
-		$request = $client->getRequest();
-
 		$url = $request->getUrl(TRUE);
 		$url->setPath(rtrim($url->getPath(), '/') . '/' . ltrim($topic->getId(), '/'));
 
@@ -323,8 +327,6 @@ final class Provider extends Application\Application implements WebSocket\WsServ
 
 		$request->setUrl($url);
 
-		$client->setRequest($request);
-
-		return $client;
+		return $request;
 	}
 }

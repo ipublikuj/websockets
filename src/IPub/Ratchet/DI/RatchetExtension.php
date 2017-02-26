@@ -37,6 +37,7 @@ use IPub\Ratchet\Server;
 use IPub\Ratchet\Session;
 use IPub\Ratchet\Users;
 use IPub\Ratchet\WAMP;
+use Tracy\Debugger;
 
 /**
  * Ratchet extension container
@@ -60,7 +61,7 @@ final class RatchetExtension extends DI\CompilerExtension
 		],
 		'server'  => [
 			'httpHost' => 'localhost',
-			'port'     => 8888,
+			'port'     => 8080,
 			'address'  => '0.0.0.0',
 			'type'     => 'message',    // message|wamp
 		],
@@ -73,7 +74,7 @@ final class RatchetExtension extends DI\CompilerExtension
 				],
 			],
 		],
-		'session' => TRUE,
+		'session' => FALSE,
 		'routes'  => [],
 		'mapping' => [],
 	];

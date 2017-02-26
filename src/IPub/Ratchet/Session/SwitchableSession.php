@@ -21,6 +21,8 @@ use Nette\Http;
 
 use Ratchet\Session as RSession;
 
+use Guzzle\Http\Message;
+
 use IPub;
 use IPub\Ratchet\Entities;
 use IPub\Ratchet\Exceptions;
@@ -100,17 +102,20 @@ final class SwitchableSession extends Http\Session
 
 	/**
 	 * @param Entities\Clients\IClient $client
+	 * @param Message\RequestInterface $request
 	 *
 	 * @return void
 	 *
 	 * @throws Exceptions\InvalidArgumentException
 	 * @throws Exceptions\LogicException
 	 */
-	public function attach(Entities\Clients\IClient $client)
+	public function attach(Entities\Clients\IClient $client, Message\RequestInterface $request)
 	{
 		if ($this->systemSession->isStarted()) {
 			throw new Exceptions\LogicException('Session is already started, please close it first and then you can disabled it.');
 		}
+
+		$client->addParameter('sessionId', $request->getCookie($this->systemSession->getName()));
 
 		$this->attached = TRUE;
 		$this->started = FALSE;
@@ -157,7 +162,7 @@ final class SwitchableSession extends Http\Session
 
 		$this->started = TRUE;
 
-		if (($id = $this->client->getRequest()->getCookie($this->systemSession->getName())) === NULL) {
+		if (($id = $this->client->getParameter('sessionId')) === NULL) {
 			$handler = $this->nullHandler;
 			$id = '';
 
@@ -288,7 +293,7 @@ final class SwitchableSession extends Http\Session
 			return $this->systemSession->getId();
 		}
 
-		return $this->client->getRequest()->getCookie($this->systemSession->getName());
+		return $this->client->getParameter('sessionId');
 	}
 
 	/**

@@ -81,16 +81,4 @@ interface IClient
 	 * @return NS\User|NULL
 	 */
 	function getUser();
-
-	/**
-	 * @param Message\RequestInterface $request
-	 *
-	 * @return void
-	 */
-	function setRequest(Message\RequestInterface $request);
-
-	/**
-	 * @return Message\RequestInterface
-	 */
-	function getRequest() : Message\RequestInterface;
 }

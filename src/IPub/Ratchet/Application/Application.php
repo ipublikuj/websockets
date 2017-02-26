@@ -29,8 +29,6 @@ use IPub\Ratchet\Exceptions;
 use IPub\Ratchet\Router;
 use IPub\Ratchet\Server;
 
-use Tracy\Debugger;
-
 /**
  * Application which run on server and provide creating controllers
  * with correctly params - convert message => control.
@@ -88,7 +86,7 @@ abstract class Application implements IApplication
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onOpen(Entities\Clients\IClient $client)
+	public function onOpen(Entities\Clients\IClient $client, Message\RequestInterface $request)
 	{
 		$this->printer->success(sprintf('New connection! (%s)', $client->getId()));
 	}
@@ -96,7 +94,7 @@ abstract class Application implements IApplication
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onClose(Entities\Clients\IClient $client)
+	public function onClose(Entities\Clients\IClient $client, Message\RequestInterface $request)
 	{
 		$this->printer->success(sprintf('Connection %s has disconnected', $client->getId()));
 	}
@@ -104,10 +102,8 @@ abstract class Application implements IApplication
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onError(Entities\Clients\IClient $client, \Exception $ex)
+	public function onError(Entities\Clients\IClient $client, Message\RequestInterface $request, \Exception $ex)
 	{
-		Debugger::log($ex);
-
 		$this->printer->error(sprintf('An error (%s) has occurred: %s', $ex->getCode(), $ex->getMessage()));
 
 		$code = $ex->getCode();
@@ -123,22 +119,23 @@ abstract class Application implements IApplication
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onMessage(Entities\Clients\IClient $from, string $message)
+	public function onMessage(Entities\Clients\IClient $from, Message\RequestInterface $request, string $message)
 	{
 		// 
 	}
 
 	/**
 	 * @param Entities\Clients\IClient $from
+	 * @param Message\RequestInterface $request
 	 * @param array $parameters
 	 *
 	 * @return Responses\IResponse|NULL
 	 *
 	 * @throws Exceptions\BadRequestException
 	 */
-	protected function processMessage(Entities\Clients\IClient $from, array $parameters)
+	protected function processMessage(Entities\Clients\IClient $from, Message\RequestInterface $request, array $parameters)
 	{
-		$appRequest = $this->router->match($from->getRequest());
+		$appRequest = $this->router->match($request);
 
 		if ($appRequest === NULL) {
 			throw new Exceptions\BadRequestException('Invalid message - router cant create request.');
@@ -177,7 +174,7 @@ abstract class Application implements IApplication
 
 		$response = new Responses\ErrorResponse($code, $headers);
 
-		$client->send($response);
+		$client->send((string) $response);
 		$client->close();
 	}
 }
