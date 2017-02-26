@@ -22,7 +22,7 @@ use Guzzle\Http\Message;
 
 use IPub;
 use IPub\Ratchet\Application\Responses;
-use IPub\Ratchet\Application\UI;
+use IPub\Ratchet\Application\Controller;
 use IPub\Ratchet\Clients;
 use IPub\Ratchet\Entities;
 use IPub\Ratchet\Exceptions;
@@ -52,7 +52,7 @@ abstract class Application implements IApplication
 	protected $router;
 
 	/**
-	 * @var IControllerFactory
+	 * @var Controller\IControllerFactory
 	 */
 	protected $controllerFactory;
 
@@ -63,12 +63,12 @@ abstract class Application implements IApplication
 
 	/**
 	 * @param Router\IRouter $router
-	 * @param IControllerFactory $controllerFactory
+	 * @param Controller\IControllerFactory $controllerFactory
 	 * @param Clients\IStorage $clientsStorage
 	 */
 	public function __construct(
 		Router\IRouter $router,
-		IControllerFactory $controllerFactory,
+		Controller\IControllerFactory $controllerFactory,
 		Clients\IStorage $clientsStorage
 	) {
 		$this->router = $router;
@@ -141,11 +141,11 @@ abstract class Application implements IApplication
 		$controllerName = $appRequest->getControllerName();
 		$controllerClass = $this->controllerFactory->getControllerClass($controllerName);
 
-		if (!is_subclass_of($controllerClass, UI\IController::class)) {
-			throw new Exceptions\BadRequestException(sprintf('%s must be implementation of %s.', $controllerClass, UI\IController::class));
+		if (!is_subclass_of($controllerClass, Controller\IController::class)) {
+			throw new Exceptions\BadRequestException(sprintf('%s must be implementation of %s.', $controllerClass, Controller\IController::class));
 		}
 
-		/** @var UI\IController $controller */
+		/** @var Controller\IController $controller */
 		$controller = $this->controllerFactory->createController($controllerName);
 
 		return $controller->run($appRequest);

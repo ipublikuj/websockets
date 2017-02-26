@@ -25,7 +25,7 @@ use Guzzle\Http\Message;
 
 use IPub;
 use IPub\Ratchet\Application;
-use IPub\Ratchet\Application\UI;
+use IPub\Ratchet\Application\Controller;
 use IPub\Ratchet\Clients;
 use IPub\Ratchet\Entities;
 use IPub\Ratchet\Exceptions;
@@ -66,13 +66,13 @@ final class Provider extends Application\Application implements WebSocket\WsServ
 	/**
 	 * @param Topics\IStorage $topicsStorage
 	 * @param Router\IRouter $router
-	 * @param Application\IControllerFactory $controllerFactory
+	 * @param Controller\IControllerFactory $controllerFactory
 	 * @param Clients\IStorage $clientsStorage
 	 */
 	public function __construct(
 		WAMP\V1\Topics\IStorage $topicsStorage,
 		Router\IRouter $router,
-		Application\IControllerFactory $controllerFactory,
+		Controller\IControllerFactory $controllerFactory,
 		Clients\IStorage $clientsStorage
 	) {
 		parent::__construct($router, $controllerFactory, $clientsStorage);

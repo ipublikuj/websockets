@@ -14,7 +14,7 @@
 
 declare(strict_types = 1);
 
-namespace IPub\Ratchet\Application\UI;
+namespace IPub\Ratchet\Application\Controller;
 
 use IPub;
 use IPub\Ratchet\Application;

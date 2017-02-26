@@ -14,10 +14,9 @@
 
 declare(strict_types = 1);
 
-namespace IPub\Ratchet\Application;
+namespace IPub\Ratchet\Application\Controller;
 
 use IPub;
-use IPub\Ratchet\Application\UI;
 use IPub\Ratchet\Exceptions;
 
 /**
@@ -46,7 +45,7 @@ interface IControllerFactory
 	 *
 	 * @param string $name
 	 *
-	 * @return UI\IController
+	 * @return IController
 	 */
-	function createController(string $name) : UI\IController;
+	function createController(string $name) : IController;
 }

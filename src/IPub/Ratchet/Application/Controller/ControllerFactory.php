@@ -14,14 +14,14 @@
 
 declare(strict_types = 1);
 
-namespace IPub\Ratchet\Application;
+namespace IPub\Ratchet\Application\Controller;
 
 use Nette;
 use Nette\DI;
 use Nette\Utils;
 
 use IPub;
-use IPub\Ratchet\Application\UI;
+use IPub\Ratchet\Application;
 use IPub\Ratchet\Exceptions;
 
 /**
@@ -77,7 +77,7 @@ class ControllerFactory implements IControllerFactory
 				throw new Exceptions\InvalidControllerException(sprintf('Multiple services of type "%s" found: %s.', $class, implode(', ', $services)));
 
 			} elseif ($services === []) {
-				/** @var UI\IController $controller */
+				/** @var IController $controller */
 				$controller = $this->container->createInstance($class);
 
 				$this->container->callInjects($controller);
@@ -92,7 +92,7 @@ class ControllerFactory implements IControllerFactory
 	/**
 	 * {@inheritdoc}
 	 */
-	public function createController(string $name) : UI\IController
+	public function createController(string $name) : IController
 	{
 		return call_user_func_array($this->factory, [$this->getControllerClass($name)]);
 	}
@@ -125,7 +125,7 @@ class ControllerFactory implements IControllerFactory
 		$reflection = new \ReflectionClass($class);
 		$class = $reflection->getName();
 
-		if (!$reflection->implementsInterface(UI\IController::class)) {
+		if (!$reflection->implementsInterface(IController::class)) {
 			throw new Exceptions\InvalidControllerException(sprintf('Cannot load controller "%s", class "%s" is not IPub\\Ratchet\\Application\\IController implementor.', $name, $class));
 
 		} elseif ($reflection->isAbstract()) {

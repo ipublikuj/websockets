@@ -92,8 +92,8 @@ final class RatchetExtension extends DI\CompilerExtension
 		 */
 
 		$controllerFactory = $builder->addDefinition($this->prefix('controllers.factory'))
-			->setClass(Application\IControllerFactory::class)
-			->setFactory(Application\ControllerFactory::class);
+			->setClass(Application\Controller\IControllerFactory::class)
+			->setFactory(Application\Controller\ControllerFactory::class);
 
 		if ($configuration['mapping']) {
 			$controllerFactory->addSetup('setMapping', [$configuration['mapping']]);
@@ -256,7 +256,7 @@ final class RatchetExtension extends DI\CompilerExtension
 
 		$allControllers = [];
 
-		foreach ($builder->findByType(Application\UI\IController::class) as $def) {
+		foreach ($builder->findByType(Application\Controller\IController::class) as $def) {
 			$allControllers[$def->getClass()] = $def;
 		}
 

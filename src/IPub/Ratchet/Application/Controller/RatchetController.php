@@ -23,7 +23,7 @@ use Nette\Utils;
 use IPub;
 use IPub\Ratchet\Application;
 use IPub\Ratchet\Application\Responses;
-use IPub\Ratchet\Application\UI;
+use IPub\Ratchet\Application\Controller;
 use IPub\Ratchet\Exceptions;
 use IPub\Ratchet\Router;
 
@@ -35,7 +35,7 @@ use IPub\Ratchet\Router;
  *
  * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  */
-class RatchetController implements UI\IController
+class RatchetController implements Controller\IController
 {
 	/**
 	 * Implement nette smart magic

@@ -19,7 +19,6 @@ namespace IPubTests\Ratchet;
 
 use Nette;
 
-use Ratchet\Session\Serialize\HandlerInterface;
 use React\EventLoop\LoopInterface;
 
 use Tester;
@@ -36,7 +35,7 @@ class ExtensionTest extends Tester\TestCase
 	{
 		$dic = $this->createContainer();
 
-		Assert::true($dic->getService('ratchet.controllers.factory') instanceof Ratchet\Application\IControllerFactory);
+		Assert::true($dic->getService('ratchet.controllers.factory') instanceof Ratchet\Application\Controller\IControllerFactory);
 
 		Assert::true($dic->getService('ratchet.users.repository') instanceof Ratchet\Users\Repository);
 
