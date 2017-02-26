@@ -38,9 +38,6 @@ class ExtensionTest extends Tester\TestCase
 
 		Assert::true($dic->getService('ratchet.controllers.factory') instanceof Ratchet\Application\IControllerFactory);
 
-		Assert::true($dic->getService('ratchet.session.provider') instanceof Ratchet\Session\ProviderFactory);
-		Assert::true($dic->getService('ratchet.session.serializer') instanceof HandlerInterface);
-
 		Assert::true($dic->getService('ratchet.users.repository') instanceof Ratchet\Users\Repository);
 
 		Assert::true($dic->getService('ratchet.clients.driver.memory') instanceof Ratchet\Clients\Drivers\InMemory);
@@ -48,7 +45,9 @@ class ExtensionTest extends Tester\TestCase
 
 		Assert::true($dic->getService('ratchet.router') instanceof Ratchet\Router\IRouter);
 
-		Assert::true($dic->getService('ratchet.server.application') instanceof Ratchet\Message\Provider);
+		Assert::true($dic->getService('ratchet.application.message') instanceof Ratchet\Message\Provider);
+
+		Assert::true($dic->getService('ratchet.server.wrapper') instanceof Ratchet\Server\Wrapper);
 		Assert::true($dic->getService('ratchet.server.loop') instanceof LoopInterface);
 		Assert::true($dic->getService('ratchet.server.server') instanceof Ratchet\Server\Server);
 	}
