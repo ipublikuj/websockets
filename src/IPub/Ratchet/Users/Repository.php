@@ -17,11 +17,13 @@ declare(strict_types = 1);
 namespace IPub\Ratchet\Users;
 
 use Nette;
+use Nette\Security as NS;
 
 use Ratchet\ConnectionInterface;
 
 use IPub;
 use IPub\Ratchet\Clients;
+use IPub\Ratchet\Entities;
 use IPub\Ratchet\Exceptions;
 
 /**
@@ -50,7 +52,7 @@ final class Repository implements IRepository
 	/**
 	 * @param ConnectionInterface $connection
 	 *
-	 * @return Nette\Security\User|NULL
+	 * @return NS\User|NULL
 	 */
 	public function getUser(ConnectionInterface $connection)
 	{
@@ -71,7 +73,7 @@ final class Repository implements IRepository
 	 */
 	public function findByUsername(string $username)
 	{
-		/** @var Clients\Client $client */
+		/** @var Entities\Clients\IClient $client */
 		foreach ($this->storage as $client) {
 			$user = $client->getUser();
 
@@ -97,7 +99,7 @@ final class Repository implements IRepository
 	 */
 	public function findById($userId)
 	{
-		/** @var Clients\Client $client */
+		/** @var Entities\Clients\IClient $client */
 		foreach ($this->storage as $client) {
 			$user = $client->getUser();
 
@@ -125,7 +127,7 @@ final class Repository implements IRepository
 	{
 		$results = [];
 
-		/** @var Clients\Client $client */
+		/** @var Entities\Clients\IClient $client */
 		foreach ($this->storage as $client) {
 			$user = $client->getUser();
 
@@ -151,7 +153,7 @@ final class Repository implements IRepository
 	{
 		$results = [];
 
-		/** @var Clients\Client $client */
+		/** @var Entities\Clients\IClient $client */
 		foreach ($this->storage as $client) {
 			$user = $client->getUser();
 
