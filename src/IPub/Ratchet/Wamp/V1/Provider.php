@@ -32,7 +32,6 @@ use IPub\Ratchet\Exceptions;
 use IPub\Ratchet\Router;
 use IPub\Ratchet\Server;
 use IPub\Ratchet\WAMP;
-use Tracy\Debugger;
 
 /**
  * Application which run on server and provide creating controllers
@@ -255,7 +254,6 @@ final class Provider extends Application\Application implements WebSocket\WsServ
 			}
 
 		} catch (\Exception $ex) {
-			Debugger::log($ex);
 			$this->printer->error(sprintf('An error (%s) has occurred: %s', $ex->getCode(), $ex->getMessage()));
 
 			$client->close(1007);

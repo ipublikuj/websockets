@@ -37,7 +37,6 @@ use IPub\Ratchet\Server;
 use IPub\Ratchet\Session;
 use IPub\Ratchet\Users;
 use IPub\Ratchet\WAMP;
-use Tracy\Debugger;
 
 /**
  * Ratchet extension container
