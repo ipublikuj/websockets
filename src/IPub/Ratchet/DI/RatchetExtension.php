@@ -93,9 +93,7 @@ final class RatchetExtension extends DI\CompilerExtension
 
 		$controllerFactory = $builder->addDefinition($this->prefix('controllers.factory'))
 			->setClass(Application\IControllerFactory::class)
-			->setFactory(Application\ControllerFactory::class, [new Nette\DI\Statement(
-				Application\ControllerFactoryCallback::class
-			)]);
+			->setFactory(Application\ControllerFactory::class);
 
 		if ($configuration['mapping']) {
 			$controllerFactory->addSetup('setMapping', [$configuration['mapping']]);

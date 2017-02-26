@@ -17,6 +17,7 @@ declare(strict_types = 1);
 namespace IPub\Ratchet\Application;
 
 use Nette;
+use Nette\DI;
 use Nette\Utils;
 
 use IPub;
@@ -57,15 +58,34 @@ class ControllerFactory implements IControllerFactory
 	private $factory;
 
 	/**
-	 * @param callable|NULL $factory
+	 * @var DI\Container
 	 */
-	public function __construct(callable $factory = NULL)
-	{
-		$this->factory = $factory ?: function (string $class) {
-			/** @var UI\IController $controller */
-			$controller = new $class;
+	private $container;
 
-			return $controller;
+	/**
+	 * @param callable|NULL $factory
+	 * @param DI\Container $container
+	 */
+	public function __construct(callable $factory = NULL, Nette\DI\Container $container)
+	{
+		$this->container = $container;
+
+		$this->factory = $factory ?: function (string $class) {
+			$services = array_keys($this->container->findByTag('ipub.ratchet.controller'), $class);
+
+			if (count($services) > 1) {
+				throw new Exceptions\InvalidControllerException(sprintf('Multiple services of type "%s" found: %s.', $class, implode(', ', $services)));
+
+			} elseif ($services === []) {
+				/** @var UI\IController $controller */
+				$controller = $this->container->createInstance($class);
+
+				$this->container->callInjects($controller);
+
+				return $controller;
+			}
+
+			return $this->container->createService($services[0]);
 		};
 	}
 
