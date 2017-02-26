@@ -7,7 +7,7 @@
 [![Composer Downloads](https://img.shields.io/packagist/dt/ipub/ratchet.svg?style=flat-square)](https://packagist.org/packages/ipub/ratchet)
 [![License](https://img.shields.io/packagist/l/ipub/ratchet.svg?style=flat-square)](https://packagist.org/packages/ipub/ratchet)
 
-Extension for implementing WebSockets into [Nette Framework](http://nette.org/)
+Extension for implementing [Ratchet](http://socketo.me/) WebSockets into [Nette Framework](http://nette.org/)
 
 ## Installation
 
