@@ -59,7 +59,7 @@ class ExtensionTest extends Tester\TestCase
 		$config = new Nette\Configurator();
 		$config->setTempDirectory(TEMP_DIR);
 
-		Ratchet\DI\RatchetExtension::register($config);
+		$config->addConfig(__DIR__ . DS . 'files' . DS . 'config.neon');
 
 		return $config->createContainer();
 	}
