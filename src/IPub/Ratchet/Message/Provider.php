@@ -72,9 +72,11 @@ final class Provider extends Application\Application
 			'data' => $message,
 		]);
 
-		/** @var Entities\Clients\IClient $client */
-		foreach ($this->clientsStorage as $client) {
-			$client->send($response);
+		if (!$response instanceof Application\Responses\NullResponse) {
+			/** @var Entities\Clients\IClient $client */
+			foreach ($this->clientsStorage as $client) {
+				$client->send($response);
+			}
 		}
 	}
 }

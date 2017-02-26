@@ -70,24 +70,18 @@ final class Server
 	private $flashServer;
 
 	/**
-	 * @param Application\IApplication $application
+	 * @param Wrapper $application
 	 * @param LoopInterface $loop
 	 * @param string $httpHost
 	 * @param int $port
 	 * @param string $address
-	 * @param bool $useSession
-	 * @param WrapperFactory $wrapperFactory
-	 * @param Session\ProviderFactory $providerFactory
 	 */
 	public function __construct(
-		Application\IApplication $application,
+		Wrapper $application,
 		LoopInterface $loop,
 		string $httpHost = 'localhost',
 		int $port = 8080,
-		string $address = '127.0.0.1',
-		bool $useSession = FALSE,
-		WrapperFactory $wrapperFactory,
-		Session\ProviderFactory $providerFactory
+		string $address = '127.0.0.1'
 	) {
 		$this->loop = $loop;
 
@@ -97,11 +91,7 @@ final class Server
 		$socket = new React\Socket\Server($this->loop);
 		$socket->listen($port, $address);
 
-		if ($useSession) {
-			$application = $providerFactory->create($application);
-		}
-
-		$component = new Ratchet\WebSocket\WsServer($wrapperFactory->create($application));
+		$component = new Ratchet\WebSocket\WsServer($application);
 
 		$this->server = new Ratchet\Server\IoServer(
 			new Ratchet\Http\HttpServer($component),

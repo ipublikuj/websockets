@@ -102,18 +102,6 @@ final class RatchetExtension extends DI\CompilerExtension
 		}
 
 		/**
-		 * SESSION
-		 */
-
-		$builder->addDefinition($this->prefix('session.provider'))
-			->setClass(Session\Provider::class)
-			->setImplement(Session\ProviderFactory::class);
-
-		$builder->addDefinition($this->prefix('session.serializer'))
-			->setClass(HandlerInterface::class)
-			->setFactory(Session\SessionSerializerFactory::class . '::create');
-
-		/**
 		 * USERS
 		 */
 
@@ -148,7 +136,7 @@ final class RatchetExtension extends DI\CompilerExtension
 			->setFactory(Router\RouteList::class);
 
 		/**
-		 * SERVER
+		 * APPLICATION
 		 */
 
 		if ($configuration['server']['type'] === 'wamp' && $configuration['wamp']['version'] === 'v1') {
@@ -166,21 +154,39 @@ final class RatchetExtension extends DI\CompilerExtension
 				])
 				->addSetup('?->setStorageDriver(?)', ['@' . $this->prefix('wamp.v1.topics.storage'), $storageDriver]);
 
-			$application = $builder->addDefinition($this->prefix('server.application'))
+			$application = $builder->addDefinition($this->prefix('application.wamp.v1'))
 				->setClass(WAMP\V1\Provider::class);
 
 		} else {
-			$application = $builder->addDefinition($this->prefix('server.application'))
+			$application = $builder->addDefinition($this->prefix('application.message'))
 				->setClass(Message\Provider::class);
 		}
+
+		/**
+		 * SESSION
+		 */
+
+		if ($configuration['session']) {
+			$builder->addDefinition($this->prefix('session.serializer'))
+				->setClass(HandlerInterface::class)
+				->setFactory(Session\SessionSerializerFactory::class . '::create');
+
+			$application = $builder->addDefinition($this->prefix('session.provider'))
+				->setClass(Session\Provider::class)
+				->setArguments(['application' => $application]);
+		}
+
+		/**
+		 * SERVER
+		 */
+
+		$application = $builder->addDefinition($this->prefix('server.wrapper'))
+			->setClass(Server\Wrapper::class)
+			->setArguments(['application' => $application]);
 
 		$loop = $builder->addDefinition($this->prefix('server.loop'))
 			->setClass(React\EventLoop\LoopInterface::class)
 			->setFactory('React\EventLoop\Factory::create');
-
-		$builder->addDefinition($this->prefix('server.wrapper'))
-			->setClass(Server\Wrapper::class)
-			->setImplement(Server\WrapperFactory::class);
 
 		$builder->addDefinition($this->prefix('server.server'))
 			->setClass(Server\Server::class, [
@@ -189,7 +195,6 @@ final class RatchetExtension extends DI\CompilerExtension
 				$configuration['server']['httpHost'],
 				$configuration['server']['port'],
 				$configuration['server']['address'],
-				$configuration['session'],
 			]);
 	}
 
@@ -202,6 +207,10 @@ final class RatchetExtension extends DI\CompilerExtension
 
 		// Get container builder
 		$builder = $this->getContainerBuilder();
+
+		/**
+		 * ROUTER CREATION
+		 */
 
 		// Get application router
 		$router = $builder->getDefinition($this->prefix('router'));
@@ -239,6 +248,10 @@ final class RatchetExtension extends DI\CompilerExtension
 			}
 		}
 
+		/**
+		 * CONTROLLERS INJECTS
+		 */
+
 		$allControllers = [];
 
 		foreach ($builder->findByType(Application\UI\IController::class) as $def) {
@@ -249,6 +262,10 @@ final class RatchetExtension extends DI\CompilerExtension
 			$def->addTag(Nette\DI\Extensions\InjectExtension::TAG_INJECT)
 				->addTag('ipub.ratchet.controller', $def->getClass());
 		}
+
+		/**
+		 * SESSION
+		 */
 
 		// Sessions switcher
 		$original = $builder->getDefinition($originalSessionServiceName = $builder->getByType(Http\Session::class) ?: 'session');
