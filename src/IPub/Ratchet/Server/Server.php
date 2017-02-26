@@ -21,13 +21,7 @@ use Nette;
 use Ratchet;
 
 use React;
-use React\EventLoop\LoopInterface;
-
-use IPub;
-use IPub\Ratchet\Application;
-use IPub\Ratchet\Exceptions;
-use IPub\Ratchet\Router;
-use IPub\Ratchet\Session;
+use React\EventLoop;
 
 /**
  * Ratchet server for Nette - run instead of Nette application
@@ -45,19 +39,14 @@ final class Server
 	use Nette\SmartObject;
 
 	/**
-	 * @var string
-	 */
-	private $httpHost;
-
-	/**
-	 * @var int
-	 */
-	private $port;
-
-	/**
-	 * @var LoopInterface
+	 * @var EventLoop\LoopInterface
 	 */
 	private $loop;
+
+	/**
+	 * @var
+	 */
+	private $configuration;
 
 	/**
 	 * @var Ratchet\Server\IoServer
@@ -71,25 +60,19 @@ final class Server
 
 	/**
 	 * @param Wrapper $application
-	 * @param LoopInterface $loop
-	 * @param string $httpHost
-	 * @param int $port
-	 * @param string $address
+	 * @param EventLoop\LoopInterface $loop
+	 * @param Configuration $configuration
 	 */
 	public function __construct(
 		Wrapper $application,
-		LoopInterface $loop,
-		string $httpHost = 'localhost',
-		int $port = 8080,
-		string $address = '127.0.0.1'
+		EventLoop\LoopInterface $loop,
+		Configuration $configuration
 	) {
 		$this->loop = $loop;
-
-		$this->httpHost = $httpHost;
-		$this->port = $port;
+		$this->configuration = $configuration;
 
 		$socket = new React\Socket\Server($this->loop);
-		$socket->listen($port, $address);
+		$socket->listen($configuration->getPort(), $configuration->getAddress());
 
 		$component = new Ratchet\WebSocket\WsServer($application);
 
@@ -100,14 +83,14 @@ final class Server
 		);
 
 		$policy = new Ratchet\Server\FlashPolicy;
-		$policy->addAllowedAccess($httpHost, 80);
-		$policy->addAllowedAccess($httpHost, $port);
+		$policy->addAllowedAccess($configuration->getHttpHost(), 80);
+		$policy->addAllowedAccess($configuration->getHttpHost(), $configuration->getPort());
 
 		$flashSock = new React\Socket\Server($this->loop);
 
 		$this->flashServer = new Ratchet\Server\IoServer($policy, $flashSock);
 
-		if ($port === 80) {
+		if ($configuration->getPort() === 80) {
 			$flashSock->listen(843, '0.0.0.0');
 
 		} else {

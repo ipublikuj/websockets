@@ -59,7 +59,7 @@ final class RatchetExtension extends DI\CompilerExtension
 			'httpHost' => 'localhost',
 			'port'     => 8888,
 			'address'  => '0.0.0.0',
-			'type'     => 'wamp',    // message|wamp
+			'type'     => 'message',    // message|wamp
 		],
 		'wamp'    => [
 			'version' => 'v1',    // v1|v2
@@ -188,13 +188,17 @@ final class RatchetExtension extends DI\CompilerExtension
 			->setClass(React\EventLoop\LoopInterface::class)
 			->setFactory('React\EventLoop\Factory::create');
 
+		$configuration = new Server\Configuration(
+			$configuration['server']['httpHost'],
+			$configuration['server']['port'],
+			$configuration['server']['address']
+		);
+
 		$builder->addDefinition($this->prefix('server.server'))
 			->setClass(Server\Server::class, [
 				$application,
 				$loop,
-				$configuration['server']['httpHost'],
-				$configuration['server']['port'],
-				$configuration['server']['address'],
+				$configuration,
 			]);
 	}
 
