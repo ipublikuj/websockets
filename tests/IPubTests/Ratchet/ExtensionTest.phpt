@@ -48,7 +48,7 @@ class ExtensionTest extends Tester\TestCase
 
 		Assert::true($dic->getService('ratchet.router') instanceof Ratchet\Router\IRouter);
 
-		Assert::true($dic->getService('ratchet.server.application') instanceof Ratchet\Application\MessageApplication);
+		Assert::true($dic->getService('ratchet.server.application') instanceof Ratchet\Message\Provider);
 		Assert::true($dic->getService('ratchet.server.loop') instanceof LoopInterface);
 		Assert::true($dic->getService('ratchet.server.server') instanceof Ratchet\Server\Server);
 	}
