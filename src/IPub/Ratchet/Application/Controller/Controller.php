@@ -106,7 +106,7 @@ abstract class Controller implements IController
 	private $context;
 
 	/**
-	 * @var Application\IControllerFactory
+	 * @var IControllerFactory
 	 */
 	private $controllerFactory;
 
@@ -114,6 +114,11 @@ abstract class Controller implements IController
 	 * @var Router\IRouter
 	 */
 	private $router;
+
+	/**
+	 * @var Router\LinkGenerator
+	 */
+	private $linkGenerator;
 
 	/**
 	 * @var Http\Session
@@ -127,15 +132,17 @@ abstract class Controller implements IController
 
 	/**
 	 * @param Nette\DI\Container|NULL $context
-	 * @param Application\IControllerFactory|NULL $controllerFactory
+	 * @param IControllerFactory|NULL $controllerFactory
 	 * @param Router\IRouter|NULL $router
+	 * @param Router\LinkGenerator|NULL $linkGenerator
 	 * @param NS\User|NULL $user
 	 * @param Http\Session|NULL $session
 	 */
 	public function injectPrimary(
 		Nette\DI\Container $context = NULL,
-		Application\IControllerFactory $controllerFactory = NULL,
+		IControllerFactory $controllerFactory = NULL,
 		Router\IRouter $router = NULL,
+		Router\LinkGenerator $linkGenerator = NULL,
 		NS\User $user = NULL,
 		Http\Session $session = NULL
 	) {
@@ -146,6 +153,7 @@ abstract class Controller implements IController
 		$this->context = $context;
 		$this->controllerFactory = $controllerFactory;
 		$this->router = $router;
+		$this->linkGenerator = $linkGenerator;
 		$this->user = $user;
 		$this->session = $session;
 	}
@@ -285,6 +293,19 @@ abstract class Controller implements IController
 	public function terminate()
 	{
 		throw new Exceptions\AbortException;
+	}
+
+	/**
+	 * @param string $destination
+	 * @param array $args
+	 *
+	 * @return string
+	 *
+	 * @throws Exceptions\InvalidLinkException
+	 */
+	public function link(string $destination, array $args = []) : string
+	{
+		return $this->linkGenerator->link($destination, $args);
 	}
 
 	/**
