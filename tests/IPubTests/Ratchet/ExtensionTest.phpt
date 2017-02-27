@@ -42,7 +42,8 @@ class ExtensionTest extends Tester\TestCase
 		Assert::true($dic->getService('ratchet.clients.driver.memory') instanceof Ratchet\Clients\Drivers\InMemory);
 		Assert::true($dic->getService('ratchet.clients.storage') instanceof Ratchet\Clients\Storage);
 
-		Assert::true($dic->getService('ratchet.router') instanceof Ratchet\Router\IRouter);
+		Assert::true($dic->getService('ratchet.routing.router') instanceof Ratchet\Router\IRouter);
+		Assert::true($dic->getService('ratchet.routing.generator') instanceof Ratchet\Router\LinkGenerator);
 
 		Assert::true($dic->getService('ratchet.application.message') instanceof Ratchet\Message\Provider);
 
