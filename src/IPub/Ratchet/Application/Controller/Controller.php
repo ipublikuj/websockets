@@ -343,7 +343,7 @@ abstract class Controller implements IController
 	 *
 	 * @return string
 	 */
-	private static function formatActionMethod($action) : string
+	public static function formatActionMethod($action) : string
 	{
 		return 'action' . $action;
 	}
@@ -355,9 +355,73 @@ abstract class Controller implements IController
 	 *
 	 * @return string
 	 */
-	private static function formatSignalMethod($signal) : string
+	public static function formatSignalMethod($signal) : string
 	{
 		return $signal == NULL ? NULL : 'handle' . $signal; // intentionally ==
+	}
+
+	/**
+	 * Converts list of arguments to named parameters
+	 *
+	 * @param string $class       class name
+	 * @param string $method      method name
+	 * @param array $args
+	 * @param array $supplemental supplemental arguments
+	 * @param array $missing      missing arguments
+	 *
+	 * @throws Exceptions\InvalidLinkException
+	 * @throws \ReflectionException
+	 *
+	 * @internal
+	 */
+	public static function argsToParams(string $class, string $method, array &$args, array $supplemental = [], array &$missing = [])
+	{
+		$i = 0;
+		$rm = new \ReflectionMethod($class, $method);
+
+		foreach ($rm->getParameters() as $param) {
+			list($type, $isClass) = Nette\Application\UI\ComponentReflection::getParameterType($param);
+			$name = $param->getName();
+
+			if (array_key_exists($i, $args)) {
+				$args[$name] = $args[$i];
+				unset($args[$i]);
+				$i++;
+
+			} elseif (array_key_exists($name, $args)) {
+				// continue with process
+
+			} elseif (array_key_exists($name, $supplemental)) {
+				$args[$name] = $supplemental[$name];
+			}
+
+			if (!isset($args[$name])) {
+				if (!$param->isDefaultValueAvailable() && !$param->allowsNull() && $type !== 'NULL' && $type !== 'array') {
+					$missing[] = $param;
+					unset($args[$name]);
+				}
+				continue;
+			}
+
+			if (!Nette\Application\UI\ComponentReflection::convertType($args[$name], $type, $isClass)) {
+				throw new Exceptions\InvalidLinkException(sprintf(
+					'Argument $%s passed to %s() must be %s, %s given.',
+					$name,
+					$rm->getDeclaringClass()->getName() . '::' . $rm->getName(),
+					$type === 'NULL' ? 'scalar' : $type,
+					is_object($args[$name]) ? get_class($args[$name]) : gettype($args[$name])
+				));
+			}
+
+			$def = $param->isDefaultValueAvailable() ? $param->getDefaultValue() : NULL;
+			if ($args[$name] === $def || ($def === NULL && $args[$name] === '')) {
+				$args[$name] = NULL; // value transmit is unnecessary
+			}
+		}
+
+		if (array_key_exists($i, $args)) {
+			throw new Exceptions\InvalidLinkException(sprintf('Passed more parameters than method %s::%s() expects.', $class, $rm->getName()));
+		}
 	}
 
 	/**

@@ -39,4 +39,13 @@ interface IRouter
 	 * @return Application\Request|NULL
 	 */
 	function match(Http\Message\RequestInterface $httpRequest);
+
+	/**
+	 * Constructs absolute URL from Request object
+	 *
+	 * @param Application\IRequest $appRequest
+	 *
+	 * @return string|NULL
+	 */
+	function constructUrl(Application\IRequest $appRequest);
 }

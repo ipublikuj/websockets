@@ -335,6 +335,153 @@ class Route implements IRouter
 	}
 
 	/**
+	 * Constructs absolute URL from Request object
+	 *
+	 * @param Application\IRequest $appRequest
+	 *
+	 * @return string|NULL
+	 */
+	public function constructUrl(Application\IRequest $appRequest)
+	{
+		$params = $appRequest->getParameters();
+		$metadata = $this->metadata;
+
+		$controller = $appRequest->getControllerName();
+		$params[self::CONTROLLER_KEY] = $controller;
+
+		if (isset($metadata[self::MODULE_KEY])) { // try split into module and [submodule:]controller parts
+			$module = $metadata[self::MODULE_KEY];
+
+			if (isset($module['fixity']) && strncmp($controller, $module[self::VALUE] . ':', strlen($module[self::VALUE]) + 1) === 0) {
+				$a = strlen($module[self::VALUE]);
+
+			} else {
+				$a = strrpos($controller, ':');
+			}
+
+			if ($a === FALSE) {
+				$params[self::MODULE_KEY] = isset($module[self::VALUE]) ? '' : NULL;
+
+			} else {
+				$params[self::MODULE_KEY] = substr($controller, 0, $a);
+				$params[self::CONTROLLER_KEY] = substr($controller, $a + 1);
+			}
+		}
+
+		if (isset($metadata[NULL][self::FILTER_OUT])) {
+			$params = call_user_func($metadata[NULL][self::FILTER_OUT], $params);
+
+			if ($params === NULL) {
+				return NULL;
+			}
+		}
+
+		foreach ($metadata as $name => $meta) {
+			if (!isset($params[$name])) {
+				continue; // retains NULL values
+			}
+
+			if (isset($meta['fixity'])) {
+				if ($params[$name] === FALSE) {
+					$params[$name] = '0';
+
+				} elseif (is_scalar($params[$name])) {
+					$params[$name] = (string) $params[$name];
+				}
+
+				if ($params[$name] === $meta[self::VALUE]) { // remove default values; NULL values are retain
+					unset($params[$name]);
+					continue;
+
+				} elseif ($meta['fixity'] === self::CONSTANT) {
+					return NULL; // missing or wrong parameter '$name'
+				}
+			}
+
+			if (is_scalar($params[$name]) && isset($meta['filterTable2'][$params[$name]])) {
+				$params[$name] = $meta['filterTable2'][$params[$name]];
+
+			} elseif (isset($meta['filterTable2']) && !empty($meta[self::FILTER_STRICT])) {
+				return NULL;
+
+			} elseif (isset($meta[self::FILTER_OUT])) {
+				$params[$name] = call_user_func($meta[self::FILTER_OUT], $params[$name]);
+			}
+
+			if (isset($meta[self::PATTERN]) && !preg_match($meta[self::PATTERN], rawurldecode($params[$name]))) {
+				return NULL; // pattern not match
+			}
+		}
+
+		// Compositing path
+		$sequence = $this->sequence;
+		$brackets = [];
+		$required = NULL; // NULL for auto-optional
+		$url = '';
+		$i = count($sequence) - 1;
+
+		do {
+			$url = $sequence[$i] . $url;
+			if ($i === 0) {
+				break;
+			}
+			$i--;
+
+			$name = $sequence[$i]; $i--; // parameter name
+
+			if ($name === ']') { // opening optional part
+				$brackets[] = $url;
+
+			} elseif ($name[0] === '[') { // closing optional part
+				$tmp = array_pop($brackets);
+
+				if ($required < count($brackets) + 1) { // is this level optional?
+					if ($name !== '[!') { // and not "required"-optional
+						$url = $tmp;
+					}
+
+				} else {
+					$required = count($brackets);
+				}
+
+			} elseif ($name[0] === '?') { // "foo" parameter
+				continue;
+
+			} elseif (isset($params[$name]) && $params[$name] != '') { // intentionally ==
+				$required = count($brackets); // make this level required
+				$url = $params[$name] . $url;
+				unset($params[$name]);
+
+			} elseif (isset($metadata[$name]['fixity'])) { // has default value?
+				if ($required === NULL && !$brackets) { // auto-optional
+					$url = '';
+
+				} else {
+					$url = $metadata[$name]['defOut'] . $url;
+				}
+
+			} else {
+				return NULL; // missing parameter '$name'
+			}
+
+		} while (TRUE);
+
+		// build query string
+		if ($this->xlat) {
+			$params = self::renameKeys($params, $this->xlat);
+		}
+
+		$sep = ini_get('arg_separator.input');
+		$query = http_build_query($params, '', $sep ? $sep[0] : '&');
+
+		if ($query != '') { // intentionally ==
+			$url .= '?' . $query;
+		}
+
+		return $url;
+	}
+
+	/**
 	 * Parse mask and array of default values; initializes object
 	 *
 	 * @param string $mask
@@ -603,6 +750,34 @@ class Route implements IRouter
 		}
 
 		return $res;
+	}
+
+	/**
+	 * Proprietary cache aim
+	 *
+	 * @return string[]|NULL
+	 *
+	 * @internal
+	 */
+	public function getTargetControllers()
+	{
+		$m = $this->metadata;
+		$module = '';
+
+		if (isset($m[self::MODULE_KEY])) {
+			if (isset($m[self::MODULE_KEY]['fixity']) && $m[self::MODULE_KEY]['fixity'] === self::CONSTANT) {
+				$module = $m[self::MODULE_KEY][self::VALUE] . ':';
+
+			} else {
+				return NULL;
+			}
+		}
+
+		if (isset($m[self::CONTROLLER_KEY]['fixity']) && $m[self::CONTROLLER_KEY]['fixity'] === self::CONSTANT) {
+			return [$module . $m[self::CONTROLLER_KEY][self::VALUE]];
+		}
+
+		return NULL;
 	}
 
 	/********************* Inflectors ******************/

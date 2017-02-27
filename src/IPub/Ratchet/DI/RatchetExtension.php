@@ -132,9 +132,13 @@ final class RatchetExtension extends DI\CompilerExtension
 		 */
 
 		// Http routes collector
-		$builder->addDefinition($this->prefix('router'))
+		$builder->addDefinition($this->prefix('routing.router'))
 			->setClass(Router\IRouter::class)
 			->setFactory(Router\RouteList::class);
+
+		// Http routes generator
+		$builder->addDefinition($this->prefix('routing.generator'))
+			->setClass(Router\LinkGenerator::class);
 
 		/**
 		 * APPLICATION
@@ -234,7 +238,7 @@ final class RatchetExtension extends DI\CompilerExtension
 		 */
 
 		// Get application router
-		$router = $builder->getDefinition($this->prefix('router'));
+		$router = $builder->getDefinition($this->prefix('routing.router'));
 
 		// Init collections
 		$routersFactories = [];
