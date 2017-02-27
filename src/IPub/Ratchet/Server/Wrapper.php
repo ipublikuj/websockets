@@ -24,9 +24,12 @@ use Ratchet\WebSocket;
 
 use Guzzle\Http\Message;
 
+use Kdyby\Events as KEvents;
+
 use IPub;
 use IPub\Ratchet\Application;
 use IPub\Ratchet\Entities;
+use IPub\Ratchet\Events;
 use IPub\Ratchet\Clients;
 
 /**
@@ -56,15 +59,23 @@ final class Wrapper implements MessageComponentInterface, WebSocket\WsServerInte
 	private $clientsStorage;
 
 	/**
+	 * @var KEvents\EventManager
+	 */
+	private $eventManager;
+
+	/**
 	 * @param Application\IApplication $application
 	 * @param Clients\IStorage $clientsStorage
+	 * @param KEvents\EventManager $eventManager
 	 */
 	public function __construct(
 		Application\IApplication $application,
-		Clients\IStorage $clientsStorage
+		Clients\IStorage $clientsStorage,
+		KEvents\EventManager $eventManager
 	) {
 		$this->application = $application;
 		$this->clientsStorage = $clientsStorage;
+		$this->eventManager = $eventManager;
 	}
 
 	/**
@@ -76,7 +87,11 @@ final class Wrapper implements MessageComponentInterface, WebSocket\WsServerInte
 
 		$this->clientsStorage->addClient($storageId, $connection);
 
-		return $this->application->onOpen($this->getConnectionClient($connection), $this->getRequest($connection));
+		$client = $this->getConnectionClient($connection);
+
+		$this->eventManager->dispatchEvent(Events\Events::CLIENT_CONNECTED, new KEvents\EventArgsList([$connection, $client]));
+
+		return $this->application->onOpen($client, $this->getRequest($connection));
 	}
 
 	/**
@@ -90,6 +105,8 @@ final class Wrapper implements MessageComponentInterface, WebSocket\WsServerInte
 
 		$this->clientsStorage->removeClient($storageId);
 
+		$this->eventManager->dispatchEvent(Events\Events::CLIENT_DISCONNECTED, new KEvents\EventArgsList([$connection, $client]));
+
 		return $this->application->onClose($client, $this->getRequest($connection));
 	}
 
@@ -98,7 +115,11 @@ final class Wrapper implements MessageComponentInterface, WebSocket\WsServerInte
 	 */
 	public function onError(ConnectionInterface $connection, \Exception $ex)
 	{
-		return $this->application->onError($this->getConnectionClient($connection), $this->getRequest($connection), $ex);
+		$client = $this->getConnectionClient($connection);
+
+		$this->eventManager->dispatchEvent(Events\Events::CLIENT_ERROR, new KEvents\EventArgsList([$connection, $client]));
+
+		return $this->application->onError($client, $this->getRequest($connection), $ex);
 	}
 
 	/**

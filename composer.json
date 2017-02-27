@@ -42,6 +42,7 @@
 		"nette/utils"		: "~2.4",
 
 		"kdyby/console"	: "~2.6",
+		"kdyby/events"	: "~3.0",
 
 		"pds/skeleton"	: "^1.0",
 

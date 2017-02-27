@@ -18,10 +18,15 @@ namespace IPub\Ratchet\Server;
 
 use Nette;
 
+use Kdyby\Events as KEvents;
+
 use Ratchet;
 
 use React;
 use React\EventLoop;
+
+use IPub;
+use IPub\Ratchet\Events;
 
 /**
  * Ratchet server for Nette - run instead of Nette application
@@ -64,20 +69,28 @@ final class Server
 	private $printer;
 
 	/**
+	 * @var KEvents\EventManager
+	 */
+	private $eventManager;
+
+	/**
 	 * @param Wrapper $application
 	 * @param EventLoop\LoopInterface $loop
 	 * @param Configuration $configuration
 	 * @param OutputPrinter $printer
+	 * @param KEvents\EventManager $eventManager
 	 */
 	public function __construct(
 		Wrapper $application,
 		EventLoop\LoopInterface $loop,
 		Configuration $configuration,
-		OutputPrinter $printer
+		OutputPrinter $printer,
+		KEvents\EventManager $eventManager
 	) {
 		$this->loop = $loop;
 		$this->configuration = $configuration;
 		$this->printer = $printer;
+		$this->eventManager = $eventManager;
 
 		$socket = new React\Socket\Server($this->loop);
 		$socket->listen($configuration->getPort(), $configuration->getAddress());
@@ -115,6 +128,8 @@ final class Server
 	{
 		$this->printer->note('Starting IPub\WebSocket');
 		$this->printer->note(sprintf('Launching Ratchet WS Server on: %s:%s', $this->configuration->getHttpHost(), $this->configuration->getPort()));
+
+		$this->eventManager->dispatchEvent(Events\Events::CLIENT_ERROR, new KEvents\EventArgsList([$this->loop, $this->server]));
 
 		$this->server->run();
 	}
