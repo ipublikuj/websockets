@@ -28,6 +28,7 @@ use IPub;
 use IPub\WebSockets;
 
 require __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'bootstrap.php';
+require __DIR__ . DS . 'libraries' . DS . 'Application.php';
 
 class ExtensionTest extends Tester\TestCase
 {
