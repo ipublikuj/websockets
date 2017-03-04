@@ -277,11 +277,13 @@ class RFC6455 implements IProtocol
 	/**
 	 * {@inheritdoc}
 	 */
-	public function close(Entities\Clients\IClient $client, int $code = 1000)
+	public function close(Entities\Clients\IClient $client, int $code = NULL)
 	{
 		if ($client->getWebSocket()->isClosing()) {
 			return;
 		}
+
+		$code = $code === NULL ? 1000 : $code;
 
 		if ($code instanceof IData) {
 			$this->send($client, $code);

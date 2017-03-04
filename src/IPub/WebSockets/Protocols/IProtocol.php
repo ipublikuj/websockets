@@ -75,9 +75,9 @@ interface IProtocol
 
 	/**
 	 * @param Entities\Clients\IClient $client
-	 * @param int $code
+	 * @param int|NULL $code
 	 *
 	 * @return void
 	 */
-	function close(Entities\Clients\IClient $client, int $code);
+	function close(Entities\Clients\IClient $client, int $code = NULL);
 }
