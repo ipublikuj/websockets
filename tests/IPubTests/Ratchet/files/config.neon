@@ -1,5 +1,0 @@
-extensions:
-	console	: Kdyby\Console\DI\ConsoleExtension
-	events	: Kdyby\Events\DI\EventsExtension
-	ratchet : IPub\Ratchet\DI\RatchetExtension
-

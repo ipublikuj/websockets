@@ -1,32 +1,32 @@
-# Ratchet
+# WebSockets
 
-[![Build Status](https://img.shields.io/travis/iPublikuj/ratchet.svg?style=flat-square)](https://travis-ci.org/iPublikuj/ratchet)
-[![Scrutinizer Code Coverage](https://img.shields.io/scrutinizer/coverage/g/iPublikuj/ratchet.svg?style=flat-square)](https://scrutinizer-ci.com/g/iPublikuj/ratchet/?branch=master)
-[![Scrutinizer Code Quality](https://img.shields.io/scrutinizer/g/iPublikuj/ratchet.svg?style=flat-square)](https://scrutinizer-ci.com/g/iPublikuj/ratchet/?branch=master)
-[![Latest Stable Version](https://img.shields.io/packagist/v/ipub/ratchet.svg?style=flat-square)](https://packagist.org/packages/ipub/ratchet)
-[![Composer Downloads](https://img.shields.io/packagist/dt/ipub/ratchet.svg?style=flat-square)](https://packagist.org/packages/ipub/ratchet)
-[![License](https://img.shields.io/packagist/l/ipub/ratchet.svg?style=flat-square)](https://packagist.org/packages/ipub/ratchet)
+[![Build Status](https://img.shields.io/travis/iPublikuj/websockets.svg?style=flat-square)](https://travis-ci.org/iPublikuj/websockets)
+[![Scrutinizer Code Coverage](https://img.shields.io/scrutinizer/coverage/g/iPublikuj/websockets.svg?style=flat-square)](https://scrutinizer-ci.com/g/iPublikuj/websockets/?branch=master)
+[![Scrutinizer Code Quality](https://img.shields.io/scrutinizer/g/iPublikuj/websockets.svg?style=flat-square)](https://scrutinizer-ci.com/g/iPublikuj/websockets/?branch=master)
+[![Latest Stable Version](https://img.shields.io/packagist/v/ipub/websockets.svg?style=flat-square)](https://packagist.org/packages/ipub/websockets)
+[![Composer Downloads](https://img.shields.io/packagist/dt/ipub/websockets.svg?style=flat-square)](https://packagist.org/packages/ipub/websockets)
+[![License](https://img.shields.io/packagist/l/ipub/websockets.svg?style=flat-square)](https://packagist.org/packages/ipub/websockets)
 
-Extension for implementing [Ratchet](http://socketo.me/) WebSockets into [Nette Framework](http://nette.org/)
+Extension for implementing WebSockets into [Nette Framework](http://nette.org/)
 
 ## Installation
 
-The best way to install ipub/ratchet is using  [Composer](http://getcomposer.org/):
+The best way to install ipub/websockets is using [Composer](http://getcomposer.org/):
 
 ```sh
-$ composer require ipub/ratchet
+$ composer require ipub/websockets
 ```
 
 After that you have to register extension in config.neon.
 
 ```neon
 extensions:
-	ratchet: IPub\Ratchet\DI\RatchetExtension
+	webSockets: IPub\WebSockets\DI\WebSocketsExtension
 ```
 
 ## Documentation
 
-Learn how to create WebSocket server & controllers in [documentation](https://github.com/iPublikuj/ratchet/blob/master/docs/en/index.md).
+Learn how to create web socket server & controllers in [documentation](https://github.com/iPublikuj/websockets/blob/master/docs/en/index.md).
 
 ***
-Homepage [http://www.ipublikuj.eu](http://www.ipublikuj.eu) and repository [http://github.com/iPublikuj/ratchet](http://github.com/iPublikuj/ratchet).
+Homepage [http://www.ipublikuj.eu](http://www.ipublikuj.eu) and repository [http://github.com/iPublikuj/websockets](http://github.com/iPublikuj/websockets).

@@ -1,9 +1,9 @@
 {
-	"name"			: "ipub/ratchet",
+	"name"			: "ipub/websockets",
 	"type"			: "library",
-	"description"	: "Extension for implementing WebSockets server side (Ratchet) & client side (Autobahn) into Nette Framework",
-	"keywords"		: ["nette", "ratchet", "websockets", "ipub", "ipublikuj", "framework", "tools"],
-	"homepage"		: "https://github.com/iPublikuj/ratchet",
+	"description"	: "Extension for implementing WebSockets server into Nette Framework",
+	"keywords"		: ["nette", "websockets", "webbsocket-server", "ipub", "ipublikuj"],
+	"homepage"		: "https://github.com/iPublikuj/websockets",
 	"license"		: ["GPL-2.0", "GPL-3.0"],
 
 	"authors": [
@@ -16,14 +16,14 @@
 
 	"support":{
 		"email"		:"support@ipublikuj.eu",
-		"issues"	:"https://github.com/iPublikuj/ratchet/issues"
+		"issues"	:"https://github.com/iPublikuj/websockets/issues"
 	},
 
 	"extra": {
 		"ipub"	: {
 			"configuration" : {
 				"extensions" : {
-					"ratchet" : "IPub\\Ratchet\\DI\\RatchetExtension"
+					"webSockets" : "IPub\\WebSockets\\DI\\WebSocketsExtension"
 				}
 			}
 		}
@@ -32,17 +32,15 @@
 	"require": {
 		"php"	: ">=7.0.0",
 
-		"cboden/ratchet": "~0.3.6",
+		"react/socket": "^0.3 || ^0.4",
 
 		"nette/application"	: "~2.4",
 		"nette/di"			: "~2.4",
 		"nette/http"		: "~2.4",
 		"nette/reflection"	: "~2.4",
-		"nette/security"	: "~2.4",
 		"nette/utils"		: "~2.4",
 
 		"kdyby/console"	: "~2.6",
-		"kdyby/events"	: "~3.0",
 
 		"pds/skeleton"	: "^1.0",
 
@@ -59,18 +57,11 @@
 		"tracy/tracy"	: "@dev"
 	},
 
-	"suggest": {
-		"ext-libevent": ">=0.0.5",
-		"ext-libev": "*",
-		"ext-zmq": "*",
-		"ext-amqp": "*"
-	},
-
 	"autoload": {
 		"psr-0": {
-			"IPub\\Ratchet\\": "src/"
+			"IPub\\WebSockets\\": "src/"
 		}
 	},
 
-	"bin": ["bin/ratchet-server", "bin/ratchet-server.php"]
+	"bin": ["bin/websockets-server", "bin/websockets-server.php"]
 }

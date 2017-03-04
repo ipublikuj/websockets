@@ -4,7 +4,7 @@ If you are not able to use [Kdyby\Console](https://github.com/Kdyby/Console) or 
 
 ```php
 use Nette\Configurator;
-use IPub\Ratchet;
+use IPub\WebSockets;
 
 define('DS', DIRECTORY_SEPARATOR);
 define('BASE_DIR', __DIR__ . DS . '..');
@@ -44,7 +44,7 @@ $configurator->addParameters([
 $container = $configurator->createContainer();
 
 // Run server
-$container->getByType(Ratchet\Server\Server::class)->run();
+$container->getByType(WebSockets\Server\Server::class)->run();
 ```
 
 NOTE: This is only example, you have to change it according your server/application configuration.
