@@ -1,6 +1,6 @@
 extensions:
 	console	: Kdyby\Console\DI\ConsoleExtension
-	websockets : IPub\WebSockets\DI\WebSocketsExtension
+	webSockets : IPub\WebSockets\DI\WebSocketsExtension
 
 services:
 	- IPubTests\WebSockets\Libraries\Application
