@@ -1,6 +1,6 @@
 # WebSockets
 
-IPub/WebSockets is a [Nette](http://nette.org/) extension designed to bring you easy implementation of websockets server.
+This is a [Nette](http://nette.org/) extension designed to bring you easy implementation of websockets server.
 
 ## What can you do with this extension
 

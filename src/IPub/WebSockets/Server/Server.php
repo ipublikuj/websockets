@@ -92,21 +92,21 @@ final class Server
 		$this->configuration = $configuration;
 		$this->logger = $logger === NULL ? new Log\NullLogger : $logger;
 
-		$socket = new React\Socket\Server($this->loop);
-		$socket->listen($configuration->getPort(), $configuration->getAddress());
+		$client = $configuration->getAddress() .':'. $configuration->getPort();
+		$socket = new React\Socket\Server($client, $this->loop);
 
 		$socket->on('connection', function (React\Socket\ConnectionInterface $connection) use ($application) {
 			$this->handleConnect($connection, $application);
 		});
 
-		$flashSocket = new React\Socket\Server($this->loop);
-
 		if ($configuration->getPort() === 80) {
-			$flashSocket->listen(843, '0.0.0.0');
+			$client = '0.0.0.0:843';
 
 		} else {
-			$flashSocket->listen(8843);
+			$client = $configuration->getAddress() .':8843';
 		}
+
+		$flashSocket = new React\Socket\Server($client, $this->loop);
 
 		$flashSocket->on('connection', function (React\Socket\ConnectionInterface $connection) use ($flashApplication) {
 			$this->handleConnect($connection, $flashApplication);

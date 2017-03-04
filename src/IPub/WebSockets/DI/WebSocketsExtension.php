@@ -49,6 +49,9 @@ use IPub\WebSockets\Server;
  */
 final class WebSocketsExtension extends DI\CompilerExtension
 {
+	// Define tag string for routes
+	const TAG_WEBSOCKETS_ROUTES = 'ipub.websockets.routes';
+
 	/**
 	 * @var array
 	 */
@@ -115,9 +118,13 @@ final class WebSocketsExtension extends DI\CompilerExtension
 		 */
 
 		// Http routes collector
-		$builder->addDefinition($this->prefix('routing.router'))
+		$router = $builder->addDefinition($this->prefix('routing.router'))
 			->setClass(Router\IRouter::class)
 			->setFactory(Router\RouteList::class);
+
+		foreach ($configuration['routes'] as $mask => $action) {
+			$router->addSetup('$service[] = new IPub\WebSockets\Router\Route(?, ?);', [$mask, $action]);
+		}
 
 		// Http routes generator
 		$builder->addDefinition($this->prefix('routing.generator'))
@@ -133,8 +140,15 @@ final class WebSocketsExtension extends DI\CompilerExtension
 		$flashApplication = $builder->addDefinition($this->prefix('server.flashWrapper'))
 			->setClass(Server\FlashWrapper::class);
 
-		$flashApplication->addSetup('?->addAllowedAccess(?, 80)', [$flashApplication, $configuration['server']['httpHost']]);
-		$flashApplication->addSetup('?->addAllowedAccess(?, ?)', [$flashApplication, $configuration['server']['httpHost'], $configuration['server']['port']]);
+		$flashApplication->addSetup('?->addAllowedAccess(?, 80)', [
+			$flashApplication,
+			$configuration['server']['httpHost']
+		]);
+		$flashApplication->addSetup('?->addAllowedAccess(?, ?)', [
+			$flashApplication,
+			$configuration['server']['httpHost'],
+			$configuration['server']['port']
+		]);
 
 		$loop = $builder->addDefinition($this->prefix('server.loop'))
 			->setClass(React\EventLoop\LoopInterface::class)
@@ -191,7 +205,7 @@ final class WebSocketsExtension extends DI\CompilerExtension
 		// Init collections
 		$routersFactories = [];
 
-		foreach ($builder->findByTag('ipub.websockets.routes') as $routerService => $priority) {
+		foreach ($builder->findByTag(self::TAG_WEBSOCKETS_ROUTES) as $routerService => $priority) {
 			// Priority is not defined...
 			if (is_bool($priority)) {
 				// ...use default value
