@@ -30,6 +30,14 @@ use IPub\WebSockets;
 require __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'bootstrap.php';
 require __DIR__ . DS . 'libraries' . DS . 'Application.php';
 
+/**
+ * WebSockets extension container test case
+ *
+ * @package        iPublikuj:WebSocket!
+ * @subpackage     Tests
+ *
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
+ */
 class ExtensionTest extends Tester\TestCase
 {
 	public function testCompilersServices()
