@@ -184,7 +184,7 @@ class Route implements IRouter
 			list($controller, $action) = Nette\Application\Helpers::splitName($metadata);
 
 			if (!$controller) {
-				throw new Exceptions\InvalidArgumentException('Second argument must be array or string in format Controller:action, "%s" given.', $metadata);
+				throw new Exceptions\InvalidArgumentException(sprintf('Second argument must be array or string in format Controller:action, "%s" given.', $metadata));
 			}
 
 			$metadata = [self::CONTROLLER_KEY => $controller];
