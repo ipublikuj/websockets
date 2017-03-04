@@ -52,6 +52,11 @@ final class Server
 	public $onStart = [];
 
 	/**
+	 * @var IWrapper
+	 */
+	private $application;
+
+	/**
 	 * @var Clients\Storage
 	 */
 	private $clientStorage;
@@ -90,6 +95,7 @@ final class Server
 		$this->clientStorage = $clientStorage;
 		$this->loop = $loop;
 		$this->configuration = $configuration;
+		$this->application = $application;
 		$this->logger = $logger === NULL ? new Log\NullLogger : $logger;
 
 		$client = $configuration->getAddress() .':'. $configuration->getPort();
