@@ -103,6 +103,9 @@ final class WebSocketsExtension extends DI\CompilerExtension
 		 * CLIENTS
 		 */
 
+		$builder->addDefinition($this->prefix('clients.factory'))
+			->setClass(Clients\ClientFactory::class);
+
 		$builder->addDefinition($this->prefix('clients.driver.memory'))
 			->setClass(Clients\Drivers\InMemory::class);
 

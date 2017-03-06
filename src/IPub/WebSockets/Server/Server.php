@@ -62,6 +62,11 @@ final class Server
 	private $clientStorage;
 
 	/**
+	 * @var Clients\IClientFactory
+	 */
+	private $clientFactory;
+
+	/**
 	 * @var EventLoop\LoopInterface
 	 */
 	private $loop;
@@ -82,6 +87,7 @@ final class Server
 	 * @param EventLoop\LoopInterface $loop
 	 * @param Configuration $configuration
 	 * @param Clients\Storage $clientStorage
+	 * @param Clients\IClientFactory $clientFactory
 	 * @param Log\LoggerInterface|NULL $logger
 	 */
 	public function __construct(
@@ -90,9 +96,11 @@ final class Server
 		EventLoop\LoopInterface $loop,
 		Configuration $configuration,
 		Clients\Storage $clientStorage,
+		Clients\IClientFactory $clientFactory,
 		Log\LoggerInterface $logger = NULL
 	) {
 		$this->clientStorage = $clientStorage;
+		$this->clientFactory = $clientFactory;
 		$this->loop = $loop;
 		$this->configuration = $configuration;
 		$this->application = $application;
@@ -149,7 +157,7 @@ final class Server
 	 */
 	private function handleConnect(React\Socket\ConnectionInterface $connection, IWrapper $application)
 	{
-		$client = new Entities\Clients\Client((int) $connection->stream, $connection);
+		$client = $this->clientFactory->create((int) $connection->stream, $connection);
 
 		$this->clientStorage->addClient($client->getId(), $client);
 

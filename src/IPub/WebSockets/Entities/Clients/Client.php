@@ -28,7 +28,7 @@ use IPub\WebSockets\Entities;
 use IPub\WebSockets\Http;
 
 /**
- * Single client connection (proxy class of ConnectionInterface)
+ * Single client connection
  *
  * @package        iPublikuj:WebSocket!
  * @subpackage     Entities
