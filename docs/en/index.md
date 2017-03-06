@@ -152,4 +152,8 @@ If everything is successful, you will see something similar to the following:
 
 This means the websocket server is now up and running ! 
 
-**From here, only the websocket server is running ! That doesn't mean you can send message, subscribe, publish or even call. Follow next steps to do it :)**
+**From here, only the websocket server is running ! That doesn't mean you can send message, subscribe, publish or even call. Follow next steps in separated packages ([ipub/websockets-message](https://github.com/iPublikuj/websockets-message) or [ipub/websockets-wamp](https://github.com/iPublikuj/websockets-wamp)) do it :)**
+
+## More
+
+- [Read more how attach action on server events](https://github.com/iPublikuj/websockets/blob/master/docs/en/events.md)
