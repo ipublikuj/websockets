@@ -49,15 +49,34 @@ final class Configuration
 	private $address;
 
 	/**
+	 * @var bool
+	 */
+	private $enableSSL = FALSE;
+
+	/**
+	 * @var array
+	 */
+	private $sslSettings = [];
+
+	/**
 	 * @param string $httpHost
 	 * @param int $port
 	 * @param string $address
+	 * @param bool $enableSSL
+	 * @param array $sslSettings
 	 */
-	public function __construct(string $httpHost = 'localhost', int $port = 8080, string $address = '0.0.0.0')
-	{
+	public function __construct(
+		string $httpHost = 'localhost',
+		int $port = 8080,
+		string $address = '0.0.0.0',
+		bool $enableSSL,
+		array $sslSettings
+	) {
 		$this->httpHost = $httpHost;
 		$this->port = $port;
 		$this->address = $address;
+		$this->enableSSL = $enableSSL;
+		$this->sslSettings = $sslSettings;
 	}
 
 	/**
@@ -82,5 +101,21 @@ final class Configuration
 	public function getAddress() : string
 	{
 		return $this->address;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isSSLEnabled() : bool
+	{
+		return $this->enableSSL;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getSSLConfiguration() : array
+	{
+		return $this->sslSettings;
 	}
 }

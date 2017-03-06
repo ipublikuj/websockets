@@ -66,6 +66,10 @@ final class WebSocketsExtension extends DI\CompilerExtension
 			'httpHost' => 'localhost',
 			'port'     => 8080,
 			'address'  => '0.0.0.0',
+			'secured'  => [
+				'enable'    => FALSE,
+				'sslSettings' => [],
+			],
 		],
 		'routes'  => [],
 		'mapping' => [],
@@ -142,12 +146,12 @@ final class WebSocketsExtension extends DI\CompilerExtension
 
 		$flashApplication->addSetup('?->addAllowedAccess(?, 80)', [
 			$flashApplication,
-			$configuration['server']['httpHost']
+			$configuration['server']['httpHost'],
 		]);
 		$flashApplication->addSetup('?->addAllowedAccess(?, ?)', [
 			$flashApplication,
 			$configuration['server']['httpHost'],
-			$configuration['server']['port']
+			$configuration['server']['port'],
 		]);
 
 		$loop = $builder->addDefinition($this->prefix('server.loop'))
@@ -157,7 +161,9 @@ final class WebSocketsExtension extends DI\CompilerExtension
 		$configuration = new Server\Configuration(
 			$configuration['server']['httpHost'],
 			$configuration['server']['port'],
-			$configuration['server']['address']
+			$configuration['server']['address'],
+			$configuration['server']['secured']['enable'],
+			$configuration['server']['secured']['sslSettings']
 		);
 
 		if ($builder->findByType(Log\LoggerInterface::class) === []) {

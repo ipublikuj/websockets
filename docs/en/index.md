@@ -47,7 +47,6 @@ This extension has a lot of configuration options:
             httpHost:   localhost
             port:       8080        // Server port. On this port the socket server will listen on
             address:    0.0.0.0
-            type:       message     // Here you define type of the server. Allowed options are `message` or `wamp`
         routes: []      // Routes definition
         mapping: []     // Controllers mapping
 ```
@@ -157,3 +156,4 @@ This means the websocket server is now up and running !
 ## More
 
 - [Read more how attach action on server events](https://github.com/iPublikuj/websockets/blob/master/docs/en/events.md)
+- [Read more how create secured connection to server](https://github.com/iPublikuj/websockets/blob/master/docs/en/ssl.md)

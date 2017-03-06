@@ -98,18 +98,25 @@ final class Server
 		$this->application = $application;
 		$this->logger = $logger === NULL ? new Log\NullLogger : $logger;
 
-		$client = $configuration->getAddress() .':'. $configuration->getPort();
+		$client = $configuration->getAddress() . ':' . $configuration->getPort();
 		$socket = new React\Socket\Server($client, $this->loop);
+
+		if ($configuration->isSSLEnabled()) {
+			$socket = new React\Socket\SecureServer($socket, $this->loop, $this->configuration->getSSLConfiguration());
+		}
 
 		$socket->on('connection', function (React\Socket\ConnectionInterface $connection) use ($application) {
 			$this->handleConnect($connection, $application);
+		});
+		$socket->on('error', function (\Exception $ex) {
+			$this->logger->error('Could not establish connection: '. $ex->getMessage());
 		});
 
 		if ($configuration->getPort() === 80) {
 			$client = '0.0.0.0:843';
 
 		} else {
-			$client = $configuration->getAddress() .':8843';
+			$client = $configuration->getAddress() . ':8843';
 		}
 
 		$flashSocket = new React\Socket\Server($client, $this->loop);
