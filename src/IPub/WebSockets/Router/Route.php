@@ -190,7 +190,7 @@ class Route implements IRouter
 			$metadata = [self::CONTROLLER_KEY => $controller];
 
 			if ($action !== '') {
-				$metadata['action'] = $action;
+				$metadata[Application\Controller\Controller::ACTION_KEY] = $action;
 			}
 
 		} elseif ($metadata instanceof \Closure) {

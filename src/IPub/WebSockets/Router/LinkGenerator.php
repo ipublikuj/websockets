@@ -86,16 +86,12 @@ class LinkGenerator
 		}
 
 		if (is_subclass_of($class, Controller\Controller::class)) {
-			if ($action === '') {
-				$action = Controller\Controller::DEFAULT_ACTION;
-			}
-
 			if (method_exists($class, $method = $class::formatActionMethod($action))) {
-				$missing = NULL;
+				$missing = [];
 
 				Controller\Controller::argsToParams($class, $method, $params, [], $missing);
 
-				if ($missing) {
+				if ($missing !== []) {
 					/** @var \ReflectionParameter $rp */
 					$rp = $missing[0];
 
