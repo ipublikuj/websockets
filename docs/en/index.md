@@ -1,30 +1,28 @@
 # WebSockets
 
-This is a [Nette](http://nette.org/) extension designed to bring you easy implementation of websockets server.
+This is a [Nette](http://nette.org/) extension designed to bring you an easy implementation of a websockets server.
 
 ## What can you do with this extension
 
 Make real time application like
 
 * Chat Application
-* Real time notification
+* Real time notifications
 * Browser games
-
-More commonly, all application who meet real time.
 
 ## Installation
 
 ### Install extension package
 
-The best way to install ipub/websockets is using [Composer](http://getcomposer.org/):
+The best way how to install ipub/websockets is using the [Composer](http://getcomposer.org/):
 
 ```sh
 $ composer require ipub/websockets
 ```
 
-### Register into Nette application
+### Register into the Nette application
 
-After that you have to register extension in config.neon.
+After that you have to register the extension in the config.neon.
 
 ```neon
 extensions:
@@ -40,12 +38,12 @@ This extension has a lot of configuration options:
     webSockets:
         clients:
             storage:
-                driver: @clients.driver.memory  // Here you could pass service name of your clients storage driver implementation
-                ttl:    0                       // If your driver support TTL, here you could define it
+                driver: @clients.driver.memory  // Here you can pass service name of your clients storage driver implementation
+                ttl:    0                       // If your driver support TTL, here you can define it
         // Main server configuration
         server:
             httpHost:   localhost
-            port:       8080        // Server port. On this port the socket server will listen on
+            port:       8080        // The websocket server will listen on this port
             address:    0.0.0.0
         routes: []      // Routes definition
         mapping: []     // Controllers mapping
@@ -53,7 +51,7 @@ This extension has a lot of configuration options:
 
 ### Define routes
 
-This extension is using routes like you know from Nette and Controllers which are similar to Presenters. So you have to define some routes in neon configuration:
+This extension is using routes same as you know them from Nette and Controllers that are similar to Presenters. So you have to define some routes in neon configuration:
 
 ```php
     # WebSockets server
@@ -63,9 +61,9 @@ This extension is using routes like you know from Nette and Controllers which ar
             '/[!<locale [a-z]{2,4}>/]other-path/<myParameter>/<otherParameter>' : 'SecondControllerName:'
 ```
 
-as you can see, definition is in nette compatible way.
+As you can see, the definition is in nette compatible way.
 
-Or if you don't want to define routes in neon, you could use define routes as service
+Or if you don't want to define routes in neon, you can define socket routes in a service
 
 ```php
 services:
@@ -94,9 +92,9 @@ class RouterFactory
 }
 ```
 
-The tag in service is **important**, extension will search for services with this tag and attach routes to extension router.
+The tag in the service is **important**, extension will search for services with this tag and attach routes to the extension router.
 
-In special cases, when you don't want to create Controllers, you could use built-in micro Controller which is similar to Nette micro Presenter. 
+In special cases, when you don't want to create Controllers, you could use built-in micro Controller which is similar to the Nette micro Presenter. 
 
 ```php
 <?php
@@ -119,14 +117,14 @@ class RouterFactory
 }
 ```
 
-When you pass callback as route metadata, micro Controller will be used.
+When you pass the callback as a route metadata, the micro Controller will be used.
 
-### Create webSocket application
+### Create a WebSocket application
 
-As next step, you have to define which application have to be used with server.
+As the next step you have to define which application have to be used with the server.
 You could use [ipub/websockets-message](https://github.com/iPublikuj/websockets-message) for classic socket messaging or [ipub/websockets-wamp](https://github.com/iPublikuj/websockets-wamp) or you could define your own application. 
 
-### Lunching server
+### Lunching the server
 
 The server side of WebSocket installation is now complete. You should be able to run this from the root of your nette project.
 
@@ -151,7 +149,7 @@ If everything is successful, you will see something similar to the following:
 
 This means the websocket server is now up and running ! 
 
-**From here, only the websocket server is running ! That doesn't mean you can send message, subscribe, publish or even call. Follow next steps in separated packages ([ipub/websockets-message](https://github.com/iPublikuj/websockets-message) or [ipub/websockets-wamp](https://github.com/iPublikuj/websockets-wamp)) do it :)**
+**From here, only the websocket server is running ! That doesn't mean you can send a message, to subscribe, to publish or even to call. Follow next steps in separated packages ([ipub/websockets-message](https://github.com/iPublikuj/websockets-message) or [ipub/websockets-wamp](https://github.com/iPublikuj/websockets-wamp)) do it :)**
 
 ## More
 
