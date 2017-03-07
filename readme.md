@@ -7,17 +7,17 @@
 [![Composer Downloads](https://img.shields.io/packagist/dt/ipub/websockets.svg?style=flat-square)](https://packagist.org/packages/ipub/websockets)
 [![License](https://img.shields.io/packagist/l/ipub/websockets.svg?style=flat-square)](https://packagist.org/packages/ipub/websockets)
 
-Extension for implementing WebSockets into [Nette Framework](http://nette.org/)
+An extension for implementing WebSockets into the [Nette Framework](http://nette.org/)
 
 ## Installation
 
-The best way to install ipub/websockets is using [Composer](http://getcomposer.org/):
+The best way how to install ipub/websockets is using [Composer](http://getcomposer.org/):
 
 ```sh
 $ composer require ipub/websockets
 ```
 
-After that you have to register extension in config.neon.
+After that you have to register the extension in the config.neon.
 
 ```neon
 extensions:
@@ -26,7 +26,7 @@ extensions:
 
 ## Documentation
 
-Learn how to create web socket server & controllers in [documentation](https://github.com/iPublikuj/websockets/blob/master/docs/en/index.md).
+Learn how to create a web socket server & controllers in [documentation](https://github.com/iPublikuj/websockets/blob/master/docs/en/index.md).
 
 ***
 Homepage [http://www.ipublikuj.eu](http://www.ipublikuj.eu) and repository [http://github.com/iPublikuj/websockets](http://github.com/iPublikuj/websockets).
