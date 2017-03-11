@@ -164,15 +164,15 @@ final class Server
 		try {
 			$application->onOpen($client);
 
-			$connection->on('data', function (string $data, React\Socket\ConnectionInterface $connection) use ($application) {
-				$this->handleData($data, $connection, $application);
+			$connection->on('data', function (string $chunk) use ($connection, $application) {
+				$this->handleData($chunk, $connection, $application);
 			});
 
-			$connection->on('end', function (React\Socket\ConnectionInterface $connection) use ($application) {
+			$connection->on('end', function () use ($connection, $application) {
 				$this->handleEnd($connection, $application);
 			});
 
-			$connection->on('error', function (\Exception $ex, React\Socket\ConnectionInterface $connection) use ($application) {
+			$connection->on('error', function (\Exception $ex) use ($connection, $application) {
 				$this->handleError($ex, $connection, $application);
 			});
 
