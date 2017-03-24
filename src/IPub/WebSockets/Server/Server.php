@@ -5,7 +5,7 @@
  * @copyright      More in license.md
  * @license        http://www.ipublikuj.eu
  * @author         Adam Kadlec http://www.ipublikuj.eu
- * @package        iPublikuj:WebSocket!
+ * @package        iPublikuj:WebSockets!
  * @subpackage     Server
  * @since          1.0.0
  *
@@ -30,7 +30,7 @@ use IPub\WebSockets\Entities;
 /**
  * WebSocket server
  *
- * @package        iPublikuj:WebSocket!
+ * @package        iPublikuj:WebSockets!
  * @subpackage     Server
  *
  * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
@@ -162,7 +162,7 @@ final class Server
 		$this->clientStorage->addClient($client->getId(), $client);
 
 		try {
-			$application->onOpen($client);
+			$application->handleOpen($client);
 
 			$connection->on('data', function (string $chunk) use ($connection, $application) {
 				$this->handleData($chunk, $connection, $application);
@@ -201,7 +201,7 @@ final class Server
 		try {
 			$client = $this->clientStorage->getClient((int) $connection->stream);
 
-			$application->onMessage($client, $data);
+			$application->handleMessage($client, $data);
 
 		} catch (\Exception $ex) {
 			$this->handleError($ex, $connection, $application);
@@ -219,7 +219,7 @@ final class Server
 		try {
 			$client = $this->clientStorage->getClient((int) $connection->stream);
 
-			$application->onClose($client);
+			$application->handleClose($client);
 
 		} catch (\Exception $ex) {
 			$this->handleError($ex, $connection, $application);
@@ -247,7 +247,7 @@ final class Server
 
 			$this->logger->error($ex->getMessage(), $context);
 
-			$application->onError($client, $ex);
+			$application->handleError($client, $ex);
 
 		} catch (\Exception $ex) {
 			$context = [

@@ -5,7 +5,7 @@
  * @copyright      More in license.md
  * @license        http://www.ipublikuj.eu
  * @author         Adam Kadlec http://www.ipublikuj.eu
- * @package        iPublikuj:WebSocket!
+ * @package        iPublikuj:WebSockets!
  * @subpackage     Application
  * @since          1.0.0
  *
@@ -29,7 +29,7 @@ use IPub\WebSockets\Router;
 /**
  * WebSockets application controller interface
  *
- * @package        iPublikuj:WebSocket!
+ * @package        iPublikuj:WebSockets!
  * @subpackage     Application
  *
  * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>

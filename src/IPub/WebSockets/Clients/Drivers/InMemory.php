@@ -5,7 +5,7 @@
  * @copyright      More in license.md
  * @license        http://www.ipublikuj.eu
  * @author         Adam Kadlec http://www.ipublikuj.eu
- * @package        iPublikuj:WebSocket!
+ * @package        iPublikuj:WebSockets!
  * @subpackage     Clients
  * @since          1.0.0
  *
@@ -19,7 +19,7 @@ namespace IPub\WebSockets\Clients\Drivers;
 /**
  * Classic memory client storage driver
  *
- * @package        iPublikuj:WebSocket!
+ * @package        iPublikuj:WebSockets!
  * @subpackage     Clients
  *
  * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>

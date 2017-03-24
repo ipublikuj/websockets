@@ -5,7 +5,7 @@
  * @copyright      More in license.md
  * @license        http://www.ipublikuj.eu
  * @author         Adam Kadlec http://www.ipublikuj.eu
- * @package        iPublikuj:WebSocket!
+ * @package        iPublikuj:WebSockets!
  * @subpackage     Server
  * @since          1.0.0
  *
@@ -26,7 +26,7 @@ interface IWrapper
 	 *
 	 * @return void
 	 */
-	function onOpen(Entities\Clients\IClient $client);
+	function handleOpen(Entities\Clients\IClient $client);
 
 	/**
 	 * @param Entities\Clients\IClient $client
@@ -34,14 +34,14 @@ interface IWrapper
 	 *
 	 * @return void
 	 */
-	function onMessage(Entities\Clients\IClient $client, string $message);
+	function handleMessage(Entities\Clients\IClient $client, string $message);
 
 	/**
 	 * @param Entities\Clients\IClient $client
 	 *
 	 * @return void
 	 */
-	function onClose(Entities\Clients\IClient $client);
+	function handleClose(Entities\Clients\IClient $client);
 
 	/**
 	 * @param Entities\Clients\IClient $client
@@ -49,5 +49,5 @@ interface IWrapper
 	 *
 	 * @return void
 	 */
-	function onError(Entities\Clients\IClient $client, \Exception $ex);
+	function handleError(Entities\Clients\IClient $client, \Exception $ex);
 }

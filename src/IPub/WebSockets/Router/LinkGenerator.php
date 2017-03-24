@@ -82,7 +82,7 @@ class LinkGenerator
 			$class = $this->controllerFactory ? $this->controllerFactory->getControllerClass($controller) : NULL;
 
 		} catch (Exceptions\InvalidControllerException $ex) {
-			throw new Exceptions\InvalidLinkException($ex->getMessage(), NULL, $ex);
+			throw new Exceptions\InvalidLinkException($ex->getMessage(), 0, $ex);
 		}
 
 		if (is_subclass_of($class, Controller\Controller::class)) {

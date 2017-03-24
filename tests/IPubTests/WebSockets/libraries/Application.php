@@ -6,7 +6,7 @@
  * @copyright      More in license.md
  * @license        http://www.ipublikuj.eu
  * @author         Adam Kadlec http://www.ipublikuj.eu
- * @package        iPublikuj:WebSocket!
+ * @package        iPublikuj:WebSockets!
  * @subpackage     Tests
  * @since          1.0.0
  *
@@ -27,7 +27,7 @@ class Application implements IApplication
 	/**
 	 * {@inheritdoc}
 	 */
-	function onOpen(Entities\Clients\IClient $client, Http\IRequest $httpRequest)
+	function handleOpen(Entities\Clients\IClient $client, Http\IRequest $httpRequest)
 	{
 
 	}
@@ -35,7 +35,7 @@ class Application implements IApplication
 	/**
 	 * {@inheritdoc}
 	 */
-	function onClose(Entities\Clients\IClient $client, Http\IRequest $httpRequest)
+	function handleClose(Entities\Clients\IClient $client, Http\IRequest $httpRequest)
 	{
 
 	}
@@ -43,7 +43,7 @@ class Application implements IApplication
 	/**
 	 * {@inheritdoc}
 	 */
-	function onError(Entities\Clients\IClient $client, Http\IRequest $httpRequest, \Exception $ex)
+	function handleError(Entities\Clients\IClient $client, Http\IRequest $httpRequest, \Exception $ex)
 	{
 
 	}
@@ -51,7 +51,7 @@ class Application implements IApplication
 	/**
 	 * {@inheritdoc}
 	 */
-	function onMessage(Entities\Clients\IClient $from, Http\IRequest $httpRequest, string $message)
+	function handleMessage(Entities\Clients\IClient $from, Http\IRequest $httpRequest, string $message)
 	{
 
 	}

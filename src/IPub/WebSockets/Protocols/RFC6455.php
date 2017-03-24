@@ -5,7 +5,7 @@
  * @copyright      More in license.md
  * @license        http://www.ipublikuj.eu
  * @author         Adam Kadlec http://www.ipublikuj.eu
- * @package        iPublikuj:WebSocket!
+ * @package        iPublikuj:WebSockets!
  * @subpackage     Protocols
  * @since          1.0.0
  *
@@ -29,7 +29,7 @@ use IPub\WebSockets\Http;
  *
  * @link           http://tools.ietf.org/html/rfc6455
  *
- * @package        iPublikuj:WebSocket!
+ * @package        iPublikuj:WebSockets!
  * @subpackage     Protocols
  *
  * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
@@ -252,7 +252,7 @@ class RFC6455 implements IProtocol
 				return;
 			}
 
-			$application->onMessage($client, $client->getRequest(), $parsed);
+			$application->handleMessage($client, $client->getRequest(), $parsed);
 		}
 
 		if (strlen($overflow) > 0) {

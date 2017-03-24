@@ -5,7 +5,7 @@
  * @copyright      More in license.md
  * @license        http://www.ipublikuj.eu
  * @author         Adam Kadlec http://www.ipublikuj.eu
- * @package        iPublikuj:WebSocket!
+ * @package        iPublikuj:WebSockets!
  * @subpackage     Server
  * @since          1.0.0
  *
@@ -30,7 +30,7 @@ use IPub\WebSockets\Protocols;
  * WebSockets server application wrapper
  * Purpose of this class is to create better interface for connection objects
  *
- * @package        iPublikuj:WebSocket!
+ * @package        iPublikuj:WebSockets!
  * @subpackage     Server
  *
  * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
@@ -128,7 +128,7 @@ final class Wrapper implements IWrapper
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onOpen(Entities\Clients\IClient $client)
+	public function handleOpen(Entities\Clients\IClient $client)
 	{
 		$client->setHTTPHeadersReceived(FALSE);
 	}
@@ -136,7 +136,7 @@ final class Wrapper implements IWrapper
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onMessage(Entities\Clients\IClient $client, string $message)
+	public function handleMessage(Entities\Clients\IClient $client, string $message)
 	{
 		if (!$client->isHTTPHeadersReceived()) {
 			$client->setHttpBuffer($client->getHttpBuffer() . $message);
@@ -168,7 +168,7 @@ final class Wrapper implements IWrapper
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onClose(Entities\Clients\IClient $client)
+	public function handleClose(Entities\Clients\IClient $client)
 	{
 		if ($client->isHTTPHeadersReceived()) {
 			$this->connectionClose($client);
@@ -178,7 +178,7 @@ final class Wrapper implements IWrapper
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onError(Entities\Clients\IClient $client, \Exception $ex)
+	public function handleError(Entities\Clients\IClient $client, \Exception $ex)
 	{
 		if ($client->isHTTPHeadersReceived()) {
 			$this->connectionError($client, $ex);
@@ -225,13 +225,13 @@ final class Wrapper implements IWrapper
 	private function connectionClose(Entities\Clients\IClient $client)
 	{
 		try {
-			$this->clientsStorage->removeClient($client->getId());
-
 			// Call service event
 			$this->onClientDisconnected($client, $client->getRequest());
 
 			// Call application event
-			$this->application->onClose($client, $client->getRequest());
+			$this->application->handleClose($client, $client->getRequest());
+
+			$this->clientsStorage->removeClient($client->getId());
 
 		} catch (Exceptions\ClientNotFoundException $ex) {
 			$this->close($client, Http\IResponse::S500_INTERNAL_SERVER_ERROR);
@@ -254,7 +254,7 @@ final class Wrapper implements IWrapper
 				$this->onClientError($client, $client->getRequest());
 
 				// Call application event
-				$this->application->onError($client, $client->getRequest(), $ex);
+				$this->application->handleError($client, $client->getRequest(), $ex);
 
 				return;
 			}
@@ -351,7 +351,7 @@ final class Wrapper implements IWrapper
 		$this->onClientConnected($client, $httpRequest);
 
 		// Call application event
-		return $this->application->onOpen($client, $httpRequest);
+		return $this->application->handleOpen($client, $httpRequest);
 	}
 
 	/**

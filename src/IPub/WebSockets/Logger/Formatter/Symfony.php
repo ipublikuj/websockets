@@ -5,7 +5,7 @@
  * @copyright      More in license.md
  * @license        http://www.ipublikuj.eu
  * @author         Adam Kadlec http://www.ipublikuj.eu
- * @package        iPublikuj:WebSocket!
+ * @package        iPublikuj:WebSockets!
  * @subpackage     Logger
  * @since          1.0.0
  *
@@ -21,7 +21,7 @@ use Symfony\Component\Console;
 /**
  * WebSockets server symfony console output formater
  *
- * @package        iPublikuj:WebSocket!
+ * @package        iPublikuj:WebSockets!
  * @subpackage     Logger
  *
  * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>

@@ -5,7 +5,7 @@
  * @copyright      More in license.md
  * @license        http://www.ipublikuj.eu
  * @author         Adam Kadlec http://www.ipublikuj.eu
- * @package        iPublikuj:WebSocket!
+ * @package        iPublikuj:WebSockets!
  * @subpackage     Http
  * @since          1.0.0
  *
@@ -22,7 +22,7 @@ use Nette\Http;
 /**
  * HTTP request factory
  *
- * @package        iPublikuj:WebSocket!
+ * @package        iPublikuj:WebSockets!
  * @subpackage     Http
  *
  * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>

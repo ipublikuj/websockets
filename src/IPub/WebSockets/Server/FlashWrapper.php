@@ -5,7 +5,7 @@
  * @copyright      More in license.md
  * @license        http://www.ipublikuj.eu
  * @author         Adam Kadlec http://www.ipublikuj.eu
- * @package        iPublikuj:WebSocket!
+ * @package        iPublikuj:WebSockets!
  * @subpackage     Server
  * @since          1.0.0
  *
@@ -117,14 +117,14 @@ final class FlashWrapper implements IWrapper
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onOpen(Entities\Clients\IClient $client)
+	public function handleOpen(Entities\Clients\IClient $client)
 	{
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onMessage(Entities\Clients\IClient $client, string $message)
+	public function handleMessage(Entities\Clients\IClient $client, string $message)
 	{
 		if (!$this->cacheValid) {
 			$this->cache = $this->renderPolicy()->asXML();
@@ -138,14 +138,14 @@ final class FlashWrapper implements IWrapper
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onClose(Entities\Clients\IClient $client)
+	public function handleClose(Entities\Clients\IClient $client)
 	{
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onError(Entities\Clients\IClient $client, \Exception $ex)
+	public function handleError(Entities\Clients\IClient $client, \Exception $ex)
 	{
 		$client->getConnection()->end();
 	}

@@ -5,7 +5,7 @@
  * @copyright      More in license.md
  * @license        http://www.ipublikuj.eu
  * @author         Adam Kadlec http://www.ipublikuj.eu
- * @package        iPublikuj:WebSocket!
+ * @package        iPublikuj:WebSockets!
  * @subpackage     Application
  * @since          1.0.0
  *
@@ -23,7 +23,7 @@ use IPub\WebSockets\Http;
 /**
  * WebSockets application interface
  *
- * @package        iPublikuj:WebSocket!
+ * @package        iPublikuj:WebSockets!
  * @subpackage     Application
  *
  * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
@@ -38,7 +38,7 @@ interface IApplication
 	 *
 	 * @return mixed
 	 */
-	function onOpen(Entities\Clients\IClient $client, Http\IRequest $httpRequest);
+	function handleOpen(Entities\Clients\IClient $client, Http\IRequest $httpRequest);
 
 	/**
 	 * This is called before or after a socket is closed (depends on how it's closed)
@@ -49,7 +49,7 @@ interface IApplication
 	 *
 	 * @return mixed
 	 */
-	function onClose(Entities\Clients\IClient $client, Http\IRequest $httpRequest);
+	function handleClose(Entities\Clients\IClient $client, Http\IRequest $httpRequest);
 
 	/**
 	 * If there is an error with one of the sockets, or somewhere in the application where an Exception is thrown,
@@ -61,7 +61,7 @@ interface IApplication
 	 *
 	 * @return mixed
 	 */
-	function onError(Entities\Clients\IClient $client, Http\IRequest $httpRequest, \Exception $ex);
+	function handleError(Entities\Clients\IClient $client, Http\IRequest $httpRequest, \Exception $ex);
 
 	/**
 	 * Triggered when a client sends data through the socket
@@ -72,7 +72,7 @@ interface IApplication
 	 *
 	 * @return mixed
 	 */
-	function onMessage(Entities\Clients\IClient $from, Http\IRequest $httpRequest, string $message);
+	function handleMessage(Entities\Clients\IClient $from, Http\IRequest $httpRequest, string $message);
 
 	/**
 	 * @todo This method may be removed in future version (note that will not break code, just make some code obsolete)

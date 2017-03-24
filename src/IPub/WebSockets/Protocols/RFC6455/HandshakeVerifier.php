@@ -5,7 +5,7 @@
  * @copyright      More in license.md
  * @license        http://www.ipublikuj.eu
  * @author         Adam Kadlec http://www.ipublikuj.eu
- * @package        iPublikuj:WebSocket!
+ * @package        iPublikuj:WebSockets!
  * @subpackage     Protocols
  * @since          1.0.0
  *
@@ -25,7 +25,7 @@ use IPub\WebSockets\Http;
  * These are checks to ensure the client requested handshake are valid
  * Verification rules come from section 4.2.1 of the RFC6455 document
  *
- * @package        iPublikuj:WebSocket!
+ * @package        iPublikuj:WebSockets!
  * @subpackage     Protocols
  *
  * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>

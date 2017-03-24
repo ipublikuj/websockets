@@ -5,7 +5,7 @@
  * @copyright      More in license.md
  * @license        http://www.ipublikuj.eu
  * @author         Adam Kadlec http://www.ipublikuj.eu
- * @package        iPublikuj:WebSocket!
+ * @package        iPublikuj:WebSockets!
  * @subpackage     Application
  * @since          1.0.0
  *
@@ -34,10 +34,15 @@ use IPub\WebSockets\Server;
  * Application which run on server and provide creating controllers
  * with correctly params - convert message => control.
  *
- * @package        iPublikuj:WebSocket!
+ * @package        iPublikuj:WebSockets!
  * @subpackage     Application
  *
  * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
+ *
+ * @method onOpen(IApplication $application, Entities\Clients\IClient $client, Http\IRequest $httpRequest)
+ * @method onClose(IApplication $application, Entities\Clients\IClient $client, Http\IRequest $httpRequest)
+ * @method onMessage(IApplication $application, Entities\Clients\IClient $client, Http\IRequest $httpRequest, string $message)
+ * @method onError(IApplication $application, Entities\Clients\IClient $client, Http\IRequest $httpRequest, \Exception $ex)
  */
 abstract class Application implements IApplication
 {
@@ -45,6 +50,26 @@ abstract class Application implements IApplication
 	 * Implement nette smart magic
 	 */
 	use Nette\SmartObject;
+
+	/**
+	 * @var \Closure
+	 */
+	public $onOpen = [];
+
+	/**
+	 * @var \Closure
+	 */
+	public $onClose = [];
+
+	/**
+	 * @var \Closure
+	 */
+	public $onMessage = [];
+
+	/**
+	 * @var \Closure
+	 */
+	public $onError = [];
 
 	/**
 	 * @var Router\IRouter
@@ -87,27 +112,33 @@ abstract class Application implements IApplication
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onOpen(Entities\Clients\IClient $client, Http\IRequest $httpRequest)
+	public function handleOpen(Entities\Clients\IClient $client, Http\IRequest $httpRequest)
 	{
 		$this->logger->info(sprintf('New connection! (%s)', $client->getId()));
+
+		$this->onOpen($this, $client, $httpRequest);
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onClose(Entities\Clients\IClient $client, Http\IRequest $httpRequest)
+	public function handleClose(Entities\Clients\IClient $client, Http\IRequest $httpRequest)
 	{
+		$this->onClose($this, $client, $httpRequest);
+
 		$this->logger->info(sprintf('Connection %s has disconnected', $client->getId()));
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onError(Entities\Clients\IClient $client, Http\IRequest $httpRequest, \Exception $ex)
+	public function handleError(Entities\Clients\IClient $client, Http\IRequest $httpRequest, \Exception $ex)
 	{
 		$this->logger->info(sprintf('An error (%s) has occurred: %s', $ex->getCode(), $ex->getMessage()));
 
 		$code = $ex->getCode();
+
+		$this->onError($this, $client, $httpRequest, $ex);
 
 		if ($code >= 400 && $code < 600) {
 			$this->close($client, $code);
@@ -120,9 +151,9 @@ abstract class Application implements IApplication
 	/**
 	 * {@inheritdoc}
 	 */
-	public function onMessage(Entities\Clients\IClient $from, Http\IRequest $httpRequest, string $message)
+	public function handleMessage(Entities\Clients\IClient $from, Http\IRequest $httpRequest, string $message)
 	{
-		// 
+		$this->onMessage($this, $from, $httpRequest, $message);
 	}
 
 	/**

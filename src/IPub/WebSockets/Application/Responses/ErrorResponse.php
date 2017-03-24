@@ -5,7 +5,7 @@
  * @copyright      More in license.md
  * @license        http://www.ipublikuj.eu
  * @author         Adam Kadlec http://www.ipublikuj.eu
- * @package        iPublikuj:WebSocket!
+ * @package        iPublikuj:WebSockets!
  * @subpackage     Responses
  * @since          1.0.0
  *
@@ -25,7 +25,7 @@ use IPub\WebSockets\Exceptions;
 /**
  * Communication error response
  *
- * @package        iPublikuj:WebSocket!
+ * @package        iPublikuj:WebSockets!
  * @subpackage     Responses
  *
  * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
