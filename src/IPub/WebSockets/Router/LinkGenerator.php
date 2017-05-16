@@ -112,7 +112,7 @@ class LinkGenerator
 		if ($url === NULL) {
 			unset($params[Controller\Controller::ACTION_KEY]);
 
-			$params = urldecode(http_build_query($params, NULL, ', '));
+			$params = urldecode(http_build_query($params, '', ', '));
 
 			throw new Exceptions\InvalidLinkException(sprintf('No route for %s(%s)', $destination, $params));
 		}
