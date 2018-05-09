@@ -173,7 +173,8 @@ final class WebSocketsExtension extends DI\CompilerExtension
 		}
 
 		$builder->addDefinition($this->prefix('server.server'))
-			->setType(Server\Server::class, [
+			->setType(Server\Server::class)
+			->setArguments([
 				$application,
 				$flashApplication,
 				$loop,
