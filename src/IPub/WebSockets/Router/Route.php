@@ -3,8 +3,8 @@
  * Route.php
  *
  * @copyright      More in license.md
- * @license        http://www.ipublikuj.eu
- * @author         Adam Kadlec http://www.ipublikuj.eu
+ * @license        https://www.ipublikuj.eu
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
  * @subpackage     Router
  * @since          1.0.0
@@ -19,7 +19,6 @@ namespace IPub\WebSockets\Router;
 use Nette;
 use Nette\Utils;
 
-use IPub;
 use IPub\WebSockets\Application;
 use IPub\WebSockets\Exceptions;
 use IPub\WebSockets\Http;
@@ -212,7 +211,7 @@ class Route implements IRouter
 	 *
 	 * @throws Exceptions\InvalidStateException
 	 */
-	public function match(Http\IRequest $httpRequest)
+	public function match(Http\IRequest $httpRequest) : ?Application\Request
 	{
 		// Combine with precedence: mask (params in URL-path), fixity, query, (post,) defaults
 
@@ -340,7 +339,7 @@ class Route implements IRouter
 	 *
 	 * @return string|NULL
 	 */
-	public function constructUrl(Application\IRequest $appRequest)
+	public function constructUrl(Application\IRequest $appRequest) : ?string
 	{
 		$params = $appRequest->getParameters();
 		$metadata = $this->metadata;
@@ -490,7 +489,7 @@ class Route implements IRouter
 	 *
 	 * @throws Exceptions\InvalidArgumentException
 	 */
-	private function setMask(string $mask, array $metadata)
+	private function setMask(string $mask, array $metadata) : void
 	{
 		$this->mask = $mask;
 
@@ -730,7 +729,7 @@ class Route implements IRouter
 	 *
 	 * @return array
 	 */
-	private static function renameKeys($arr, $xlat)
+	private static function renameKeys($arr, $xlat) : array
 	{
 		if (empty($xlat)) {
 			return $arr;
@@ -758,7 +757,7 @@ class Route implements IRouter
 	 *
 	 * @internal
 	 */
-	public function getTargetControllers()
+	public function getTargetControllers() : ?array
 	{
 		$m = $this->metadata;
 		$module = '';

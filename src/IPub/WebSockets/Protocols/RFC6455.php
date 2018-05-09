@@ -3,8 +3,8 @@
  * RFC6455.php
  *
  * @copyright      More in license.md
- * @license        http://www.ipublikuj.eu
- * @author         Adam Kadlec http://www.ipublikuj.eu
+ * @license        https://www.ipublikuj.eu
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
  * @subpackage     Protocols
  * @since          1.0.0
@@ -18,7 +18,6 @@ namespace IPub\WebSockets\Protocols;
 
 use Nette;
 
-use IPub;
 use IPub\WebSockets\Application;
 use IPub\WebSockets\Encoding;
 use IPub\WebSockets\Entities;
@@ -277,7 +276,7 @@ class RFC6455 implements IProtocol
 	/**
 	 * {@inheritdoc}
 	 */
-	public function close(Entities\Clients\IClient $client, int $code = NULL)
+	public function close(Entities\Clients\IClient $client, ?int $code = NULL)
 	{
 		if ($client->getWebSocket()->isClosing()) {
 			return;
@@ -332,7 +331,7 @@ class RFC6455 implements IProtocol
 	 *
 	 * @return RFC6455\Frame
 	 */
-	private function newFrame(string $payload = NULL, bool $final = TRUE, int $opCode = RFC6455\Frame::OP_TEXT) : RFC6455\Frame
+	private function newFrame(?string $payload = NULL, bool $final = TRUE, int $opCode = RFC6455\Frame::OP_TEXT) : RFC6455\Frame
 	{
 		return new RFC6455\Frame($payload, $final, $opCode);
 	}

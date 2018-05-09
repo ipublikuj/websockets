@@ -3,8 +3,8 @@
  * IRequest.php
  *
  * @copyright      More in license.md
- * @license        http://www.ipublikuj.eu
- * @author         Adam Kadlec http://www.ipublikuj.eu
+ * @license        https://www.ipublikuj.eu
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
  * @subpackage     Http
  * @since          1.0.0
@@ -53,13 +53,13 @@ class Request extends Http\Request implements IRequest
 	public function __construct(
 		Http\UrlScript $url,
 		$query = NULL,
-		array $post = NULL,
-		array $files = NULL,
-		array $cookies = NULL,
-		array $headers = NULL,
-		string $method = NULL,
-		string $remoteAddress = NULL,
-		string $remoteHost = NULL,
+		?array $post = NULL,
+		?array $files = NULL,
+		?array $cookies = NULL,
+		?array $headers = NULL,
+		?string $method = NULL,
+		?string $remoteAddress = NULL,
+		?string $remoteHost = NULL,
 		$rawBodyCallback = NULL
 	) {
 		parent::__construct($url, $query, $post, $files, $cookies, $headers, $method, $remoteAddress, $remoteHost, $rawBodyCallback);
@@ -70,7 +70,7 @@ class Request extends Http\Request implements IRequest
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setUrl(Http\UrlScript $url)
+	public function setUrl(Http\UrlScript $url) : void
 	{
 		$this->url = $url;
 	}
@@ -99,7 +99,7 @@ class Request extends Http\Request implements IRequest
 	/**
 	 * {@inheritdoc}
 	 */
-	public function isSecured()
+	public function isSecured() : bool
 	{
 		return $this->url->getScheme() === 'wss';
 	}
@@ -107,7 +107,7 @@ class Request extends Http\Request implements IRequest
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setProtocolVersion(float $version)
+	public function setProtocolVersion(float $version) : void
 	{
 		$this->protocolVersion = $version;
 	}
@@ -115,7 +115,7 @@ class Request extends Http\Request implements IRequest
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getProtocolVersion()
+	public function getProtocolVersion() : ?float
 	{
 		return $this->protocolVersion;
 	}

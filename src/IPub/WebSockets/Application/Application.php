@@ -3,8 +3,8 @@
  * Application.php
  *
  * @copyright      More in license.md
- * @license        http://www.ipublikuj.eu
- * @author         Adam Kadlec http://www.ipublikuj.eu
+ * @license        https://www.ipublikuj.eu
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
  * @subpackage     Application
  * @since          1.0.0
@@ -20,7 +20,6 @@ use Nette;
 
 use Psr\Log;
 
-use IPub;
 use IPub\WebSockets\Application\Responses;
 use IPub\WebSockets\Application\Controller;
 use IPub\WebSockets\Clients;
@@ -101,7 +100,7 @@ abstract class Application implements IApplication
 		Router\IRouter $router,
 		Controller\IControllerFactory $controllerFactory,
 		Clients\IStorage $clientsStorage,
-		Log\LoggerInterface $logger = NULL
+		?Log\LoggerInterface $logger = NULL
 	) {
 		$this->router = $router;
 		$this->controllerFactory = $controllerFactory;

@@ -3,8 +3,8 @@
  * IClient.php
  *
  * @copyright      More in license.md
- * @license        http://www.ipublikuj.eu
- * @author         Adam Kadlec http://www.ipublikuj.eu
+ * @license        https://www.ipublikuj.eu
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
  * @subpackage     Entities
  * @since          1.0.0
@@ -20,7 +20,6 @@ use Nette\Security as NS;
 
 use React\Socket;
 
-use IPub;
 use IPub\WebSockets\Application\Responses;
 use IPub\WebSockets\Entities;
 use IPub\WebSockets\Http;
@@ -114,7 +113,7 @@ interface IClient
 	 *
 	 * @return void
 	 */
-	function close(int $code = NULL);
+	function close(?int $code = NULL);
 
 	/**
 	 * @param Responses\IResponse|string $response

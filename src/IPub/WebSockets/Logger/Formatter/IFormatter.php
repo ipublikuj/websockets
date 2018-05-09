@@ -3,8 +3,8 @@
  * IFormatter.php
  *
  * @copyright      More in license.md
- * @license        http://www.ipublikuj.eu
- * @author         Adam Kadlec http://www.ipublikuj.eu
+ * @license        https://www.ipublikuj.eu
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
  * @subpackage     Logger
  * @since          1.0.0
@@ -31,25 +31,25 @@ interface IFormatter
 	 *
 	 * @return void
 	 */
-	function error(string $message);
+	function error(string $message) : void;
 
 	/**
 	 * @param string $message
 	 *
 	 * @return void
 	 */
-	function warning(string $message);
+	function warning(string $message) : void;
 	/**
 	 * @param string $message
 	 *
 	 * @return void
 	 */
-	function note(string $message);
+	function note(string $message) : void;
 
 	/**
 	 * @param string $message
 	 *
 	 * @return void
 	 */
-	function caution(string $message);
+	function caution(string $message) : void;
 }

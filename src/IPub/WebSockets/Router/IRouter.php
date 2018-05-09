@@ -3,8 +3,8 @@
  * IRouter.php
  *
  * @copyright      More in license.md
- * @license        http://www.ipublikuj.eu
- * @author         Adam Kadlec http://www.ipublikuj.eu
+ * @license        https://www.ipublikuj.eu
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
  * @subpackage     Router
  * @since          1.0.0
@@ -16,7 +16,6 @@ declare(strict_types = 1);
 
 namespace IPub\WebSockets\Router;
 
-use IPub;
 use IPub\WebSockets\Application;
 use IPub\WebSockets\Http;
 
@@ -37,7 +36,7 @@ interface IRouter
 	 *
 	 * @return Application\Request|NULL
 	 */
-	function match(Http\IRequest $httpRequest);
+	function match(Http\IRequest $httpRequest) : ?Application\Request;
 
 	/**
 	 * Constructs absolute URL from Request object
@@ -46,5 +45,5 @@ interface IRouter
 	 *
 	 * @return string|NULL
 	 */
-	function constructUrl(Application\IRequest $appRequest);
+	function constructUrl(Application\IRequest $appRequest) : ?string;
 }

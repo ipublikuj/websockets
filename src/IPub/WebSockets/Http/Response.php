@@ -3,8 +3,8 @@
  * Response.php
  *
  * @copyright      More in license.md
- * @license        http://www.ipublikuj.eu
- * @author         Adam Kadlec http://www.ipublikuj.eu
+ * @license        https://www.ipublikuj.eu
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
  * @subpackage     Http
  * @since          1.0.0
@@ -18,7 +18,6 @@ namespace IPub\WebSockets\Http;
 
 use Nette;
 
-use IPub;
 use IPub\WebSockets\Exceptions;
 
 /**
@@ -125,7 +124,7 @@ final class Response implements IResponse
 	 * @param array $headers
 	 * @param string|NULL $body
 	 */
-	public function __construct(int $code, array $headers = [], string $body = NULL)
+	public function __construct(int $code, array $headers = [], ?string $body = NULL)
 	{
 		$this->setCode($code);
 		$this->setBody($body);
@@ -136,7 +135,7 @@ final class Response implements IResponse
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setCode(int $code, string $reason = NULL)
+	public function setCode(int $code, ?string $reason = NULL) : void
 	{
 		$code = (int) $code;
 
@@ -160,7 +159,7 @@ final class Response implements IResponse
 	/**
 	 * {@inheritdoc}
 	 */
-	public function addHeader(string $name, string $value)
+	public function addHeader(string $name, string $value) : void
 	{
 		$this->headers[$name] = $value;
 	}
@@ -196,7 +195,7 @@ final class Response implements IResponse
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setBody(string $body = NULL)
+	public function setBody(?string $body = NULL) : void
 	{
 		$this->body = $body;
 	}

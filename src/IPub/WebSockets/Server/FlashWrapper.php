@@ -3,8 +3,8 @@
  * FlashWrapper.php
  *
  * @copyright      More in license.md
- * @license        http://www.ipublikuj.eu
- * @author         Adam Kadlec http://www.ipublikuj.eu
+ * @license        https://www.ipublikuj.eu
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
  * @subpackage     Server
  * @since          1.0.0
@@ -16,7 +16,6 @@ declare(strict_types = 1);
 
 namespace IPub\WebSockets\Server;
 
-use IPub;
 use IPub\WebSockets\Entities;
 use IPub\WebSockets\Exceptions;
 
@@ -68,7 +67,7 @@ final class FlashWrapper implements IWrapper
 	 *
 	 * @throws Exceptions\UnexpectedValueException
 	 */
-	public function addAllowedAccess($domain, $ports = '*', $secure = FALSE)
+	public function addAllowedAccess($domain, $ports = '*', $secure = FALSE) : void
 	{
 		if (!$this->validateDomain($domain)) {
 			throw new Exceptions\UnexpectedValueException('Invalid domain');
@@ -87,7 +86,7 @@ final class FlashWrapper implements IWrapper
 	 *
 	 * @return void
 	 */
-	public function clearAllowedAccess()
+	public function clearAllowedAccess() : void
 	{
 		$this->access = [];
 		$this->cacheValid = FALSE;
@@ -104,7 +103,7 @@ final class FlashWrapper implements IWrapper
 	 *
 	 * @throws Exceptions\UnexpectedValueException
 	 */
-	public function setSiteControl($permittedCrossDomainPolicies = 'all')
+	public function setSiteControl($permittedCrossDomainPolicies = 'all') : void
 	{
 		if (!$this->validateSiteControl($permittedCrossDomainPolicies)) {
 			throw new Exceptions\UnexpectedValueException('Invalid site control set');
@@ -117,14 +116,14 @@ final class FlashWrapper implements IWrapper
 	/**
 	 * {@inheritdoc}
 	 */
-	public function handleOpen(Entities\Clients\IClient $client)
+	public function handleOpen(Entities\Clients\IClient $client) : void
 	{
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function handleMessage(Entities\Clients\IClient $client, string $message)
+	public function handleMessage(Entities\Clients\IClient $client, string $message) : void
 	{
 		if (!$this->cacheValid) {
 			$this->cache = $this->renderPolicy()->asXML();
@@ -138,14 +137,14 @@ final class FlashWrapper implements IWrapper
 	/**
 	 * {@inheritdoc}
 	 */
-	public function handleClose(Entities\Clients\IClient $client)
+	public function handleClose(Entities\Clients\IClient $client) : void
 	{
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function handleError(Entities\Clients\IClient $client, \Exception $ex)
+	public function handleError(Entities\Clients\IClient $client, \Exception $ex) : void
 	{
 		$client->getConnection()->end();
 	}

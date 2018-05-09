@@ -3,8 +3,8 @@
  * RouteList.php
  *
  * @copyright      More in license.md
- * @license        http://www.ipublikuj.eu
- * @author         Adam Kadlec http://www.ipublikuj.eu
+ * @license        https://www.ipublikuj.eu
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
  * @subpackage     Router
  * @since          1.0.0
@@ -18,7 +18,6 @@ namespace IPub\WebSockets\Router;
 
 use Nette\Utils;
 
-use IPub;
 use IPub\WebSockets\Application;
 use IPub\WebSockets\Exceptions;
 use IPub\WebSockets\Http;
@@ -47,7 +46,7 @@ class RouteList extends Utils\ArrayList implements IRouter
 	/**
 	 * @param string|NULL $module
 	 */
-	public function __construct(string $module = NULL)
+	public function __construct(?string $module = NULL)
 	{
 		$this->module = $module ? $module . ':' : '';
 	}
@@ -59,7 +58,7 @@ class RouteList extends Utils\ArrayList implements IRouter
 	 *
 	 * @return Application\Request|NULL
 	 */
-	public function match(Http\IRequest $httpRequest)
+	public function match(Http\IRequest $httpRequest) : ?Application\Request
 	{
 		/** @var IRouter $route */
 		foreach ($this as $route) {
@@ -86,7 +85,7 @@ class RouteList extends Utils\ArrayList implements IRouter
 	 *
 	 * @return string|NULL
 	 */
-	public function constructUrl(Application\IRequest $appRequest)
+	public function constructUrl(Application\IRequest $appRequest) : ?string
 	{
 		if ($this->cachedRoutes === NULL) {
 			$this->warmupCache();
@@ -130,7 +129,7 @@ class RouteList extends Utils\ArrayList implements IRouter
 	 *
 	 * @throws Exceptions\InvalidArgumentException
 	 */
-	public function offsetSet($index, $route)
+	public function offsetSet($index, $route) : void
 	{
 		if (!$route instanceof IRouter) {
 			throw new Exceptions\InvalidArgumentException('Argument must be IRouter descendant.');
@@ -150,7 +149,7 @@ class RouteList extends Utils\ArrayList implements IRouter
 	/**
 	 * @return void
 	 */
-	public function warmupCache()
+	public function warmupCache() : void
 	{
 		$routes = [];
 		$routes['*'] = [];

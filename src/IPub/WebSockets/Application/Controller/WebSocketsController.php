@@ -3,8 +3,8 @@
  * WebSocketsController.php
  *
  * @copyright      More in license.md
- * @license        http://www.ipublikuj.eu
- * @author         Adam Kadlec http://www.ipublikuj.eu
+ * @license        https://www.ipublikuj.eu
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
  * @subpackage     Application
  * @since          1.0.0
@@ -20,7 +20,6 @@ use Nette;
 use Nette\DI;
 use Nette\Utils;
 
-use IPub;
 use IPub\WebSockets\Application;
 use IPub\WebSockets\Application\Responses;
 use IPub\WebSockets\Application\Controller;
@@ -66,7 +65,7 @@ class WebSocketsController implements Controller\IController
 	 * @param DI\Container|NULL $context
 	 * @param Router\IRouter|NULL $router
 	 */
-	public function __construct(DI\Container $context = NULL, Router\IRouter $router = NULL)
+	public function __construct(?DI\Container $context = NULL, ?Router\IRouter $router = NULL)
 	{
 		$this->context = $context;
 		$this->router = $router;

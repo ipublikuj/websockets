@@ -3,8 +3,8 @@
  * Server.php
  *
  * @copyright      More in license.md
- * @license        http://www.ipublikuj.eu
- * @author         Adam Kadlec http://www.ipublikuj.eu
+ * @license        https://www.ipublikuj.eu
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
  * @subpackage     Server
  * @since          1.0.0
@@ -23,7 +23,6 @@ use Psr\Log;
 use React;
 use React\EventLoop;
 
-use IPub;
 use IPub\WebSockets\Clients;
 use IPub\WebSockets\Entities;
 
@@ -97,7 +96,7 @@ final class Server
 		Configuration $configuration,
 		Clients\Storage $clientStorage,
 		Clients\IClientFactory $clientFactory,
-		Log\LoggerInterface $logger = NULL
+		?Log\LoggerInterface $logger = NULL
 	) {
 		$this->clientStorage = $clientStorage;
 		$this->clientFactory = $clientFactory;
@@ -139,7 +138,7 @@ final class Server
 	 *
 	 * @return void
 	 */
-	public function run()
+	public function run() : void
 	{
 		$this->logger->debug('Starting IPub\WebSockets');
 		$this->logger->debug(sprintf('Launching WebSockets WS Server on: %s:%s', $this->configuration->getHttpHost(), $this->configuration->getPort()));
@@ -155,7 +154,7 @@ final class Server
 	 *
 	 * @return void
 	 */
-	private function handleConnect(React\Socket\ConnectionInterface $connection, IWrapper $application)
+	private function handleConnect(React\Socket\ConnectionInterface $connection, IWrapper $application) : void
 	{
 		$client = $this->clientFactory->create((int) $connection->stream, $connection);
 
@@ -196,7 +195,7 @@ final class Server
 	 *
 	 * @return void
 	 */
-	private function handleData(string $data, React\Socket\ConnectionInterface $connection, IWrapper $application)
+	private function handleData(string $data, React\Socket\ConnectionInterface $connection, IWrapper $application) : void
 	{
 		try {
 			$client = $this->clientStorage->getClient((int) $connection->stream);
@@ -214,7 +213,7 @@ final class Server
 	 *
 	 * @return void
 	 */
-	private function handleEnd(React\Socket\ConnectionInterface $connection, IWrapper $application)
+	private function handleEnd(React\Socket\ConnectionInterface $connection, IWrapper $application) : void
 	{
 		try {
 			$client = $this->clientStorage->getClient((int) $connection->stream);
@@ -233,7 +232,7 @@ final class Server
 	 *
 	 * @return void
 	 */
-	private function handleError(\Exception $ex, React\Socket\ConnectionInterface $connection, IWrapper $application)
+	private function handleError(\Exception $ex, React\Socket\ConnectionInterface $connection, IWrapper $application) : void
 	{
 		try {
 			$client = $this->clientStorage->getClient((int) $connection->stream);

@@ -3,8 +3,8 @@
  * IRequest.php
  *
  * @copyright      More in license.md
- * @license        http://www.ipublikuj.eu
- * @author         Adam Kadlec http://www.ipublikuj.eu
+ * @license        https://www.ipublikuj.eu
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
  * @subpackage     Http
  * @since          1.0.0
@@ -33,17 +33,17 @@ interface IRequest extends Http\IRequest
 	 *
 	 * @return void
 	 */
-	function setUrl(Http\UrlScript $url);
+	function setUrl(Http\UrlScript $url) : void;
 
 	/**
 	 * @param float $version
 	 *
 	 * @return void
 	 */
-	function setProtocolVersion(float $version);
+	function setProtocolVersion(float $version) : void;
 
 	/**
 	 * @return float|NULL
 	 */
-	function getProtocolVersion();
+	function getProtocolVersion() : ?float;
 }

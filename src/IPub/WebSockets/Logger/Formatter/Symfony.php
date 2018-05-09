@@ -3,8 +3,8 @@
  * Symfony.php
  *
  * @copyright      More in license.md
- * @license        http://www.ipublikuj.eu
- * @author         Adam Kadlec http://www.ipublikuj.eu
+ * @license        https://www.ipublikuj.eu
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
  * @subpackage     Logger
  * @since          1.0.0
@@ -44,7 +44,7 @@ final class Symfony implements IFormatter
 	/**
 	 * {@inheritdoc}
 	 */
-	public function error(string $message)
+	public function error(string $message) : void
 	{
 		$this->output->error($message);
 	}
@@ -52,7 +52,7 @@ final class Symfony implements IFormatter
 	/**
 	 * {@inheritdoc}
 	 */
-	public function warning(string $message)
+	public function warning(string $message) : void
 	{
 		$this->output->warning($message);
 	}
@@ -60,7 +60,7 @@ final class Symfony implements IFormatter
 	/**
 	 * {@inheritdoc}
 	 */
-	public function note(string $message)
+	public function note(string $message) : void
 	{
 		$this->output->note($message);
 	}
@@ -68,7 +68,7 @@ final class Symfony implements IFormatter
 	/**
 	 * {@inheritdoc}
 	 */
-	public function caution(string $message)
+	public function caution(string $message) : void
 	{
 		$this->output->caution($message);
 	}

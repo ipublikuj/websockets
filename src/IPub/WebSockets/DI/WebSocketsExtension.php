@@ -3,8 +3,8 @@
  * WebSocketsExtension.php
  *
  * @copyright      More in license.md
- * @license        http://www.ipublikuj.eu
- * @author         Adam Kadlec http://www.ipublikuj.eu
+ * @license        https://www.ipublikuj.eu
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
  * @subpackage     DI
  * @since          1.0.0
@@ -18,7 +18,6 @@ namespace IPub\WebSockets\DI;
 
 use Nette;
 use Nette\DI;
-use Nette\PhpGenerator as Code;
 
 use Kdyby\Console;
 
@@ -26,7 +25,6 @@ use Psr\Log;
 
 use React;
 
-use IPub;
 use IPub\WebSockets;
 use IPub\WebSockets\Application;
 use IPub\WebSockets\Clients;

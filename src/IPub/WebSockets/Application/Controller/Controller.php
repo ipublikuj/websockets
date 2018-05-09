@@ -3,8 +3,8 @@
  * Controller.php
  *
  * @copyright      More in license.md
- * @license        http://www.ipublikuj.eu
- * @author         Adam Kadlec http://www.ipublikuj.eu
+ * @license        https://www.ipublikuj.eu
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
  * @subpackage     Application
  * @since          1.0.0
@@ -20,7 +20,6 @@ use Nette;
 use Nette\Http;
 use Nette\Security as NS;
 
-use IPub;
 use IPub\WebSockets\Application;
 use IPub\WebSockets\Application\Responses;
 use IPub\WebSockets\Exceptions;
@@ -138,12 +137,12 @@ abstract class Controller implements IController
 	 * @param Http\Session|NULL $session
 	 */
 	public function injectPrimary(
-		Nette\DI\Container $context = NULL,
-		IControllerFactory $controllerFactory = NULL,
-		Router\IRouter $router = NULL,
-		Router\LinkGenerator $linkGenerator = NULL,
-		NS\User $user = NULL,
-		Http\Session $session = NULL
+		?Nette\DI\Container $context = NULL,
+		?IControllerFactory $controllerFactory = NULL,
+		?Router\IRouter $router = NULL,
+		?Router\LinkGenerator $linkGenerator = NULL,
+		?NS\User $user = NULL,
+		?Http\Session $session = NULL
 	) {
 		if ($this->controllerFactory !== NULL) {
 			throw new Nette\InvalidStateException(sprintf('Method "%s" is intended for initialization and should not be called more than once.', __METHOD__));
@@ -333,7 +332,7 @@ abstract class Controller implements IController
 	 *
 	 * @throws Exceptions\InvalidStateException
 	 */
-	public function getSession(string $namespace = NULL)
+	public function getSession(?string $namespace = NULL)
 	{
 		if (!$this->session) {
 			throw new Exceptions\InvalidStateException('Service Session has not been set.');

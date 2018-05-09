@@ -3,8 +3,8 @@
  * Storage.php
  *
  * @copyright      More in license.md
- * @license        http://www.ipublikuj.eu
- * @author         Adam Kadlec http://www.ipublikuj.eu
+ * @license        https://www.ipublikuj.eu
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
  * @subpackage     Storage
  * @since          1.0.0
@@ -20,7 +20,6 @@ use Nette;
 
 use Psr\Log;
 
-use IPub;
 use IPub\WebSockets\Clients\Drivers;
 use IPub\WebSockets\Entities;
 use IPub\WebSockets\Exceptions;
@@ -59,7 +58,7 @@ final class Storage implements IStorage
 	 * @param int|NULL $ttl
 	 * @param Log\LoggerInterface|NULL $logger
 	 */
-	public function __construct(int $ttl = 0, Log\LoggerInterface $logger = NULL)
+	public function __construct(int $ttl = 0, ?Log\LoggerInterface $logger = NULL)
 	{
 		$this->ttl = $ttl;
 		$this->logger = $logger === NULL ? new Log\NullLogger : $logger;

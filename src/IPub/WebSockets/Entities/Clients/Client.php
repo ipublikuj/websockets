@@ -3,8 +3,8 @@
  * Client.php
  *
  * @copyright      More in license.md
- * @license        http://www.ipublikuj.eu
- * @author         Adam Kadlec http://www.ipublikuj.eu
+ * @license        https://www.ipublikuj.eu
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
  * @subpackage     Entities
  * @since          1.0.0
@@ -22,7 +22,6 @@ use Nette\Utils;
 
 use React\Socket;
 
-use IPub;
 use IPub\WebSockets\Application\Responses;
 use IPub\WebSockets\Entities;
 use IPub\WebSockets\Http;
@@ -200,7 +199,7 @@ class Client implements IClient
 	/**
 	 * {@inheritdoc}
 	 */
-	public function close(int $code = NULL)
+	public function close(?int $code = NULL)
 	{
 		$this->webSocket->getProtocol()->close($this, $code);
 	}
