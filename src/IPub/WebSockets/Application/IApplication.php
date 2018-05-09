@@ -35,9 +35,9 @@ interface IApplication
 	 * @param Entities\Clients\IClient $client
 	 * @param Http\IRequest $httpRequest
 	 *
-	 * @return mixed
+	 * @return void
 	 */
-	function handleOpen(Entities\Clients\IClient $client, Http\IRequest $httpRequest);
+	function handleOpen(Entities\Clients\IClient $client, Http\IRequest $httpRequest) : void;
 
 	/**
 	 * This is called before or after a socket is closed (depends on how it's closed)
@@ -46,9 +46,9 @@ interface IApplication
 	 * @param Entities\Clients\IClient $client
 	 * @param Http\IRequest $httpRequest
 	 *
-	 * @return mixed
+	 * @return void
 	 */
-	function handleClose(Entities\Clients\IClient $client, Http\IRequest $httpRequest);
+	function handleClose(Entities\Clients\IClient $client, Http\IRequest $httpRequest) : void;
 
 	/**
 	 * If there is an error with one of the sockets, or somewhere in the application where an Exception is thrown,
@@ -58,9 +58,9 @@ interface IApplication
 	 * @param Http\IRequest $httpRequest
 	 * @param \Exception $ex
 	 *
-	 * @return mixed
+	 * @return void
 	 */
-	function handleError(Entities\Clients\IClient $client, Http\IRequest $httpRequest, \Exception $ex);
+	function handleError(Entities\Clients\IClient $client, Http\IRequest $httpRequest, \Exception $ex) : void;
 
 	/**
 	 * Triggered when a client sends data through the socket
@@ -69,9 +69,9 @@ interface IApplication
 	 * @param Http\IRequest $httpRequest
 	 * @param string $message
 	 *
-	 * @return mixed
+	 * @return void
 	 */
-	function handleMessage(Entities\Clients\IClient $from, Http\IRequest $httpRequest, string $message);
+	function handleMessage(Entities\Clients\IClient $from, Http\IRequest $httpRequest, string $message) : void;
 
 	/**
 	 * @todo This method may be removed in future version (note that will not break code, just make some code obsolete)

@@ -48,7 +48,7 @@ final class Message implements Protocols\IMessage, \Countable
 	/**
 	 * {@inheritdoc}
 	 */
-	public function count()
+	public function count() : int
 	{
 		return count($this->frames);
 	}
@@ -72,11 +72,9 @@ final class Message implements Protocols\IMessage, \Countable
 	 *
 	 * {@inheritdoc}
 	 */
-	public function addFrame(Protocols\IFrame $fragment)
+	public function addFrame(Protocols\IFrame $fragment) : void
 	{
 		$this->frames->push($fragment);
-
-		return $this;
 	}
 
 	/**

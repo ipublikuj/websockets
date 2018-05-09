@@ -33,7 +33,7 @@ interface IFrame extends IData
 	 *
 	 * @return void
 	 */
-	function addBuffer(string $buffer);
+	function addBuffer(string $buffer) : void;
 
 	/**
 	 * Is this the final frame in a fragmented message?

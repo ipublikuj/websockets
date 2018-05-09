@@ -34,7 +34,7 @@ interface IStorage extends \IteratorAggregate
 	 *
 	 * @return void
 	 */
-	function setStorageDriver(Drivers\IDriver $driver);
+	function setStorageDriver(Drivers\IDriver $driver) : void;
 
 	/**
 	 * @param int $identifier
@@ -49,7 +49,7 @@ interface IStorage extends \IteratorAggregate
 	 *
 	 * @return void
 	 */
-	function addClient(int $identifier, Entities\Clients\IClient $client);
+	function addClient(int $identifier, Entities\Clients\IClient $client) : void;
 
 	/**
 	 * @param int $identifier
@@ -70,5 +70,5 @@ interface IStorage extends \IteratorAggregate
 	 *
 	 * @return void
 	 */
-	function refreshClient(Entities\Clients\IClient $client);
+	function refreshClient(Entities\Clients\IClient $client) : void;
 }

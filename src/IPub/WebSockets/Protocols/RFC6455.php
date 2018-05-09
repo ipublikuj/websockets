@@ -114,7 +114,7 @@ class RFC6455 implements IProtocol
 	/**
 	 * {@inheritdoc}
 	 */
-	public function handleMessage(Entities\Clients\IClient $client, Application\IApplication $application, string $data = '')
+	public function handleMessage(Entities\Clients\IClient $client, Application\IApplication $application, string $data = '') : void
 	{
 		$overflow = '';
 
@@ -262,7 +262,7 @@ class RFC6455 implements IProtocol
 	/**
 	 * {@inheritdoc}
 	 */
-	public function send(Entities\Clients\IClient $client, $payload)
+	public function send(Entities\Clients\IClient $client, $payload) : void
 	{
 		if (!$client->getWebSocket()->isClosing()) {
 			if (!($payload instanceof IData)) {
@@ -276,7 +276,7 @@ class RFC6455 implements IProtocol
 	/**
 	 * {@inheritdoc}
 	 */
-	public function close(Entities\Clients\IClient $client, ?int $code = NULL)
+	public function close(Entities\Clients\IClient $client, ?int $code = NULL) : void
 	{
 		if ($client->getWebSocket()->isClosing()) {
 			return;
@@ -359,7 +359,7 @@ class RFC6455 implements IProtocol
 	/**
 	 * Creates a private lookup of valid, private close codes
 	 */
-	private function setCloseCodes()
+	private function setCloseCodes() : void
 	{
 		$this->closeCodes[RFC6455\Frame::CLOSE_NORMAL] = TRUE;
 		$this->closeCodes[RFC6455\Frame::CLOSE_GOING_AWAY] = TRUE;

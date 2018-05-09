@@ -58,7 +58,7 @@ final class HandshakeVerifier
 	 *
 	 * @return bool TRUE if all headers are valid, FALSE if 1 or more were invalid
 	 */
-	public function verifyAll(Http\IRequest $httpRequest)
+	public function verifyAll(Http\IRequest $httpRequest) : bool
 	{
 		$passes = 0;
 

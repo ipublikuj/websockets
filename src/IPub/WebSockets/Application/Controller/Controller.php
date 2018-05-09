@@ -228,7 +228,7 @@ abstract class Controller implements IController
 	 *
 	 * @throws Exceptions\ForbiddenRequestException
 	 */
-	public function checkRequirements($element)
+	public function checkRequirements($element) : void
 	{
 		$user = (array) Nette\Application\UI\ComponentReflection::parseAnnotation($element, 'User');
 
@@ -253,7 +253,7 @@ abstract class Controller implements IController
 	 * @throws Exceptions\AbortException
 	 * @throws Exceptions\BadRequestException
 	 */
-	public function sendPayload()
+	public function sendPayload() : void
 	{
 		if (isset($this->payload->callback)) {
 			$this->sendResponse(new Responses\CallResponse($this->payload->callback, $this->payload->data));
@@ -274,7 +274,7 @@ abstract class Controller implements IController
 	 *
 	 * @throws Exceptions\AbortException
 	 */
-	public function sendResponse(Responses\IResponse $response)
+	public function sendResponse(Responses\IResponse $response) : void
 	{
 		$this->response = $response;
 
@@ -288,7 +288,7 @@ abstract class Controller implements IController
 	 *
 	 * @throws Exceptions\AbortException
 	 */
-	public function terminate()
+	public function terminate() : void
 	{
 		throw new Exceptions\AbortException;
 	}
@@ -315,7 +315,7 @@ abstract class Controller implements IController
 	 *
 	 * @throws Exceptions\BadRequestException
 	 */
-	private function changeAction($action)
+	private function changeAction($action) : void
 	{
 		if (is_string($action) && Nette\Utils\Strings::match($action, '#^[a-zA-Z0-9][a-zA-Z0-9_\x7f-\xff]*\z#')) {
 			$this->action = $action;
@@ -388,12 +388,14 @@ abstract class Controller implements IController
 	 * @param array $supplemental supplemental arguments
 	 * @param array $missing      missing arguments
 	 *
+	 * @return void
+	 *
 	 * @throws Exceptions\InvalidLinkException
 	 * @throws \ReflectionException
 	 *
 	 * @internal
 	 */
-	public static function argsToParams(string $class, string $method, array &$args, array $supplemental = [], array &$missing = [])
+	public static function argsToParams(string $class, string $method, array &$args, array $supplemental = [], array &$missing = []) : void
 	{
 		$i = 0;
 		$rm = new \ReflectionMethod($class, $method);
@@ -446,7 +448,7 @@ abstract class Controller implements IController
 	/**
 	 * @return void
 	 */
-	protected function startup()
+	protected function startup() : void
 	{
 		$this->startupCheck = TRUE;
 	}
@@ -456,7 +458,7 @@ abstract class Controller implements IController
 	 *
 	 * @return void
 	 */
-	protected function shutdown(Responses\IResponse $response)
+	protected function shutdown(Responses\IResponse $response) : void
 	{
 
 	}
@@ -492,7 +494,7 @@ abstract class Controller implements IController
 	 *
 	 * @return void
 	 */
-	private function initGlobalParameters()
+	private function initGlobalParameters() : void
 	{
 		// init $this->globalParams
 		$this->globalParams = [];

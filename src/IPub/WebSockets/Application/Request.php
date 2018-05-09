@@ -59,7 +59,7 @@ class Request implements IRequest
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setControllerName(string $name)
+	public function setControllerName(string $name) : void
 	{
 		$this->name = $name;
 	}
@@ -75,7 +75,7 @@ class Request implements IRequest
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setParameters(array $params)
+	public function setParameters(array $params) : void
 	{
 		$this->params = $params;
 	}

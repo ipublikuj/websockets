@@ -25,7 +25,7 @@ interface IWebSocket
 	 *
 	 * @return void
 	 */
-	function setEstablished(bool $state);
+	function setEstablished(bool $state) : void;
 
 	/**
 	 * @return bool
@@ -37,7 +37,7 @@ interface IWebSocket
 	 *
 	 * @return void
 	 */
-	function setClosing(bool $state);
+	function setClosing(bool $state) : void;
 
 	/**
 	 * @return bool
@@ -54,7 +54,7 @@ interface IWebSocket
 	 *
 	 * @return void
 	 */
-	function setMessage(Protocols\IMessage $message);
+	function setMessage(Protocols\IMessage $message) : void;
 
 	/**
 	 * @return Protocols\IMessage
@@ -64,7 +64,7 @@ interface IWebSocket
 	/**
 	 * @return void
 	 */
-	function destroyMessage();
+	function destroyMessage() : void;
 
 	/**
 	 * @return bool
@@ -76,7 +76,7 @@ interface IWebSocket
 	 *
 	 * @return void
 	 */
-	function setFrame(Protocols\IFrame $frame);
+	function setFrame(Protocols\IFrame $frame) : void;
 
 	/**
 	 * @return Protocols\IFrame
@@ -86,7 +86,7 @@ interface IWebSocket
 	/**
 	 * @return void
 	 */
-	function destroyFrame();
+	function destroyFrame() : void;
 
 	/**
 	 * @return bool

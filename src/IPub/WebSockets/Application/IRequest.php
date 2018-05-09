@@ -33,7 +33,7 @@ interface IRequest
 	 *
 	 * @return void
 	 */
-	function setControllerName(string $name);
+	function setControllerName(string $name) : void;
 
 	/**
 	 * Retrieve the controller name
@@ -49,7 +49,7 @@ interface IRequest
 	 *
 	 * @return void
 	 */
-	function setParameters(array $params);
+	function setParameters(array $params) : void;
 
 	/**
 	 * Returns all variables provided to the controller (usually via URL)

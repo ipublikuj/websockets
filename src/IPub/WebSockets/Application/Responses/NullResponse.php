@@ -34,9 +34,9 @@ class NullResponse implements IResponse
 	use Nette\SmartObject;
 
 	/**
-	 * @return string
+	 * {@inheritdoc}
 	 */
-	public function create() : string
+	public function create() : ?string
 	{
 		return NULL;
 	}

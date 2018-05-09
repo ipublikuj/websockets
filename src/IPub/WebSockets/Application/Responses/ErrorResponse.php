@@ -72,7 +72,7 @@ class ErrorResponse implements IResponse
 	 *
 	 * @throws Exceptions\InvalidArgumentException
 	 */
-	public function setStatus(int $statusCode)
+	public function setStatus(int $statusCode) : void
 	{
 		if ($statusCode < 100 || $statusCode > 599) {
 			throw new Exceptions\InvalidArgumentException(sprintf('Bad HTTP response "%s".', $statusCode));
@@ -86,7 +86,7 @@ class ErrorResponse implements IResponse
 	 *
 	 * @return void
 	 */
-	public function setHeaders(array $headers)
+	public function setHeaders(array $headers) : void
 	{
 		$this->headers = new Utils\ArrayHash;
 
@@ -101,7 +101,7 @@ class ErrorResponse implements IResponse
 	 *
 	 * @return void
 	 */
-	public function addHeader(string $header, $value)
+	public function addHeader(string $header, $value) : void
 	{
 		$this->headers->offsetSet($header, $value);
 	}
@@ -109,7 +109,7 @@ class ErrorResponse implements IResponse
 	/**
 	 * {@inheritdoc}
 	 */
-	public function create() : string
+	public function create() : ?string
 	{
 		$headers = [];
 		$headers[] = 'HTTP/1.1 ' . $this->statusCode;

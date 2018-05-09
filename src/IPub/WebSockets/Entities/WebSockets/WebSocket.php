@@ -67,7 +67,7 @@ final class WebSocket implements IWebSocket
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setEstablished(bool $state)
+	public function setEstablished(bool $state) : void
 	{
 		$this->established = $state;
 	}
@@ -83,7 +83,7 @@ final class WebSocket implements IWebSocket
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setClosing(bool $state)
+	public function setClosing(bool $state) : void
 	{
 		$this->closing = $state;
 	}
@@ -107,7 +107,7 @@ final class WebSocket implements IWebSocket
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setMessage(Protocols\IMessage $message)
+	public function setMessage(Protocols\IMessage $message) : void
 	{
 		$this->message = $message;
 	}
@@ -123,7 +123,7 @@ final class WebSocket implements IWebSocket
 	/**
 	 * {@inheritdoc}
 	 */
-	public function destroyMessage()
+	public function destroyMessage() : void
 	{
 		$this->message = NULL;
 	}
@@ -139,7 +139,7 @@ final class WebSocket implements IWebSocket
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setFrame(Protocols\IFrame $frame)
+	public function setFrame(Protocols\IFrame $frame) : void
 	{
 		$this->frame = $frame;
 	}
@@ -155,7 +155,7 @@ final class WebSocket implements IWebSocket
 	/**
 	 * {@inheritdoc}
 	 */
-	public function destroyFrame()
+	public function destroyFrame() : void
 	{
 		$this->frame = NULL;
 	}

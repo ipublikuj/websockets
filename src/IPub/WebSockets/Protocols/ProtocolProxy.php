@@ -86,7 +86,7 @@ final class ProtocolProxy
 	 *
 	 * @return void
 	 */
-	public function enableProtocol(IProtocol $protocol)
+	public function enableProtocol(IProtocol $protocol) : void
 	{
 		$this->protocols[$protocol->getVersion()] = $protocol;
 	}
@@ -98,7 +98,7 @@ final class ProtocolProxy
 	 *
 	 * @return void
 	 */
-	public function disableProtocol(string $protocolId)
+	public function disableProtocol(string $protocolId) : void
 	{
 		unset($this->protocols[$protocolId]);
 	}

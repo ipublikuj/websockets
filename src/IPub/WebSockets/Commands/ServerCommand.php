@@ -65,7 +65,7 @@ class ServerCommand extends Console\Command\Command
 	/**
 	 * @return void
 	 */
-	protected function configure()
+	protected function configure() : void
 	{
 		$this
 			->setName('ipub:websockets:start')
@@ -75,7 +75,7 @@ class ServerCommand extends Console\Command\Command
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function execute(Input\InputInterface $input, Output\OutputInterface $output)
+	protected function execute(Input\InputInterface $input, Output\OutputInterface $output) : void
 	{
 		$io = new Style\SymfonyStyle($input, $output);
 

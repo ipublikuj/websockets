@@ -62,7 +62,7 @@ interface IProtocol
 	 *
 	 * @return void
 	 */
-	function handleMessage(Entities\Clients\IClient $client, Application\IApplication $application, string $message = '');
+	function handleMessage(Entities\Clients\IClient $client, Application\IApplication $application, string $message = '') : void;
 
 	/**
 	 * @param Entities\Clients\IClient $client
@@ -70,7 +70,7 @@ interface IProtocol
 	 *
 	 * @return void
 	 */
-	function send(Entities\Clients\IClient $client, $payload);
+	function send(Entities\Clients\IClient $client, $payload) : void;
 
 	/**
 	 * @param Entities\Clients\IClient $client
@@ -78,5 +78,5 @@ interface IProtocol
 	 *
 	 * @return void
 	 */
-	function close(Entities\Clients\IClient $client, ?int $code = NULL);
+	function close(Entities\Clients\IClient $client, ?int $code = NULL) : void;
 }

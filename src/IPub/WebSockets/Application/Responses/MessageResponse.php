@@ -48,9 +48,9 @@ class MessageResponse implements IResponse
 	}
 
 	/**
-	 * @return string
+	 * {@inheritdoc}
 	 */
-	public function create() : string
+	public function create() : ?string
 	{
 		return $this->data;
 	}

@@ -163,7 +163,7 @@ final class Frame implements Protocols\IFrame
 	/**
 	 * {@inheritdoc}
 	 */
-	public function addBuffer(string $buffer)
+	public function addBuffer(string $buffer) : void
 	{
 		$len = strlen($buffer);
 
@@ -321,7 +321,7 @@ final class Frame implements Protocols\IFrame
 	 *
 	 * @throws \UnderFlowException if the frame is not coalesced
 	 */
-	public function unMaskPayload()
+	public function unMaskPayload() : void
 	{
 		if (!$this->isCoalesced()) {
 			throw new \UnderflowException('Frame must be coalesced before applying mask');

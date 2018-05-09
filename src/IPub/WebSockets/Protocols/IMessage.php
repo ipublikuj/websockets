@@ -31,7 +31,7 @@ interface IMessage extends IData
 	 *
 	 * @return void
 	 */
-	function addFrame(IFrame $fragment);
+	function addFrame(IFrame $fragment) : void;
 
 	/**
 	 * @return int

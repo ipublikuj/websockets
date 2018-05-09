@@ -119,7 +119,7 @@ class Client implements IClient
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setHTTPHeadersReceived(bool $state)
+	public function setHTTPHeadersReceived(bool $state) : void
 	{
 		$this->httpHeadersReceived = $state;
 	}
@@ -135,7 +135,7 @@ class Client implements IClient
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setHttpBuffer(string $buffer)
+	public function setHttpBuffer(string $buffer) : void
 	{
 		$this->httpBuffer = $buffer;
 	}
@@ -151,7 +151,7 @@ class Client implements IClient
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setRequest(Http\IRequest $httpRequest)
+	public function setRequest(Http\IRequest $httpRequest) : void
 	{
 		$this->httpRequest = $httpRequest;
 	}
@@ -167,7 +167,7 @@ class Client implements IClient
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setWebSocket(Entities\WebSockets\IWebSocket $webSocket)
+	public function setWebSocket(Entities\WebSockets\IWebSocket $webSocket) : void
 	{
 		$this->webSocket = $webSocket;
 	}
@@ -183,7 +183,7 @@ class Client implements IClient
 	/**
 	 * {@inheritdoc}
 	 */
-	public function addParameter(string $key, $value)
+	public function addParameter(string $key, $value) : void
 	{
 		$this->parameters->offsetSet($key, $value);
 	}
@@ -199,7 +199,7 @@ class Client implements IClient
 	/**
 	 * {@inheritdoc}
 	 */
-	public function close(?int $code = NULL)
+	public function close(?int $code = NULL) : void
 	{
 		$this->webSocket->getProtocol()->close($this, $code);
 	}
@@ -207,7 +207,7 @@ class Client implements IClient
 	/**
 	 * {@inheritdoc}
 	 */
-	public function send($response)
+	public function send($response) : void
 	{
 		if ($response instanceof Responses\IResponse) {
 			$response = $response->create();
@@ -219,7 +219,7 @@ class Client implements IClient
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setUser(NS\User $user)
+	public function setUser(NS\User $user) : void
 	{
 		$this->user = $user;
 	}
@@ -227,7 +227,7 @@ class Client implements IClient
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getUser()
+	public function getUser() : ?NS\User
 	{
 		return $this->user;
 	}

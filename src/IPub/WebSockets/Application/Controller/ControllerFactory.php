@@ -150,7 +150,7 @@ class ControllerFactory implements IControllerFactory
 	 *
 	 * @throws Exceptions\InvalidStateException
 	 */
-	public function setMapping(array $mapping)
+	public function setMapping(array $mapping) : void
 	{
 		foreach ($mapping as $module => $mask) {
 			if (is_string($mask)) {

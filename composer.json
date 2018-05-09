@@ -34,6 +34,8 @@
 
 		"react/socket": "^0.5.1",
 
+		"psr/log": "^1.0",
+
 		"nette/application"	: "~2.4",
 		"nette/di"			: "~2.4",
 		"nette/http"		: "~2.4",

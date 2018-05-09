@@ -67,7 +67,7 @@ final class Storage implements IStorage
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setStorageDriver(Drivers\IDriver $driver)
+	public function setStorageDriver(Drivers\IDriver $driver) : void
 	{
 		$this->driver = $driver;
 	}
@@ -96,7 +96,7 @@ final class Storage implements IStorage
 	/**
 	 * {@inheritdoc}
 	 */
-	public function addClient(int $identifier, Entities\Clients\IClient $client)
+	public function addClient(int $identifier, Entities\Clients\IClient $client) : void
 	{
 		$context = [
 			'user' => $client->getUser(),
@@ -155,7 +155,7 @@ final class Storage implements IStorage
 	/**
 	 * {@inheritdoc}
 	 */
-	public function refreshClient(Entities\Clients\IClient $client)
+	public function refreshClient(Entities\Clients\IClient $client) : void
 	{
 		if ($this->hasClient($client->getId())) {
 			$this->driver->save($client->getId(), $client, $this->ttl);

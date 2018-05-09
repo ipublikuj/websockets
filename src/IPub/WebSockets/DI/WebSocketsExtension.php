@@ -76,7 +76,7 @@ final class WebSocketsExtension extends DI\CompilerExtension
 	/**
 	 * {@inheritdoc}
 	 */
-	public function loadConfiguration()
+	public function loadConfiguration() : void
 	{
 		parent::loadConfiguration();
 
@@ -90,7 +90,7 @@ final class WebSocketsExtension extends DI\CompilerExtension
 		 */
 
 		$controllerFactory = $builder->addDefinition($this->prefix('controllers.factory'))
-			->setClass(Application\Controller\IControllerFactory::class)
+			->setType(Application\Controller\IControllerFactory::class)
 			->setFactory(Application\Controller\ControllerFactory::class);
 
 		if ($configuration['mapping']) {
@@ -102,17 +102,17 @@ final class WebSocketsExtension extends DI\CompilerExtension
 		 */
 
 		$builder->addDefinition($this->prefix('clients.factory'))
-			->setClass(Clients\ClientFactory::class);
+			->setType(Clients\ClientFactory::class);
 
 		$builder->addDefinition($this->prefix('clients.driver.memory'))
-			->setClass(Clients\Drivers\InMemory::class);
+			->setType(Clients\Drivers\InMemory::class);
 
 		$storageDriver = $configuration['clients']['storage']['driver'] === '@clients.driver.memory' ?
 			$builder->getDefinition($this->prefix('clients.driver.memory')) :
 			$builder->getDefinition($configuration['clients']['storage']['driver']);
 
 		$builder->addDefinition($this->prefix('clients.storage'))
-			->setClass(Clients\Storage::class)
+			->setType(Clients\Storage::class)
 			->setArguments([
 				'ttl' => $configuration['clients']['storage']['ttl'],
 			])
@@ -124,7 +124,7 @@ final class WebSocketsExtension extends DI\CompilerExtension
 
 		// Http routes collector
 		$router = $builder->addDefinition($this->prefix('routing.router'))
-			->setClass(Router\IRouter::class)
+			->setType(Router\IRouter::class)
 			->setFactory(Router\RouteList::class);
 
 		foreach ($configuration['routes'] as $mask => $action) {
@@ -133,17 +133,17 @@ final class WebSocketsExtension extends DI\CompilerExtension
 
 		// Http routes generator
 		$builder->addDefinition($this->prefix('routing.generator'))
-			->setClass(Router\LinkGenerator::class);
+			->setType(Router\LinkGenerator::class);
 
 		/**
 		 * SERVER
 		 */
 
 		$application = $builder->addDefinition($this->prefix('server.wrapper'))
-			->setClass(Server\Wrapper::class);
+			->setType(Server\Wrapper::class);
 
 		$flashApplication = $builder->addDefinition($this->prefix('server.flashWrapper'))
-			->setClass(Server\FlashWrapper::class);
+			->setType(Server\FlashWrapper::class);
 
 		$flashApplication->addSetup('?->addAllowedAccess(?, 80)', [
 			$flashApplication,
@@ -156,7 +156,7 @@ final class WebSocketsExtension extends DI\CompilerExtension
 		]);
 
 		$loop = $builder->addDefinition($this->prefix('server.loop'))
-			->setClass(React\EventLoop\LoopInterface::class)
+			->setType(React\EventLoop\LoopInterface::class)
 			->setFactory('React\EventLoop\Factory::create');
 
 		$configuration = new Server\Configuration(
@@ -169,11 +169,11 @@ final class WebSocketsExtension extends DI\CompilerExtension
 
 		if ($builder->findByType(Log\LoggerInterface::class) === []) {
 			$builder->addDefinition($this->prefix('server.logger'))
-				->setClass(Logger\Console::class);
+				->setType(Logger\Console::class);
 		}
 
 		$builder->addDefinition($this->prefix('server.server'))
-			->setClass(Server\Server::class, [
+			->setType(Server\Server::class, [
 				$application,
 				$flashApplication,
 				$loop,
@@ -187,7 +187,7 @@ final class WebSocketsExtension extends DI\CompilerExtension
 
 		foreach ($commands as $name => $cmd) {
 			$builder->addDefinition($this->prefix('commands' . lcfirst($name)))
-				->setClass($cmd)
+				->setType($cmd)
 				->addTag(Console\DI\ConsoleExtension::TAG_COMMAND);
 		}
 	}
@@ -195,7 +195,7 @@ final class WebSocketsExtension extends DI\CompilerExtension
 	/**
 	 * {@inheritdoc}
 	 */
-	public function beforeCompile()
+	public function beforeCompile() : void
 	{
 		parent::beforeCompile();
 
@@ -249,12 +249,12 @@ final class WebSocketsExtension extends DI\CompilerExtension
 		$allControllers = [];
 
 		foreach ($builder->findByType(Application\Controller\IController::class) as $def) {
-			$allControllers[$def->getClass()] = $def;
+			$allControllers[$def->getType()] = $def;
 		}
 
 		foreach ($allControllers as $def) {
 			$def->addTag(Nette\DI\Extensions\InjectExtension::TAG_INJECT)
-				->addTag('ipub.websockets.controller', $def->getClass());
+				->addTag('ipub.websockets.controller', $def->getType());
 		}
 	}
 
@@ -264,7 +264,7 @@ final class WebSocketsExtension extends DI\CompilerExtension
 	 *
 	 * @return void
 	 */
-	public static function register(Nette\Configurator $config, string $extensionName = 'websockets')
+	public static function register(Nette\Configurator $config, string $extensionName = 'websockets') : void
 	{
 		$config->onCompile[] = function (Nette\Configurator $config, DI\Compiler $compiler) use ($extensionName) {
 			$compiler->addExtension($extensionName, new WebSocketsExtension());
