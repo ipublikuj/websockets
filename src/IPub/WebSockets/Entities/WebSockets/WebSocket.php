@@ -3,8 +3,8 @@
  * WebSocket.php
  *
  * @copyright      More in license.md
- * @license        http://www.ipublikuj.eu
- * @author         Adam Kadlec http://www.ipublikuj.eu
+ * @license        https://www.ipublikuj.eu
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
  * @subpackage     Entities
  * @since          1.0.0
@@ -18,7 +18,6 @@ namespace IPub\WebSockets\Entities\WebSockets;
 
 use Nette;
 
-use IPub;
 use IPub\WebSockets\Protocols;
 
 final class WebSocket implements IWebSocket
@@ -68,7 +67,7 @@ final class WebSocket implements IWebSocket
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setEstablished(bool $state)
+	public function setEstablished(bool $state) : void
 	{
 		$this->established = $state;
 	}
@@ -84,7 +83,7 @@ final class WebSocket implements IWebSocket
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setClosing(bool $state)
+	public function setClosing(bool $state) : void
 	{
 		$this->closing = $state;
 	}
@@ -108,7 +107,7 @@ final class WebSocket implements IWebSocket
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setMessage(Protocols\IMessage $message)
+	public function setMessage(Protocols\IMessage $message) : void
 	{
 		$this->message = $message;
 	}
@@ -124,7 +123,7 @@ final class WebSocket implements IWebSocket
 	/**
 	 * {@inheritdoc}
 	 */
-	public function destroyMessage()
+	public function destroyMessage() : void
 	{
 		$this->message = NULL;
 	}
@@ -140,7 +139,7 @@ final class WebSocket implements IWebSocket
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setFrame(Protocols\IFrame $frame)
+	public function setFrame(Protocols\IFrame $frame) : void
 	{
 		$this->frame = $frame;
 	}
@@ -156,7 +155,7 @@ final class WebSocket implements IWebSocket
 	/**
 	 * {@inheritdoc}
 	 */
-	public function destroyFrame()
+	public function destroyFrame() : void
 	{
 		$this->frame = NULL;
 	}

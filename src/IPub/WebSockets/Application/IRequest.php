@@ -3,8 +3,8 @@
  * IRequest.php
  *
  * @copyright      More in license.md
- * @license        http://www.ipublikuj.eu
- * @author         Adam Kadlec http://www.ipublikuj.eu
+ * @license        https://www.ipublikuj.eu
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
  * @subpackage     Application
  * @since          1.0.0
@@ -33,7 +33,7 @@ interface IRequest
 	 *
 	 * @return void
 	 */
-	function setControllerName(string $name);
+	function setControllerName(string $name) : void;
 
 	/**
 	 * Retrieve the controller name
@@ -49,7 +49,7 @@ interface IRequest
 	 *
 	 * @return void
 	 */
-	function setParameters(array $params);
+	function setParameters(array $params) : void;
 
 	/**
 	 * Returns all variables provided to the controller (usually via URL)

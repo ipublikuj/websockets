@@ -3,8 +3,8 @@
  * LinkGenerator.php
  *
  * @copyright      More in license.md
- * @license        http://www.ipublikuj.eu
- * @author         Adam Kadlec http://www.ipublikuj.eu
+ * @license        https://www.ipublikuj.eu
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
  * @subpackage     Router
  * @since          1.0.0
@@ -18,7 +18,6 @@ namespace IPub\WebSockets\Router;
 
 use Nette;
 
-use IPub;
 use IPub\WebSockets\Application;
 use IPub\WebSockets\Application\Controller;
 use IPub\WebSockets\Exceptions;
@@ -53,7 +52,7 @@ class LinkGenerator
 	 * @param IRouter $router
 	 * @param Controller\IControllerFactory|NULL $controllerFactory
 	 */
-	public function __construct(IRouter $router, Controller\IControllerFactory $controllerFactory = NULL)
+	public function __construct(IRouter $router, ?Controller\IControllerFactory $controllerFactory = NULL)
 	{
 		$this->router = $router;
 		$this->controllerFactory = $controllerFactory;
@@ -119,5 +118,4 @@ class LinkGenerator
 
 		return $url . $frag;
 	}
-
 }

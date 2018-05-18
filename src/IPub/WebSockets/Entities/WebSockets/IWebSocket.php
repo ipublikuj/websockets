@@ -3,8 +3,8 @@
  * IWebSocket.php
  *
  * @copyright      More in license.md
- * @license        http://www.ipublikuj.eu
- * @author         Adam Kadlec http://www.ipublikuj.eu
+ * @license        https://www.ipublikuj.eu
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
  * @subpackage     Entities
  * @since          1.0.0
@@ -16,7 +16,6 @@ declare(strict_types = 1);
 
 namespace IPub\WebSockets\Entities\WebSockets;
 
-use IPub;
 use IPub\WebSockets\Protocols;
 
 interface IWebSocket
@@ -26,7 +25,7 @@ interface IWebSocket
 	 *
 	 * @return void
 	 */
-	function setEstablished(bool $state);
+	function setEstablished(bool $state) : void;
 
 	/**
 	 * @return bool
@@ -38,7 +37,7 @@ interface IWebSocket
 	 *
 	 * @return void
 	 */
-	function setClosing(bool $state);
+	function setClosing(bool $state) : void;
 
 	/**
 	 * @return bool
@@ -55,7 +54,7 @@ interface IWebSocket
 	 *
 	 * @return void
 	 */
-	function setMessage(Protocols\IMessage $message);
+	function setMessage(Protocols\IMessage $message) : void;
 
 	/**
 	 * @return Protocols\IMessage
@@ -65,7 +64,7 @@ interface IWebSocket
 	/**
 	 * @return void
 	 */
-	function destroyMessage();
+	function destroyMessage() : void;
 
 	/**
 	 * @return bool
@@ -77,7 +76,7 @@ interface IWebSocket
 	 *
 	 * @return void
 	 */
-	function setFrame(Protocols\IFrame $frame);
+	function setFrame(Protocols\IFrame $frame) : void;
 
 	/**
 	 * @return Protocols\IFrame
@@ -87,7 +86,7 @@ interface IWebSocket
 	/**
 	 * @return void
 	 */
-	function destroyFrame();
+	function destroyFrame() : void;
 
 	/**
 	 * @return bool

@@ -3,8 +3,8 @@
  * IWrapper.php
  *
  * @copyright      More in license.md
- * @license        http://www.ipublikuj.eu
- * @author         Adam Kadlec http://www.ipublikuj.eu
+ * @license        https://www.ipublikuj.eu
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
  * @subpackage     Server
  * @since          1.0.0
@@ -16,7 +16,6 @@ declare(strict_types = 1);
 
 namespace IPub\WebSockets\Server;
 
-use IPub;
 use IPub\WebSockets\Entities;
 
 interface IWrapper
@@ -26,7 +25,7 @@ interface IWrapper
 	 *
 	 * @return void
 	 */
-	function handleOpen(Entities\Clients\IClient $client);
+	function handleOpen(Entities\Clients\IClient $client) : void;
 
 	/**
 	 * @param Entities\Clients\IClient $client
@@ -34,14 +33,14 @@ interface IWrapper
 	 *
 	 * @return void
 	 */
-	function handleMessage(Entities\Clients\IClient $client, string $message);
+	function handleMessage(Entities\Clients\IClient $client, string $message) : void;
 
 	/**
 	 * @param Entities\Clients\IClient $client
 	 *
 	 * @return void
 	 */
-	function handleClose(Entities\Clients\IClient $client);
+	function handleClose(Entities\Clients\IClient $client) : void;
 
 	/**
 	 * @param Entities\Clients\IClient $client
@@ -49,5 +48,5 @@ interface IWrapper
 	 *
 	 * @return void
 	 */
-	function handleError(Entities\Clients\IClient $client, \Exception $ex);
+	function handleError(Entities\Clients\IClient $client, \Exception $ex) : void;
 }

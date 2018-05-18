@@ -3,8 +3,8 @@
  * IClient.php
  *
  * @copyright      More in license.md
- * @license        http://www.ipublikuj.eu
- * @author         Adam Kadlec http://www.ipublikuj.eu
+ * @license        https://www.ipublikuj.eu
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
  * @subpackage     Entities
  * @since          1.0.0
@@ -20,7 +20,6 @@ use Nette\Security as NS;
 
 use React\Socket;
 
-use IPub;
 use IPub\WebSockets\Application\Responses;
 use IPub\WebSockets\Entities;
 use IPub\WebSockets\Http;
@@ -50,7 +49,7 @@ interface IClient
 	 *
 	 * @return void
 	 */
-	function setHTTPHeadersReceived(bool $state);
+	function setHTTPHeadersReceived(bool $state) : void;
 
 	/**
 	 * @return bool
@@ -62,7 +61,7 @@ interface IClient
 	 *
 	 * @return void
 	 */
-	function setHttpBuffer(string $buffer);
+	function setHttpBuffer(string $buffer) : void;
 
 	/**
 	 * @return string
@@ -74,7 +73,7 @@ interface IClient
 	 *
 	 * @return void
 	 */
-	function setRequest(Http\IRequest $httpRequest);
+	function setRequest(Http\IRequest $httpRequest) : void;
 
 	/**
 	 * @return Http\IRequest
@@ -86,7 +85,7 @@ interface IClient
 	 *
 	 * @return void
 	 */
-	function setWebSocket(Entities\WebSockets\IWebSocket $webSocket);
+	function setWebSocket(Entities\WebSockets\IWebSocket $webSocket) : void;
 
 	/**
 	 * @return Entities\WebSockets\IWebSocket
@@ -99,7 +98,7 @@ interface IClient
 	 *
 	 * @return void
 	 */
-	function addParameter(string $key, $value);
+	function addParameter(string $key, $value) : void;
 
 	/**
 	 * @param string $key
@@ -114,24 +113,24 @@ interface IClient
 	 *
 	 * @return void
 	 */
-	function close(int $code = NULL);
+	function close(?int $code = NULL) : void;
 
 	/**
 	 * @param Responses\IResponse|string $response
 	 *
 	 * @return void
 	 */
-	function send($response);
+	function send($response) : void;
 
 	/**
 	 * @param NS\User $user
 	 *
 	 * @return void
 	 */
-	function setUser(NS\User $user);
+	function setUser(NS\User $user) : void;
 
 	/**
 	 * @return NS\User|NULL
 	 */
-	function getUser();
+	function getUser() : ?NS\User;
 }

@@ -3,8 +3,8 @@
  * Wrapper.php
  *
  * @copyright      More in license.md
- * @license        http://www.ipublikuj.eu
- * @author         Adam Kadlec http://www.ipublikuj.eu
+ * @license        https://www.ipublikuj.eu
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
  * @subpackage     Server
  * @since          1.0.0
@@ -18,7 +18,6 @@ namespace IPub\WebSockets\Server;
 
 use Nette;
 
-use IPub;
 use IPub\WebSockets\Application;
 use IPub\WebSockets\Clients;
 use IPub\WebSockets\Entities;
@@ -128,7 +127,7 @@ final class Wrapper implements IWrapper
 	/**
 	 * {@inheritdoc}
 	 */
-	public function handleOpen(Entities\Clients\IClient $client)
+	public function handleOpen(Entities\Clients\IClient $client) : void
 	{
 		$client->setHTTPHeadersReceived(FALSE);
 	}
@@ -136,7 +135,7 @@ final class Wrapper implements IWrapper
 	/**
 	 * {@inheritdoc}
 	 */
-	public function handleMessage(Entities\Clients\IClient $client, string $message)
+	public function handleMessage(Entities\Clients\IClient $client, string $message) : void
 	{
 		if (!$client->isHTTPHeadersReceived()) {
 			$client->setHttpBuffer($client->getHttpBuffer() . $message);
@@ -168,7 +167,7 @@ final class Wrapper implements IWrapper
 	/**
 	 * {@inheritdoc}
 	 */
-	public function handleClose(Entities\Clients\IClient $client)
+	public function handleClose(Entities\Clients\IClient $client) : void
 	{
 		if ($client->isHTTPHeadersReceived()) {
 			$this->connectionClose($client);
@@ -178,7 +177,7 @@ final class Wrapper implements IWrapper
 	/**
 	 * {@inheritdoc}
 	 */
-	public function handleError(Entities\Clients\IClient $client, \Exception $ex)
+	public function handleError(Entities\Clients\IClient $client, \Exception $ex) : void
 	{
 		if ($client->isHTTPHeadersReceived()) {
 			$this->connectionError($client, $ex);
@@ -195,7 +194,7 @@ final class Wrapper implements IWrapper
 	 *
 	 * @return void
 	 */
-	private function connectionOpen(Entities\Clients\IClient $client, Http\IRequest $httpRequest)
+	private function connectionOpen(Entities\Clients\IClient $client, Http\IRequest $httpRequest) : void
 	{
 		if (!$this->protocolsProxy->isProtocolEnabled($httpRequest)) {
 			$this->close($client);
@@ -222,7 +221,7 @@ final class Wrapper implements IWrapper
 	 *
 	 * @return void
 	 */
-	private function connectionClose(Entities\Clients\IClient $client)
+	private function connectionClose(Entities\Clients\IClient $client) : void
 	{
 		try {
 			// Call service event
@@ -244,7 +243,7 @@ final class Wrapper implements IWrapper
 	 *
 	 * @return void
 	 */
-	public function connectionError(Entities\Clients\IClient $client, \Exception $ex)
+	public function connectionError(Entities\Clients\IClient $client, \Exception $ex) : void
 	{
 		try {
 			$webSocket = $client->getWebSocket();
@@ -272,7 +271,7 @@ final class Wrapper implements IWrapper
 	 *
 	 * @return void
 	 */
-	private function connectionMessage(Entities\Clients\IClient $client, $message)
+	private function connectionMessage(Entities\Clients\IClient $client, $message) : void
 	{
 		$webSocket = $client->getWebSocket();
 
@@ -303,7 +302,7 @@ final class Wrapper implements IWrapper
 	 */
 	private function attemptUpgrade(
 		Entities\Clients\IClient $client,
-		$data = ''
+		string $data = ''
 	) {
 		/** @var Http\IRequest $httpRequest */
 		$httpRequest = $client->getRequest();

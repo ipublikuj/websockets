@@ -3,8 +3,8 @@
  * Frame.php
  *
  * @copyright      More in license.md
- * @license        http://www.ipublikuj.eu
- * @author         Adam Kadlec http://www.ipublikuj.eu
+ * @license        https://www.ipublikuj.eu
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
  * @subpackage     Protocols
  * @since          1.0.0
@@ -18,7 +18,6 @@ namespace IPub\WebSockets\Protocols\RFC6455;
 
 use Nette;
 
-use IPub;
 use IPub\WebSockets\Exceptions;
 use IPub\WebSockets\Protocols;
 
@@ -113,7 +112,7 @@ final class Frame implements Protocols\IFrame
 	 * @param bool $final
 	 * @param int $opCode
 	 */
-	public function __construct(string $payload = NULL, bool $final = TRUE, int $opCode = self::OP_TEXT)
+	public function __construct(?string $payload = NULL, bool $final = TRUE, int $opCode = self::OP_TEXT)
 	{
 		if ($payload === NULL) {
 			return;
@@ -164,7 +163,7 @@ final class Frame implements Protocols\IFrame
 	/**
 	 * {@inheritdoc}
 	 */
-	public function addBuffer(string $buffer)
+	public function addBuffer(string $buffer) : void
 	{
 		$len = strlen($buffer);
 
@@ -290,7 +289,7 @@ final class Frame implements Protocols\IFrame
 	 * @throws \OutOfBoundsException
 	 * @throws Exceptions\InvalidArgumentException If there is an issue with the given masking key
 	 */
-	public function maskPayload(string $maskingKey = NULL)
+	public function maskPayload(?string $maskingKey = NULL)
 	{
 		if ($maskingKey === NULL) {
 			$maskingKey = $this->generateMaskingKey();
@@ -322,7 +321,7 @@ final class Frame implements Protocols\IFrame
 	 *
 	 * @throws \UnderFlowException if the frame is not coalesced
 	 */
-	public function unMaskPayload()
+	public function unMaskPayload() : void
 	{
 		if (!$this->isCoalesced()) {
 			throw new \UnderflowException('Frame must be coalesced before applying mask');
@@ -351,7 +350,7 @@ final class Frame implements Protocols\IFrame
 	 *
 	 * @throws \UnderflowException If using the payload but enough hasn't been buffered
 	 */
-	public function applyMask(string $maskingKey, string $payload = NULL) : string
+	public function applyMask(string $maskingKey, ?string $payload = NULL) : string
 	{
 		if ($payload === NULL) {
 			if (!$this->isCoalesced()) {

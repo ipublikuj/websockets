@@ -3,8 +3,8 @@
  * Application.php
  *
  * @copyright      More in license.md
- * @license        http://www.ipublikuj.eu
- * @author         Adam Kadlec http://www.ipublikuj.eu
+ * @license        https://www.ipublikuj.eu
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
  * @subpackage     Application
  * @since          1.0.0
@@ -20,7 +20,6 @@ use Nette;
 
 use Psr\Log;
 
-use IPub;
 use IPub\WebSockets\Application\Responses;
 use IPub\WebSockets\Application\Controller;
 use IPub\WebSockets\Clients;
@@ -101,7 +100,7 @@ abstract class Application implements IApplication
 		Router\IRouter $router,
 		Controller\IControllerFactory $controllerFactory,
 		Clients\IStorage $clientsStorage,
-		Log\LoggerInterface $logger = NULL
+		?Log\LoggerInterface $logger = NULL
 	) {
 		$this->router = $router;
 		$this->controllerFactory = $controllerFactory;
@@ -112,7 +111,7 @@ abstract class Application implements IApplication
 	/**
 	 * {@inheritdoc}
 	 */
-	public function handleOpen(Entities\Clients\IClient $client, Http\IRequest $httpRequest)
+	public function handleOpen(Entities\Clients\IClient $client, Http\IRequest $httpRequest) : void
 	{
 		$this->logger->info(sprintf('New connection! (%s)', $client->getId()));
 
@@ -122,7 +121,7 @@ abstract class Application implements IApplication
 	/**
 	 * {@inheritdoc}
 	 */
-	public function handleClose(Entities\Clients\IClient $client, Http\IRequest $httpRequest)
+	public function handleClose(Entities\Clients\IClient $client, Http\IRequest $httpRequest) : void
 	{
 		$this->onClose($this, $client, $httpRequest);
 
@@ -132,7 +131,7 @@ abstract class Application implements IApplication
 	/**
 	 * {@inheritdoc}
 	 */
-	public function handleError(Entities\Clients\IClient $client, Http\IRequest $httpRequest, \Exception $ex)
+	public function handleError(Entities\Clients\IClient $client, Http\IRequest $httpRequest, \Exception $ex) : void
 	{
 		$this->logger->info(sprintf('An error (%s) has occurred: %s', $ex->getCode(), $ex->getMessage()));
 
@@ -151,7 +150,7 @@ abstract class Application implements IApplication
 	/**
 	 * {@inheritdoc}
 	 */
-	public function handleMessage(Entities\Clients\IClient $from, Http\IRequest $httpRequest, string $message)
+	public function handleMessage(Entities\Clients\IClient $from, Http\IRequest $httpRequest, string $message) : void
 	{
 		$this->onMessage($this, $from, $httpRequest, $message);
 	}
@@ -164,7 +163,7 @@ abstract class Application implements IApplication
 	 *
 	 * @throws Exceptions\BadRequestException
 	 */
-	protected function processMessage(Http\IRequest $httpRequest, array $parameters)
+	protected function processMessage(Http\IRequest $httpRequest, array $parameters) : ?Responses\IResponse
 	{
 		$appRequest = $this->router->match($httpRequest);
 
@@ -196,7 +195,7 @@ abstract class Application implements IApplication
 	 *
 	 * @return void
 	 */
-	protected function close(Entities\Clients\IClient $client, int $code = 400, array $additionalHeaders = [])
+	protected function close(Entities\Clients\IClient $client, int $code = 400, array $additionalHeaders = []) : void
 	{
 		$headers = array_merge([
 			'X-Powered-By' => Server\Server::VERSION
@@ -204,7 +203,7 @@ abstract class Application implements IApplication
 
 		$response = new Responses\ErrorResponse($code, $headers);
 
-		$client->send((string) $response);
+		$client->send($response);
 		$client->close();
 	}
 }

@@ -3,8 +3,8 @@
  * ProtocolProxy.php
  *
  * @copyright      More in license.md
- * @license        http://www.ipublikuj.eu
- * @author         Adam Kadlec http://www.ipublikuj.eu
+ * @license        https://www.ipublikuj.eu
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
  * @subpackage     Protocols
  * @since          1.0.0
@@ -18,7 +18,6 @@ namespace IPub\WebSockets\Protocols;
 
 use Nette;
 
-use IPub;
 use IPub\WebSockets\Exceptions;
 use IPub\WebSockets\Http;
 
@@ -87,7 +86,7 @@ final class ProtocolProxy
 	 *
 	 * @return void
 	 */
-	public function enableProtocol(IProtocol $protocol)
+	public function enableProtocol(IProtocol $protocol) : void
 	{
 		$this->protocols[$protocol->getVersion()] = $protocol;
 	}
@@ -99,7 +98,7 @@ final class ProtocolProxy
 	 *
 	 * @return void
 	 */
-	public function disableProtocol(string $protocolId)
+	public function disableProtocol(string $protocolId) : void
 	{
 		unset($this->protocols[$protocolId]);
 	}

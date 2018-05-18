@@ -3,8 +3,8 @@
  * ControllerFactory.php
  *
  * @copyright      More in license.md
- * @license        http://www.ipublikuj.eu
- * @author         Adam Kadlec http://www.ipublikuj.eu
+ * @license        https://www.ipublikuj.eu
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
  * @subpackage     Application
  * @since          1.0.0
@@ -20,8 +20,6 @@ use Nette;
 use Nette\DI;
 use Nette\Utils;
 
-use IPub;
-use IPub\WebSockets\Application;
 use IPub\WebSockets\Exceptions;
 
 /**
@@ -66,7 +64,7 @@ class ControllerFactory implements IControllerFactory
 	 * @param callable|NULL $factory
 	 * @param DI\Container $container
 	 */
-	public function __construct(callable $factory = NULL, Nette\DI\Container $container)
+	public function __construct(?callable $factory = NULL, Nette\DI\Container $container)
 	{
 		$this->container = $container;
 
@@ -152,7 +150,7 @@ class ControllerFactory implements IControllerFactory
 	 *
 	 * @throws Exceptions\InvalidStateException
 	 */
-	public function setMapping(array $mapping)
+	public function setMapping(array $mapping) : void
 	{
 		foreach ($mapping as $module => $mask) {
 			if (is_string($mask)) {

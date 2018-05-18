@@ -3,8 +3,8 @@
  * IRequest.php
  *
  * @copyright      More in license.md
- * @license        http://www.ipublikuj.eu
- * @author         Adam Kadlec http://www.ipublikuj.eu
+ * @license        https://www.ipublikuj.eu
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
  * @subpackage     Http
  * @since          1.0.0
@@ -97,7 +97,7 @@ interface IResponse
 	 *
 	 * @return void
 	 */
-	function setCode(int $code, string $reason = NULL);
+	function setCode(int $code, ?string $reason = NULL) : void;
 
 	/**
 	 * Returns HTTP response code
@@ -114,7 +114,7 @@ interface IResponse
 	 *
 	 * @return void
 	 */
-	function addHeader(string $name, string $value);
+	function addHeader(string $name, string $value) : void;
 
 	/**
 	 * Returns value of an HTTP header
@@ -140,6 +140,8 @@ interface IResponse
 
 	/**
 	 * @param string|NULL $body
+	 *
+	 * @return void
 	 */
-	function setBody(string $body = NULL);
+	function setBody(string $body = NULL) : void;
 }

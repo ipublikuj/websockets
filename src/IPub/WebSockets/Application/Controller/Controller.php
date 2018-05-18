@@ -3,8 +3,8 @@
  * Controller.php
  *
  * @copyright      More in license.md
- * @license        http://www.ipublikuj.eu
- * @author         Adam Kadlec http://www.ipublikuj.eu
+ * @license        https://www.ipublikuj.eu
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
  * @subpackage     Application
  * @since          1.0.0
@@ -20,7 +20,6 @@ use Nette;
 use Nette\Http;
 use Nette\Security as NS;
 
-use IPub;
 use IPub\WebSockets\Application;
 use IPub\WebSockets\Application\Responses;
 use IPub\WebSockets\Exceptions;
@@ -138,12 +137,12 @@ abstract class Controller implements IController
 	 * @param Http\Session|NULL $session
 	 */
 	public function injectPrimary(
-		Nette\DI\Container $context = NULL,
-		IControllerFactory $controllerFactory = NULL,
-		Router\IRouter $router = NULL,
-		Router\LinkGenerator $linkGenerator = NULL,
-		NS\User $user = NULL,
-		Http\Session $session = NULL
+		?Nette\DI\Container $context = NULL,
+		?IControllerFactory $controllerFactory = NULL,
+		?Router\IRouter $router = NULL,
+		?Router\LinkGenerator $linkGenerator = NULL,
+		?NS\User $user = NULL,
+		?Http\Session $session = NULL
 	) {
 		if ($this->controllerFactory !== NULL) {
 			throw new Nette\InvalidStateException(sprintf('Method "%s" is intended for initialization and should not be called more than once.', __METHOD__));
@@ -229,7 +228,7 @@ abstract class Controller implements IController
 	 *
 	 * @throws Exceptions\ForbiddenRequestException
 	 */
-	public function checkRequirements($element)
+	public function checkRequirements($element) : void
 	{
 		$user = (array) Nette\Application\UI\ComponentReflection::parseAnnotation($element, 'User');
 
@@ -254,7 +253,7 @@ abstract class Controller implements IController
 	 * @throws Exceptions\AbortException
 	 * @throws Exceptions\BadRequestException
 	 */
-	public function sendPayload()
+	public function sendPayload() : void
 	{
 		if (isset($this->payload->callback)) {
 			$this->sendResponse(new Responses\CallResponse($this->payload->callback, $this->payload->data));
@@ -263,7 +262,7 @@ abstract class Controller implements IController
 			$this->sendResponse(new Responses\MessageResponse($this->payload->data));
 		}
 
-		$this->sendResponse(new Responses\NullResponse());
+		$this->sendResponse(new Responses\NullResponse);
 	}
 
 	/**
@@ -275,7 +274,7 @@ abstract class Controller implements IController
 	 *
 	 * @throws Exceptions\AbortException
 	 */
-	public function sendResponse(Responses\IResponse $response)
+	public function sendResponse(Responses\IResponse $response) : void
 	{
 		$this->response = $response;
 
@@ -289,7 +288,7 @@ abstract class Controller implements IController
 	 *
 	 * @throws Exceptions\AbortException
 	 */
-	public function terminate()
+	public function terminate() : void
 	{
 		throw new Exceptions\AbortException;
 	}
@@ -316,7 +315,7 @@ abstract class Controller implements IController
 	 *
 	 * @throws Exceptions\BadRequestException
 	 */
-	private function changeAction($action)
+	private function changeAction($action) : void
 	{
 		if (is_string($action) && Nette\Utils\Strings::match($action, '#^[a-zA-Z0-9][a-zA-Z0-9_\x7f-\xff]*\z#')) {
 			$this->action = $action;
@@ -333,7 +332,7 @@ abstract class Controller implements IController
 	 *
 	 * @throws Exceptions\InvalidStateException
 	 */
-	public function getSession(string $namespace = NULL)
+	public function getSession(?string $namespace = NULL)
 	{
 		if (!$this->session) {
 			throw new Exceptions\InvalidStateException('Service Session has not been set.');
@@ -389,12 +388,14 @@ abstract class Controller implements IController
 	 * @param array $supplemental supplemental arguments
 	 * @param array $missing      missing arguments
 	 *
+	 * @return void
+	 *
 	 * @throws Exceptions\InvalidLinkException
 	 * @throws \ReflectionException
 	 *
 	 * @internal
 	 */
-	public static function argsToParams(string $class, string $method, array &$args, array $supplemental = [], array &$missing = [])
+	public static function argsToParams(string $class, string $method, array &$args, array $supplemental = [], array &$missing = []) : void
 	{
 		$i = 0;
 		$rm = new \ReflectionMethod($class, $method);
@@ -447,7 +448,7 @@ abstract class Controller implements IController
 	/**
 	 * @return void
 	 */
-	protected function startup()
+	protected function startup() : void
 	{
 		$this->startupCheck = TRUE;
 	}
@@ -457,7 +458,7 @@ abstract class Controller implements IController
 	 *
 	 * @return void
 	 */
-	protected function shutdown(Responses\IResponse $response)
+	protected function shutdown(Responses\IResponse $response) : void
 	{
 
 	}
@@ -493,7 +494,7 @@ abstract class Controller implements IController
 	 *
 	 * @return void
 	 */
-	private function initGlobalParameters()
+	private function initGlobalParameters() : void
 	{
 		// init $this->globalParams
 		$this->globalParams = [];

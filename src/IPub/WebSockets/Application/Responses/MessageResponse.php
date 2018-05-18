@@ -3,8 +3,8 @@
  * MessageResponse.php
  *
  * @copyright      More in license.md
- * @license        http://www.ipublikuj.eu
- * @author         Adam Kadlec http://www.ipublikuj.eu
+ * @license        https://www.ipublikuj.eu
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
  * @subpackage     Responses
  * @since          1.0.0
@@ -48,9 +48,9 @@ class MessageResponse implements IResponse
 	}
 
 	/**
-	 * @return string
+	 * {@inheritdoc}
 	 */
-	public function create() : string
+	public function create() : ?string
 	{
 		return $this->data;
 	}

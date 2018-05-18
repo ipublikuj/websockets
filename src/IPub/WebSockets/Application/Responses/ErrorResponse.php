@@ -3,8 +3,8 @@
  * ErrorResponse.php
  *
  * @copyright      More in license.md
- * @license        http://www.ipublikuj.eu
- * @author         Adam Kadlec http://www.ipublikuj.eu
+ * @license        https://www.ipublikuj.eu
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
  * @subpackage     Responses
  * @since          1.0.0
@@ -19,7 +19,6 @@ namespace IPub\WebSockets\Application\Responses;
 use Nette;
 use Nette\Utils;
 
-use IPub;
 use IPub\WebSockets\Exceptions;
 
 /**
@@ -73,7 +72,7 @@ class ErrorResponse implements IResponse
 	 *
 	 * @throws Exceptions\InvalidArgumentException
 	 */
-	public function setStatus(int $statusCode)
+	public function setStatus(int $statusCode) : void
 	{
 		if ($statusCode < 100 || $statusCode > 599) {
 			throw new Exceptions\InvalidArgumentException(sprintf('Bad HTTP response "%s".', $statusCode));
@@ -87,7 +86,7 @@ class ErrorResponse implements IResponse
 	 *
 	 * @return void
 	 */
-	public function setHeaders(array $headers)
+	public function setHeaders(array $headers) : void
 	{
 		$this->headers = new Utils\ArrayHash;
 
@@ -102,7 +101,7 @@ class ErrorResponse implements IResponse
 	 *
 	 * @return void
 	 */
-	public function addHeader(string $header, $value)
+	public function addHeader(string $header, $value) : void
 	{
 		$this->headers->offsetSet($header, $value);
 	}
@@ -110,7 +109,7 @@ class ErrorResponse implements IResponse
 	/**
 	 * {@inheritdoc}
 	 */
-	public function create() : string
+	public function create() : ?string
 	{
 		$headers = [];
 		$headers[] = 'HTTP/1.1 ' . $this->statusCode;
@@ -119,7 +118,7 @@ class ErrorResponse implements IResponse
 			$headers[] = $key .':'. $value;
 		}
 
-		return implode("\r\n", $headers) . "\r\n";
+		return Utils\Json::encode($headers);
 	}
 
 	/**

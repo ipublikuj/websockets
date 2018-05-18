@@ -3,8 +3,8 @@
  * Storage.php
  *
  * @copyright      More in license.md
- * @license        http://www.ipublikuj.eu
- * @author         Adam Kadlec http://www.ipublikuj.eu
+ * @license        https://www.ipublikuj.eu
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
  * @subpackage     Storage
  * @since          1.0.0
@@ -20,7 +20,6 @@ use Nette;
 
 use Psr\Log;
 
-use IPub;
 use IPub\WebSockets\Clients\Drivers;
 use IPub\WebSockets\Entities;
 use IPub\WebSockets\Exceptions;
@@ -59,7 +58,7 @@ final class Storage implements IStorage
 	 * @param int|NULL $ttl
 	 * @param Log\LoggerInterface|NULL $logger
 	 */
-	public function __construct(int $ttl = 0, Log\LoggerInterface $logger = NULL)
+	public function __construct(int $ttl = 0, ?Log\LoggerInterface $logger = NULL)
 	{
 		$this->ttl = $ttl;
 		$this->logger = $logger === NULL ? new Log\NullLogger : $logger;
@@ -68,7 +67,7 @@ final class Storage implements IStorage
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setStorageDriver(Drivers\IDriver $driver)
+	public function setStorageDriver(Drivers\IDriver $driver) : void
 	{
 		$this->driver = $driver;
 	}
@@ -97,7 +96,7 @@ final class Storage implements IStorage
 	/**
 	 * {@inheritdoc}
 	 */
-	public function addClient(int $identifier, Entities\Clients\IClient $client)
+	public function addClient(int $identifier, Entities\Clients\IClient $client) : void
 	{
 		$context = [
 			'user' => $client->getUser(),
@@ -156,7 +155,7 @@ final class Storage implements IStorage
 	/**
 	 * {@inheritdoc}
 	 */
-	public function refreshClient(Entities\Clients\IClient $client)
+	public function refreshClient(Entities\Clients\IClient $client) : void
 	{
 		if ($this->hasClient($client->getId())) {
 			$this->driver->save($client->getId(), $client, $this->ttl);

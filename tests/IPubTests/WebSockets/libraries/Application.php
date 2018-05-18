@@ -4,8 +4,8 @@
  * @testCase
  *
  * @copyright      More in license.md
- * @license        http://www.ipublikuj.eu
- * @author         Adam Kadlec http://www.ipublikuj.eu
+ * @license        https://www.ipublikuj.eu
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
  * @subpackage     Tests
  * @since          1.0.0
@@ -27,7 +27,7 @@ class Application implements IApplication
 	/**
 	 * {@inheritdoc}
 	 */
-	function handleOpen(Entities\Clients\IClient $client, Http\IRequest $httpRequest)
+	function handleOpen(Entities\Clients\IClient $client, Http\IRequest $httpRequest) : void
 	{
 
 	}
@@ -35,7 +35,7 @@ class Application implements IApplication
 	/**
 	 * {@inheritdoc}
 	 */
-	function handleClose(Entities\Clients\IClient $client, Http\IRequest $httpRequest)
+	function handleClose(Entities\Clients\IClient $client, Http\IRequest $httpRequest) : void
 	{
 
 	}
@@ -43,7 +43,7 @@ class Application implements IApplication
 	/**
 	 * {@inheritdoc}
 	 */
-	function handleError(Entities\Clients\IClient $client, Http\IRequest $httpRequest, \Exception $ex)
+	function handleError(Entities\Clients\IClient $client, Http\IRequest $httpRequest, \Exception $ex) : void
 	{
 
 	}
@@ -51,7 +51,7 @@ class Application implements IApplication
 	/**
 	 * {@inheritdoc}
 	 */
-	function handleMessage(Entities\Clients\IClient $from, Http\IRequest $httpRequest, string $message)
+	function handleMessage(Entities\Clients\IClient $from, Http\IRequest $httpRequest, string $message) : void
 	{
 
 	}

@@ -3,8 +3,8 @@
  * Server.php
  *
  * @copyright      More in license.md
- * @license        http://www.ipublikuj.eu
- * @author         Adam Kadlec http://www.ipublikuj.eu
+ * @license        https://www.ipublikuj.eu
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
  * @subpackage     Server
  * @since          1.0.0
@@ -23,7 +23,6 @@ use Psr\Log;
 use React;
 use React\EventLoop;
 
-use IPub;
 use IPub\WebSockets\Clients;
 use IPub\WebSockets\Entities;
 
@@ -55,6 +54,11 @@ final class Server
 	 * @var IWrapper
 	 */
 	private $application;
+
+	/**
+	 * @var FlashWrapper
+	 */
+	private $flashApplication;
 
 	/**
 	 * @var Clients\Storage
@@ -97,41 +101,15 @@ final class Server
 		Configuration $configuration,
 		Clients\Storage $clientStorage,
 		Clients\IClientFactory $clientFactory,
-		Log\LoggerInterface $logger = NULL
+		?Log\LoggerInterface $logger = NULL
 	) {
 		$this->clientStorage = $clientStorage;
 		$this->clientFactory = $clientFactory;
 		$this->loop = $loop;
 		$this->configuration = $configuration;
 		$this->application = $application;
+		$this->flashApplication = $flashApplication;
 		$this->logger = $logger === NULL ? new Log\NullLogger : $logger;
-
-		$client = $configuration->getAddress() . ':' . $configuration->getPort();
-		$socket = new React\Socket\Server($client, $this->loop);
-
-		if ($configuration->isSSLEnabled()) {
-			$socket = new React\Socket\SecureServer($socket, $this->loop, $this->configuration->getSSLConfiguration());
-		}
-
-		$socket->on('connection', function (React\Socket\ConnectionInterface $connection) use ($application) {
-			$this->handleConnect($connection, $application);
-		});
-		$socket->on('error', function (\Exception $ex) {
-			$this->logger->error('Could not establish connection: '. $ex->getMessage());
-		});
-
-		if ($configuration->getPort() === 80) {
-			$client = '0.0.0.0:843';
-
-		} else {
-			$client = $configuration->getAddress() . ':8843';
-		}
-
-		$flashSocket = new React\Socket\Server($client, $this->loop);
-
-		$flashSocket->on('connection', function (React\Socket\ConnectionInterface $connection) use ($flashApplication) {
-			$this->handleConnect($connection, $flashApplication);
-		});
 	}
 
 	/**
@@ -139,8 +117,36 @@ final class Server
 	 *
 	 * @return void
 	 */
-	public function run()
+	public function run() : void
 	{
+		$client = $this->configuration->getAddress() . ':' . $this->configuration->getPort();
+		$socket = new React\Socket\Server($client, $this->loop);
+
+		if ($this->configuration->isSSLEnabled()) {
+			$socket = new React\Socket\SecureServer($socket, $this->loop, $this->configuration->getSSLConfiguration());
+		}
+
+		$socket->on('connection', function (React\Socket\ConnectionInterface $connection) {
+			$this->handleConnect($connection, $this->application);
+		});
+
+		$socket->on('error', function (\Exception $ex) {
+			$this->logger->error('Could not establish connection: '. $ex->getMessage());
+		});
+
+		if ($this->configuration->getPort() === 80) {
+			$client = '0.0.0.0:843';
+
+		} else {
+			$client = $this->configuration->getAddress() . ':8843';
+		}
+
+		$flashSocket = new React\Socket\Server($client, $this->loop);
+
+		$flashSocket->on('connection', function (React\Socket\ConnectionInterface $connection) {
+			$this->handleConnect($connection, $this->flashApplication);
+		});
+
 		$this->logger->debug('Starting IPub\WebSockets');
 		$this->logger->debug(sprintf('Launching WebSockets WS Server on: %s:%s', $this->configuration->getHttpHost(), $this->configuration->getPort()));
 
@@ -155,7 +161,7 @@ final class Server
 	 *
 	 * @return void
 	 */
-	private function handleConnect(React\Socket\ConnectionInterface $connection, IWrapper $application)
+	private function handleConnect(React\Socket\ConnectionInterface $connection, IWrapper $application) : void
 	{
 		$client = $this->clientFactory->create((int) $connection->stream, $connection);
 
@@ -196,7 +202,7 @@ final class Server
 	 *
 	 * @return void
 	 */
-	private function handleData(string $data, React\Socket\ConnectionInterface $connection, IWrapper $application)
+	private function handleData(string $data, React\Socket\ConnectionInterface $connection, IWrapper $application) : void
 	{
 		try {
 			$client = $this->clientStorage->getClient((int) $connection->stream);
@@ -214,7 +220,7 @@ final class Server
 	 *
 	 * @return void
 	 */
-	private function handleEnd(React\Socket\ConnectionInterface $connection, IWrapper $application)
+	private function handleEnd(React\Socket\ConnectionInterface $connection, IWrapper $application) : void
 	{
 		try {
 			$client = $this->clientStorage->getClient((int) $connection->stream);
@@ -233,7 +239,7 @@ final class Server
 	 *
 	 * @return void
 	 */
-	private function handleError(\Exception $ex, React\Socket\ConnectionInterface $connection, IWrapper $application)
+	private function handleError(\Exception $ex, React\Socket\ConnectionInterface $connection, IWrapper $application) : void
 	{
 		try {
 			$client = $this->clientStorage->getClient((int) $connection->stream);

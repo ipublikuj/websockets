@@ -3,8 +3,8 @@
  * Console.php
  *
  * @copyright      More in license.md
- * @license        http://www.ipublikuj.eu
- * @author         Adam Kadlec http://www.ipublikuj.eu
+ * @license        https://www.ipublikuj.eu
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
  * @subpackage     Logger
  * @since          1.0.0
@@ -19,8 +19,6 @@ namespace IPub\WebSockets\Logger;
 use Nette;
 
 use Psr\Log;
-
-use IPub;
 
 /**
  * WebSockets server output printer
@@ -47,7 +45,7 @@ final class Console implements Log\LoggerInterface
 	 *
 	 * @return void
 	 */
-	public function setFormatter(Formatter\IFormatter $formatter)
+	public function setFormatter(Formatter\IFormatter $formatter) : void
 	{
 		$this->formatter = $formatter;
 	}
@@ -55,7 +53,7 @@ final class Console implements Log\LoggerInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function emergency($message, array $context = [])
+	public function emergency($message, array $context = []) : void
 	{
 		if ($this->formatter) {
 			$this->formatter->caution($message);
@@ -70,7 +68,7 @@ final class Console implements Log\LoggerInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function alert($message, array $context = [])
+	public function alert($message, array $context = []) : void
 	{
 		if ($this->formatter) {
 			$this->formatter->error($message);
@@ -85,7 +83,7 @@ final class Console implements Log\LoggerInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function critical($message, array $context = [])
+	public function critical($message, array $context = []) : void
 	{
 		if ($this->formatter) {
 			$this->formatter->error($message);
@@ -100,7 +98,7 @@ final class Console implements Log\LoggerInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function error($message, array $context = [])
+	public function error($message, array $context = []) : void
 	{
 		if ($this->formatter) {
 			$this->formatter->error($message);
@@ -115,7 +113,7 @@ final class Console implements Log\LoggerInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function warning($message, array $context = [])
+	public function warning($message, array $context = []) : void
 	{
 		if ($this->formatter) {
 			$this->formatter->warning($message);
@@ -130,7 +128,7 @@ final class Console implements Log\LoggerInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function notice($message, array $context = [])
+	public function notice($message, array $context = []) : void
 	{
 		if ($this->formatter) {
 			$this->formatter->note($message);
@@ -145,7 +143,7 @@ final class Console implements Log\LoggerInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function info($message, array $context = [])
+	public function info($message, array $context = []) : void
 	{
 		if ($this->formatter) {
 			$this->formatter->note($message);
@@ -160,7 +158,7 @@ final class Console implements Log\LoggerInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function debug($message, array $context = [])
+	public function debug($message, array $context = []) : void
 	{
 		if ($this->formatter) {
 			$this->formatter->note($message);
@@ -175,7 +173,7 @@ final class Console implements Log\LoggerInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function log($level, $message, array $context = [])
+	public function log($level, $message, array $context = []) : void
 	{
 		if ($this->formatter) {
 			$this->formatter->note($message);
@@ -190,7 +188,7 @@ final class Console implements Log\LoggerInterface
 	/**
 	 * @param string $message
 	 */
-	private function writeln(string $message)
+	private function writeln(string $message) : void
 	{
 		if ($this->formatter) {
 			$this->formatter->writeln($message);

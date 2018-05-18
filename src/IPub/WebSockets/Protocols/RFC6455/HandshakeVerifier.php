@@ -3,8 +3,8 @@
  * HandshakeVerifier.php
  *
  * @copyright      More in license.md
- * @license        http://www.ipublikuj.eu
- * @author         Adam Kadlec http://www.ipublikuj.eu
+ * @license        https://www.ipublikuj.eu
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
  * @subpackage     Protocols
  * @since          1.0.0
@@ -18,7 +18,6 @@ namespace IPub\WebSockets\Protocols\RFC6455;
 
 use Nette;
 
-use IPub;
 use IPub\WebSockets\Http;
 
 /**
@@ -59,7 +58,7 @@ final class HandshakeVerifier
 	 *
 	 * @return bool TRUE if all headers are valid, FALSE if 1 or more were invalid
 	 */
-	public function verifyAll(Http\IRequest $httpRequest)
+	public function verifyAll(Http\IRequest $httpRequest) : bool
 	{
 		$passes = 0;
 
@@ -94,7 +93,7 @@ final class HandshakeVerifier
 	 *
 	 * @return bool
 	 */
-	public function verifyHTTPVersion(float $val = NULL) : bool
+	public function verifyHTTPVersion(?float $val = NULL) : bool
 	{
 		return $val && $val >= 1.1;
 	}
@@ -129,7 +128,7 @@ final class HandshakeVerifier
 	 * @todo Find out if I can find the master socket, ensure the port is attached to header if not 80 or 443 - not sure if this is possible, as I tried to hide it
 	 * @todo Once I fix HTTP::getHeaders just verify this isn't NULL or empty...or maybe need to verify it's a valid domain??? Or should it equal $_SERVER['HOST'] ?
 	 */
-	public function verifyHost(string $val = NULL) : bool
+	public function verifyHost(?string $val = NULL) : bool
 	{
 		return $val !== NULL;
 	}
@@ -176,7 +175,7 @@ final class HandshakeVerifier
 	 * @todo  The spec says we don't need to base64_decode - can I just check if the length is 24 and not decode?
 	 * @todo  Check the spec to see what the encoding of the key could be
 	 */
-	public function verifyKey(string $val = NULL) : bool
+	public function verifyKey(?string $val = NULL) : bool
 	{
 		return strlen(base64_decode($val)) === 16;
 	}

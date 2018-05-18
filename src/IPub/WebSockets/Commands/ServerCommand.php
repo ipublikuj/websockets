@@ -3,8 +3,8 @@
  * ServerCommand.php
  *
  * @copyright      More in license.md
- * @license        http://www.ipublikuj.eu
- * @author         Adam Kadlec http://www.ipublikuj.eu
+ * @license        https://www.ipublikuj.eu
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
  * @subpackage     Commands
  * @since          1.0.0
@@ -23,7 +23,6 @@ use Symfony\Component\Console\Output;
 
 use Psr\Log;
 
-use IPub;
 use IPub\WebSockets\Logger;
 use IPub\WebSockets\Server;
 
@@ -54,8 +53,8 @@ class ServerCommand extends Console\Command\Command
 	 */
 	public function __construct(
 		Server\Server $server,
-		Log\LoggerInterface $logger = NULL,
-		string $name = NULL
+		?Log\LoggerInterface $logger = NULL,
+		?string $name = NULL
 	) {
 		parent::__construct($name);
 
@@ -66,7 +65,7 @@ class ServerCommand extends Console\Command\Command
 	/**
 	 * @return void
 	 */
-	protected function configure()
+	protected function configure() : void
 	{
 		$this
 			->setName('ipub:websockets:start')
@@ -76,7 +75,7 @@ class ServerCommand extends Console\Command\Command
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function execute(Input\InputInterface $input, Output\OutputInterface $output)
+	protected function execute(Input\InputInterface $input, Output\OutputInterface $output) : void
 	{
 		$io = new Style\SymfonyStyle($input, $output);
 

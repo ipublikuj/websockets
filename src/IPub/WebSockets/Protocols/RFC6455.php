@@ -3,8 +3,8 @@
  * RFC6455.php
  *
  * @copyright      More in license.md
- * @license        http://www.ipublikuj.eu
- * @author         Adam Kadlec http://www.ipublikuj.eu
+ * @license        https://www.ipublikuj.eu
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
  * @subpackage     Protocols
  * @since          1.0.0
@@ -18,7 +18,6 @@ namespace IPub\WebSockets\Protocols;
 
 use Nette;
 
-use IPub;
 use IPub\WebSockets\Application;
 use IPub\WebSockets\Encoding;
 use IPub\WebSockets\Entities;
@@ -115,7 +114,7 @@ class RFC6455 implements IProtocol
 	/**
 	 * {@inheritdoc}
 	 */
-	public function handleMessage(Entities\Clients\IClient $client, Application\IApplication $application, string $data = '')
+	public function handleMessage(Entities\Clients\IClient $client, Application\IApplication $application, string $data = '') : void
 	{
 		$overflow = '';
 
@@ -263,10 +262,10 @@ class RFC6455 implements IProtocol
 	/**
 	 * {@inheritdoc}
 	 */
-	public function send(Entities\Clients\IClient $client, $payload)
+	public function send(Entities\Clients\IClient $client, $payload) : void
 	{
 		if (!$client->getWebSocket()->isClosing()) {
-			if (!($payload instanceof IData)) {
+			if (!$payload instanceof IData) {
 				$payload = new RFC6455\Frame($payload);
 			}
 
@@ -277,7 +276,7 @@ class RFC6455 implements IProtocol
 	/**
 	 * {@inheritdoc}
 	 */
-	public function close(Entities\Clients\IClient $client, int $code = NULL)
+	public function close(Entities\Clients\IClient $client, ?int $code = NULL) : void
 	{
 		if ($client->getWebSocket()->isClosing()) {
 			return;
@@ -332,7 +331,7 @@ class RFC6455 implements IProtocol
 	 *
 	 * @return RFC6455\Frame
 	 */
-	private function newFrame(string $payload = NULL, bool $final = TRUE, int $opCode = RFC6455\Frame::OP_TEXT) : RFC6455\Frame
+	private function newFrame(?string $payload = NULL, bool $final = TRUE, int $opCode = RFC6455\Frame::OP_TEXT) : RFC6455\Frame
 	{
 		return new RFC6455\Frame($payload, $final, $opCode);
 	}
@@ -360,7 +359,7 @@ class RFC6455 implements IProtocol
 	/**
 	 * Creates a private lookup of valid, private close codes
 	 */
-	private function setCloseCodes()
+	private function setCloseCodes() : void
 	{
 		$this->closeCodes[RFC6455\Frame::CLOSE_NORMAL] = TRUE;
 		$this->closeCodes[RFC6455\Frame::CLOSE_GOING_AWAY] = TRUE;

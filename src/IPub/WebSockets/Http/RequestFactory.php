@@ -3,8 +3,8 @@
  * RequestFactory.php
  *
  * @copyright      More in license.md
- * @license        http://www.ipublikuj.eu
- * @author         Adam Kadlec http://www.ipublikuj.eu
+ * @license        https://www.ipublikuj.eu
+ * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
  * @subpackage     Http
  * @since          1.0.0
@@ -104,7 +104,7 @@ final class RequestFactory
 	 *
 	 * @return void
 	 */
-	public function setBinary(bool $binary = TRUE)
+	public function setBinary(bool $binary = TRUE) : void
 	{
 		$this->binary = $binary;
 	}
@@ -114,7 +114,7 @@ final class RequestFactory
 	 *
 	 * @return void
 	 */
-	public function setProxy($proxy)
+	public function setProxy($proxy) : void
 	{
 		$this->proxies = (array) $proxy;
 	}
@@ -124,7 +124,7 @@ final class RequestFactory
 	 *
 	 * @return IRequest|NULL
 	 */
-	public function createHttpRequest(string $packet)
+	public function createHttpRequest(string $packet) : ?IRequest
 	{
 		if (strlen($packet) > $this->maxSize) {
 			throw new \OverflowException("Maximum buffer size of {$this->maxSize} exceeded parsing HTTP header");
@@ -151,7 +151,7 @@ final class RequestFactory
 		}
 
 		if (preg_match('#^([^\s]+)\s+([^\s]+)\s+HTTP/(1\.(?:0|1))$#i', $http, $matches) === 0) {
-			throw new Exception(
+			throw new \Exception(
 				'HTTP headers are not well-formed: %s',
 				0,
 				$http
@@ -342,7 +342,7 @@ final class RequestFactory
 	 *
 	 * @param  string $message
 	 *
-	 * @return boolean
+	 * @return bool
 	 */
 	private function isEom($message) : bool
 	{
