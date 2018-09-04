@@ -121,9 +121,6 @@ class WebSocketsController implements Controller\IController
 		if (is_string($response)) {
 			$response = new Responses\MessageResponse($response);
 
-		} elseif ($response instanceof \stdClass && isset($response->callback) && isset($response->data)) {
-			$response = new Responses\CallResponse($response->callback, $response->data);
-
 		} elseif (!$response instanceof Responses\IResponse) {
 			throw new Exceptions\InvalidStateException('Returned value from micro controller is no valid.');
 		}

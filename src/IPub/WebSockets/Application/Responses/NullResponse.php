@@ -36,7 +36,7 @@ class NullResponse implements IResponse
 	/**
 	 * {@inheritdoc}
 	 */
-	public function create() : ?string
+	public function create() : ?array
 	{
 		return NULL;
 	}

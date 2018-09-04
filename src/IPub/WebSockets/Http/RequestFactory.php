@@ -310,7 +310,7 @@ final class RequestFactory
 		if (!$this->binary) {
 			$list = [&$cookies];
 
-			while (list($key, $val) = each($list)) {
+			foreach ($list as $key=>$val) {
 				foreach ($val as $k => $v) {
 					if (is_string($k) && (!preg_match($reChars, $k) || preg_last_error())) {
 						unset($list[$key][$k]);

@@ -28,7 +28,7 @@ namespace IPub\WebSockets\Application\Responses;
 interface IResponse
 {
 	/**
-	 * @return string|NULL
+	 * @return mixed[]|NULL
 	 */
-	function create() : ?string;
+	function create() : ?array;
 }

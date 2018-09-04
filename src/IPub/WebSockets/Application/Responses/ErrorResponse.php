@@ -109,7 +109,7 @@ class ErrorResponse implements IResponse
 	/**
 	 * {@inheritdoc}
 	 */
-	public function create() : ?string
+	public function create() : ?array
 	{
 		$headers = [];
 		$headers[] = 'HTTP/1.1 ' . $this->statusCode;
@@ -118,14 +118,16 @@ class ErrorResponse implements IResponse
 			$headers[] = $key .':'. $value;
 		}
 
-		return Utils\Json::encode($headers);
+		return $headers;
 	}
 
 	/**
 	 * @return string
+	 *
+	 * @throws Nette\Utils\JsonException
 	 */
 	public function __toString()
 	{
-		return $this->create();
+		return Utils\Json::encode($this->create());
 	}
 }

@@ -255,10 +255,7 @@ abstract class Controller implements IController
 	 */
 	public function sendPayload() : void
 	{
-		if (isset($this->payload->callback)) {
-			$this->sendResponse(new Responses\CallResponse($this->payload->callback, $this->payload->data));
-
-		} elseif (isset($this->payload->data)) {
+		if (isset($this->payload->data)) {
 			$this->sendResponse(new Responses\MessageResponse($this->payload->data));
 		}
 

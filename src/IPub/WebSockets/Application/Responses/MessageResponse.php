@@ -35,14 +35,14 @@ class MessageResponse implements IResponse
 	use Nette\SmartObject;
 
 	/**
-	 * @var string
+	 * @var mixed[]
 	 */
 	private $data;
 
 	/**
-	 * @param string $data
+	 * @param mixed[] $data
 	 */
-	public function __construct(string $data)
+	public function __construct(array $data)
 	{
 		$this->data = $data;
 	}
@@ -50,16 +50,18 @@ class MessageResponse implements IResponse
 	/**
 	 * {@inheritdoc}
 	 */
-	public function create() : ?string
+	public function create() : ?array
 	{
 		return $this->data;
 	}
 
 	/**
 	 * @return string
+	 *
+	 * @throws Nette\Utils\JsonException
 	 */
 	public function __toString()
 	{
-		return $this->create();
+		return Nette\Utils\Json::encode($this->create());
 	}
 }

@@ -211,7 +211,7 @@ class Client implements IClient
 	public function send($response) : void
 	{
 		if ($response instanceof Responses\IResponse) {
-			$response = $response->create();
+			$response = (string) $response;
 
 		} elseif (!$response instanceof Protocols\IData) {
 			$response = (string) $response;
