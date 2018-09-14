@@ -23,6 +23,7 @@ use Symfony\Component\Console\Output;
 
 use Psr\Log;
 
+use IPub\WebSockets\Exceptions;
 use IPub\WebSockets\Logger;
 use IPub\WebSockets\Server;
 
@@ -91,6 +92,11 @@ class ServerCommand extends Console\Command\Command
 			$this->logger->setFormatter(new Logger\Formatter\Symfony($io));
 		}
 
-		$this->server->run();
+		try {
+			$this->server->run();
+
+		} catch (Exceptions\TerminateException $ex) {
+			$this->server->getLoop()->stop();
+		}
 	}
 }

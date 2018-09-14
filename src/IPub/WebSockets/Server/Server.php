@@ -35,6 +35,7 @@ use IPub\WebSockets\Entities;
  * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  *
  * @method onStart(EventLoop\LoopInterface $eventLoop, Server $server)
+ * @method onStop(EventLoop\LoopInterface $eventLoop, Server $server)
  */
 final class Server
 {
@@ -49,6 +50,11 @@ final class Server
 	 * @var \Closure
 	 */
 	public $onStart = [];
+
+	/**
+	 * @var \Closure
+	 */
+	public $onStop = [];
 
 	/**
 	 * @var IWrapper
@@ -153,6 +159,19 @@ final class Server
 		$this->onStart($this->loop, $this);
 
 		$this->loop->run();
+	}
+
+
+	/**
+	 * Stop IO server
+	 *
+	 * @return void
+	 */
+	public function stop() : void
+	{
+		$this->onStop($this->loop, $this);
+
+		$this->loop->stop();
 	}
 
 	/**
