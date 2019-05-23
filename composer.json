@@ -1,67 +1,81 @@
 {
-	"name"			: "ipub/websockets",
-	"type"			: "library",
-	"description"	: "Extension for implementing WebSockets server into Nette Framework",
-	"keywords"		: ["nette", "websockets", "webbsocket-server", "ipub", "ipublikuj"],
-	"homepage"		: "https://github.com/iPublikuj/websockets",
-	"license"		: ["GPL-2.0", "GPL-3.0"],
+  "name" : "ipub/websockets",
+  "type" : "library",
+  "description" : "Extension for implementing WebSockets server into Nette Framework",
+  "keywords" : [
+    "nette",
+    "websockets",
+    "webbsocket-server",
+    "ipub",
+    "ipublikuj"
+  ],
 
-	"authors": [
-		{
-			"name"		: "iPublikuj:cms",
-			"email"		: "info@ipublikuj.eu",
-			"homepage"	: "https://www.ipublikuj.eu/"
-		}
-	],
+  "homepage" : "https://github.com/iPublikuj/websockets",
 
-	"support":{
-		"email"		:"support@ipublikuj.eu",
-		"issues"	:"https://github.com/iPublikuj/websockets/issues"
-	},
+  "license" : [
+    "GPL-2.0",
+    "GPL-3.0"
+  ],
 
-	"extra": {
-		"ipub"	: {
-			"configuration" : {
-				"extensions" : {
-					"webSockets" : "IPub\\WebSockets\\DI\\WebSocketsExtension"
-				}
-			}
-		}
-	},
+  "authors" : [
+    {
+      "name" : "iPublikuj:cms",
+      "email" : "info@ipublikuj.eu",
+      "homepage" : "https://www.ipublikuj.eu/"
+    }
+  ],
 
-	"require": {
-		"php"	: ">=7.1.0",
+  "support" : {
+    "email" : "support@ipublikuj.eu",
+    "issues" : "https://github.com/iPublikuj/websockets/issues"
+  },
 
-		"react/socket": "^0.5.1",
+  "extra" : {
+    "ipub" : {
+      "configuration" : {
+        "extensions" : {
+          "webSockets" : "IPub\\WebSockets\\DI\\WebSocketsExtension"
+        }
+      }
+    }
+  },
 
-		"psr/log": "^1.0",
+  "require" : {
+    "php" : ">=7.1.0",
 
-		"nette/application"	: "~2.4",
-		"nette/di"			: "~2.4",
-		"nette/http"		: "~2.4",
-		"nette/reflection"	: "~2.4",
-		"nette/utils"		: "~2.4",
+    "react/socket" : "~1.2",
 
-		"kdyby/console"	: "~2.7"
-	},
+    "psr/log" : "^1.0",
 
-	"require-dev": {
-		"nette/bootstrap"		: "~2.4",
-		"nette/mail"			: "~2.4",
-		"nette/robot-loader"	: "~2.4",
-		"nette/safe-stream"		: "~2.3",
-		"nette/tester"			: "~2.0",
+    "nette/application" : "~2.4",
+    "nette/di" : "~2.4",
+    "nette/http" : "~2.4",
+    "nette/reflection" : "~2.4",
+    "nette/utils" : "~2.4",
 
-		"tracy/tracy"	: "~2.4",
+    "kdyby/console" : "~2.7"
+  },
 
-		"pds/skeleton"	: "~1.0"
-	},
+  "require-dev" : {
+    "nette/bootstrap" : "~2.4",
+    "nette/mail" : "~2.4",
+    "nette/robot-loader" : "~2.4",
+    "nette/safe-stream" : "~2.3",
+    "nette/tester" : "~2.0",
 
-	"autoload": {
-		"psr-0": {
-			"IPub\\WebSockets\\": "src/"
-		}
-	},
+    "tracy/tracy" : "~2.4",
 
-	"bin": ["bin/websockets-server", "bin/websockets-server.php"]
+    "pds/skeleton" : "~1.0"
+  },
+
+  "autoload" : {
+    "psr-0" : {
+      "IPub\\WebSockets\\" : "src/"
+    }
+  },
+
+  "bin" : [
+    "bin/websockets-server",
+    "bin/websockets-server.php"
+  ]
 }
