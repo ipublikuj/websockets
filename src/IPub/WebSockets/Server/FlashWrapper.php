@@ -174,8 +174,8 @@ final class FlashWrapper implements IWrapper
 
 		foreach ($this->access as $access) {
 			$tmp = $policy->addChild('allow-access-from');
-			$tmp->addAttribute('domain', $access[0]);
-			$tmp->addAttribute('to-ports', $access[1]);
+			$tmp->addAttribute('domain', (string) $access[0]);
+			$tmp->addAttribute('to-ports', (string) $access[1]);
 			$tmp->addAttribute('secure', ($access[2] === TRUE) ? 'true' : 'false');
 		}
 
