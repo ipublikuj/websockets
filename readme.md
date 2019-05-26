@@ -1,8 +1,8 @@
 # WebSockets
 
-[![Build Status](https://img.shields.io/travis/iPublikuj/websockets.svg?style=flat-square)](https://travis-ci.org/iPublikuj/websockets)
-[![Scrutinizer Code Coverage](https://img.shields.io/scrutinizer/coverage/g/iPublikuj/websockets.svg?style=flat-square)](https://scrutinizer-ci.com/g/iPublikuj/websockets/?branch=master)
-[![Scrutinizer Code Quality](https://img.shields.io/scrutinizer/g/iPublikuj/websockets.svg?style=flat-square)](https://scrutinizer-ci.com/g/iPublikuj/websockets/?branch=master)
+[![Build Status](https://img.shields.io/travis/ipublikuj/websockets.svg?style=flat-square)](https://travis-ci.org/ipublikuj/websockets)
+[![Scrutinizer Code Coverage](https://img.shields.io/scrutinizer/coverage/g/ipublikuj/websockets.svg?style=flat-square)](https://scrutinizer-ci.com/g/ipublikuj/websockets/?branch=master)
+[![Scrutinizer Code Quality](https://img.shields.io/scrutinizer/g/ipublikuj/websockets.svg?style=flat-square)](https://scrutinizer-ci.com/g/ipublikuj/websockets/?branch=master)
 [![Latest Stable Version](https://img.shields.io/packagist/v/ipub/websockets.svg?style=flat-square)](https://packagist.org/packages/ipub/websockets)
 [![Composer Downloads](https://img.shields.io/packagist/dt/ipub/websockets.svg?style=flat-square)](https://packagist.org/packages/ipub/websockets)
 [![License](https://img.shields.io/packagist/l/ipub/websockets.svg?style=flat-square)](https://packagist.org/packages/ipub/websockets)
