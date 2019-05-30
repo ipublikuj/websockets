@@ -180,7 +180,7 @@ class Route implements IRouter
 	public function __construct(string $mask, $metadata)
 	{
 		if (is_string($metadata)) {
-			list($controller, $action) = Nette\Application\Helpers::splitName($metadata);
+			list($controller, $action) = $this->splitName($metadata);
 
 			if (!$controller) {
 				throw new Exceptions\InvalidArgumentException(sprintf('Second argument must be array or string in format Controller:action, "%s" given.', $metadata));
@@ -857,5 +857,19 @@ class Route implements IRouter
 	protected static function param2path($s) : string
 	{
 		return str_replace('%2F', '/', rawurlencode($s));
+	}
+
+	/**
+	 * @param string $name
+	 *
+	 * @return string[]
+	 */
+	private function splitName(string $name) : array
+	{
+		$pos = strrpos($name, ':');
+
+		return $pos === false
+			? ['', $name, '']
+			: [substr($name, 0, $pos), (string) substr($name, $pos + 1), ':'];
 	}
 }

@@ -16,6 +16,8 @@ declare(strict_types = 1);
 
 namespace IPub\WebSockets\Http;
 
+use Fig\Http\Message;
+
 use Nette;
 use Nette\Http;
 
@@ -159,13 +161,13 @@ final class RequestFactory
 		}
 
 		switch ($method = strtoupper($matches[1])) {
-			case Http\IRequest::DELETE:
-			case Http\IRequest::GET:
-			case Http\IRequest::HEAD:
-			case Http\IRequest::OPTIONS:
-			case Http\IRequest::PATCH:
-			case Http\IRequest::POST:
-			case Http\IRequest::PUT:
+			case Message\RequestMethodInterface::METHOD_DELETE:
+			case Message\RequestMethodInterface::METHOD_GET:
+			case Message\RequestMethodInterface::METHOD_HEAD:
+			case Message\RequestMethodInterface::METHOD_OPTIONS:
+			case Message\RequestMethodInterface::METHOD_PATCH:
+			case Message\RequestMethodInterface::METHOD_POST:
+			case Message\RequestMethodInterface::METHOD_PUT:
 				// Nothing to do here
 				break;
 
@@ -217,7 +219,7 @@ final class RequestFactory
 
 		// Use real client address and host if trusted proxy is used
 		$usingTrustedProxy = $remoteAddr && array_filter($this->proxies, function ($proxy) use ($remoteAddr) {
-				return Http\Helpers::ipMatch($remoteAddr, $proxy);
+				return $this->ipMatch($remoteAddr, $proxy);
 			});
 
 		if ($usingTrustedProxy) {
@@ -283,7 +285,7 @@ final class RequestFactory
 				if (!empty($headers['http_x_forwarded_for'])) {
 					$xForwardedForWithoutProxies = array_filter(explode(',', $headers['http_x_forwarded_for']), function ($ip) {
 						return !array_filter($this->proxies, function ($proxy) use ($ip) {
-							return Http\Helpers::ipMatch(trim($ip), $proxy);
+							return $this->ipMatch(trim($ip), $proxy);
 						});
 					});
 
@@ -423,5 +425,26 @@ final class RequestFactory
 		}
 
 		return $data;
+	}
+
+	/**
+	 * Is IP address in CIDR block?
+	 *
+	 * @return bool
+	 */
+	private function ipMatch($ip, $mask)
+	{
+		list($mask, $size) = explode('/', $mask . '/');
+
+		$tmp = function ($n) { return sprintf('%032b', $n); };
+		$ip = implode('', array_map($tmp, unpack('N*', inet_pton($ip))));
+		$mask = implode('', array_map($tmp, unpack('N*', inet_pton($mask))));
+		$max = strlen($ip);
+
+		if (!$max || $max !== strlen($mask) || (int) $size < 0 || (int) $size > $max) {
+			return false;
+		}
+
+		return strncmp($ip, $mask, $size === '' ? $max : (int) $size) === 0;
 	}
 }

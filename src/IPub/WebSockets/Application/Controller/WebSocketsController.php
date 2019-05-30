@@ -114,7 +114,7 @@ class WebSocketsController implements Controller\IController
 		}
 
 		$params['controller'] = $this;
-		$params = Nette\Application\UI\ComponentReflection::combineArgs($reflection, $params);
+		$params = Application\Reflection::combineArgs($reflection, $params);
 
 		$response = call_user_func_array($callback, $params);
 

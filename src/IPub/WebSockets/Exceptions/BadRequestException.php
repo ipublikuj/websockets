@@ -16,8 +16,6 @@ declare(strict_types = 1);
 
 namespace IPub\WebSockets\Exceptions;
 
-use Nette\Application;
-
-class BadRequestException extends Application\BadRequestException implements IException
+class BadRequestException extends \Exception implements IException
 {
 }

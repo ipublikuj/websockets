@@ -16,8 +16,9 @@ declare(strict_types = 1);
 
 namespace IPub\WebSockets\Application\Controller;
 
+use Fig\Http;
+
 use Nette;
-use Nette\Http;
 use Nette\Security as NS;
 
 use IPub\WebSockets\Application;
@@ -35,7 +36,6 @@ use IPub\WebSockets\Router;
  *
  * @property-read \stdClass $payload
  * @property-read NS\User $user
- * @property-read Http\Session $session
  */
 abstract class Controller implements IController
 {
@@ -119,11 +119,6 @@ abstract class Controller implements IController
 	private $linkGenerator;
 
 	/**
-	 * @var Http\Session
-	 */
-	private $session;
-
-	/**
 	 * @var NS\User
 	 */
 	private $user;
@@ -134,15 +129,13 @@ abstract class Controller implements IController
 	 * @param Router\IRouter|NULL $router
 	 * @param Router\LinkGenerator|NULL $linkGenerator
 	 * @param NS\User|NULL $user
-	 * @param Http\Session|NULL $session
 	 */
 	public function injectPrimary(
 		?Nette\DI\Container $context = NULL,
 		?IControllerFactory $controllerFactory = NULL,
 		?Router\IRouter $router = NULL,
 		?Router\LinkGenerator $linkGenerator = NULL,
-		?NS\User $user = NULL,
-		?Http\Session $session = NULL
+		?NS\User $user = NULL
 	) {
 		if ($this->controllerFactory !== NULL) {
 			throw new Nette\InvalidStateException(sprintf('Method "%s" is intended for initialization and should not be called more than once.', __METHOD__));
@@ -153,7 +146,6 @@ abstract class Controller implements IController
 		$this->router = $router;
 		$this->linkGenerator = $linkGenerator;
 		$this->user = $user;
-		$this->session = $session;
 	}
 
 	public function __construct()
@@ -180,7 +172,7 @@ abstract class Controller implements IController
 
 			$this->initGlobalParameters();
 
-			$this->checkRequirements(new Nette\Application\UI\ComponentReflection($this));
+			$this->checkRequirements(new Application\Reflection($this));
 
 			$this->startup();
 
@@ -230,7 +222,7 @@ abstract class Controller implements IController
 	 */
 	public function checkRequirements($element) : void
 	{
-		$user = (array) Nette\Application\UI\ComponentReflection::parseAnnotation($element, 'User');
+		$user = (array) Application\Reflection::parseAnnotation($element, 'User');
 
 		if (in_array('loggedIn', $user, TRUE) && !$this->getUser()->isLoggedIn()) {
 			throw new Exceptions\ForbiddenRequestException;
@@ -318,24 +310,8 @@ abstract class Controller implements IController
 			$this->action = $action;
 
 		} else {
-			throw new Exceptions\BadRequestException('Action name is not alphanumeric string.', Http\IResponse::S404_NOT_FOUND);
+			throw new Exceptions\BadRequestException('Action name is not alphanumeric string.', Http\Message\StatusCodeInterface::STATUS_NOT_FOUND);
 		}
-	}
-
-	/**
-	 * @param string|NULL $namespace
-	 *
-	 * @return Http\Session|Http\SessionSection
-	 *
-	 * @throws Exceptions\InvalidStateException
-	 */
-	public function getSession(?string $namespace = NULL)
-	{
-		if (!$this->session) {
-			throw new Exceptions\InvalidStateException('Service Session has not been set.');
-		}
-
-		return $namespace === NULL ? $this->session : $this->session->getSection($namespace);
 	}
 
 	/**
@@ -398,7 +374,7 @@ abstract class Controller implements IController
 		$rm = new \ReflectionMethod($class, $method);
 
 		foreach ($rm->getParameters() as $param) {
-			list($type, $isClass) = Nette\Application\UI\ComponentReflection::getParameterType($param);
+			list($type, $isClass) = Application\Reflection::getParameterType($param);
 			$name = $param->getName();
 
 			if (array_key_exists($i, $args)) {
@@ -421,7 +397,7 @@ abstract class Controller implements IController
 				continue;
 			}
 
-			if (!Nette\Application\UI\ComponentReflection::convertType($args[$name], $type, $isClass)) {
+			if (!Application\Reflection::convertType($args[$name], $type, $isClass)) {
 				throw new Exceptions\InvalidLinkException(sprintf(
 					'Argument $%s passed to %s() must be %s, %s given.',
 					$name,
@@ -470,7 +446,7 @@ abstract class Controller implements IController
 	 */
 	protected function tryCall($method, array $params) : bool
 	{
-		$rc = new Nette\Application\UI\ComponentReflection($this);
+		$rc = new Application\Reflection($this);
 
 		if ($rc->hasMethod($method)) {
 			$rm = $rc->getMethod($method);

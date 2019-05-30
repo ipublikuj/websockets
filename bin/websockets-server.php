@@ -5,7 +5,7 @@
  * @copyright      More in license.md
  * @license        https://www.ipublikuj.eu
  * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
- * @package        iPublikuj:Packages!
+ * @package        iPublikuj:WebSockets!
  * @subpackage     bin
  * @since          2.0.0
  *

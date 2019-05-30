@@ -16,8 +16,6 @@ declare(strict_types = 1);
 
 namespace IPub\WebSockets\Exceptions;
 
-use Nette\Application;
-
-class AbortException extends Application\AbortException implements IException
+class AbortException extends \Exception implements IException
 {
 }

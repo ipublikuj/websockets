@@ -16,8 +16,6 @@ declare(strict_types = 1);
 
 namespace IPub\WebSockets\Exceptions;
 
-use Nette\Application;
-
-class ForbiddenRequestException extends Application\ForbiddenRequestException implements IException
+class ForbiddenRequestException extends \Exception implements IException
 {
 }

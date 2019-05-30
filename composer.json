@@ -47,7 +47,8 @@
 
     "psr/log" : "^1.0",
 
-    "nette/application" : "~2.4",
+    "fig/http-message-util" : "^1.1",
+
     "nette/di" : "~2.4",
     "nette/http" : "~2.4",
     "nette/reflection" : "~2.4",
