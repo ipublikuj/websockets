@@ -186,11 +186,11 @@ class Reflection extends \ReflectionClass
 	}
 
 	/**
-	 * @return MethodReflection
+	 * @return Nette\Reflection\Method
 	 */
 	public function getMethod($name)
 	{
-		return new MethodReflection($this->getName(), $name);
+		return new Nette\Reflection\Method($this->getName(), $name);
 	}
 
 	public function __toString()
@@ -214,6 +214,7 @@ class Reflection extends \ReflectionClass
 
 			return call_user_func_array([new ClassType($this->getName()), $name], $args);
 		}
+
 		Nette\Utils\ObjectMixin::strictCall(get_class($this), $name);
 	}
 }
