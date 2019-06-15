@@ -156,6 +156,16 @@ abstract class Application implements IApplication
 	}
 
 	/**
+	 * @param Log\LoggerInterface $logger
+	 *
+	 * @return void
+	 */
+	public function setLogger(Log\LoggerInterface $logger) : void
+	{
+		$this->logger = $logger;
+	}
+
+	/**
 	 * @param Http\IRequest $httpRequest
 	 * @param array $parameters
 	 *

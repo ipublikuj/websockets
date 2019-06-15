@@ -25,6 +25,7 @@ use React\EventLoop;
 
 use IPub\WebSockets\Clients;
 use IPub\WebSockets\Entities;
+use IPub\WebSockets\Exceptions;
 
 /**
  * WebSocket server
@@ -90,6 +91,11 @@ final class Server
 	 * @var Log\LoggerInterface|Log\NullLogger|NULL
 	 */
 	private $logger;
+
+	/**
+	 * @var bool
+	 */
+	private $isRunning = FALSE;
 
 	/**
 	 * @param Wrapper $application
@@ -158,6 +164,8 @@ final class Server
 
 		$this->onStart($this->loop, $this);
 
+		$this->isRunning = TRUE;
+
 		$this->loop->run();
 	}
 
@@ -172,6 +180,22 @@ final class Server
 		$this->onStop($this->loop, $this);
 
 		$this->loop->stop();
+
+		$this->isRunning = FALSE;
+	}
+
+	/**
+	 * @param Log\LoggerInterface $logger
+	 *
+	 * @return void
+	 */
+	public function setLogger(Log\LoggerInterface $logger) : void
+	{
+		if ($this->isRunning) {
+			throw new Exceptions\InvalidStateException('Server is running, logger could not be set.');
+		}
+
+		$this->logger = $logger;
 	}
 
 	/**

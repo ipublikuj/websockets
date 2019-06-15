@@ -96,7 +96,7 @@ class ServerCommand extends Console\Command\Command
 			$this->server->run();
 
 		} catch (Exceptions\TerminateException $ex) {
-			$this->server->getLoop()->stop();
+			$this->server->stop();
 		}
 	}
 }
