@@ -1,6 +1,6 @@
 # Example application bootstrap file
 
-If you are not able to use [Kdyby\Console](https://github.com/Kdyby/Console) or you want to use server loop your way, here is a example how to create your bootstrap file:
+If you are not able to use third party Symfony console or you want to use server loop your way, here is a example how to create your bootstrap file:
 
 ```php
 use Nette\Configurator;

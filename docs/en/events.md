@@ -8,7 +8,7 @@ Sometimes you will need to perform a server side action when a user connects or 
 * Incoming message
 * After processing message
 
-Event system in this extension is independent. You could attach events directly in your DI in Nette way or you could use a third-party extension like [Kdyby/Events](https://github.com/kdyby/events)
+Event system in this extension is independent. You could attach events directly in your DI in Nette way.
 
 ## Creating event listener
 
