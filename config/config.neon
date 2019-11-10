@@ -1,3 +1,2 @@
 extensions:
 	packages: IPub\WebSockets\DI\WebSocketsExtension
-	console: Kdyby\Console\DI\ConsoleExtension

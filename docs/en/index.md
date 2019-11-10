@@ -47,6 +47,7 @@ This extension has a lot of configuration options:
             address:    0.0.0.0
         routes: []      // Routes definition
         mapping: []     // Controllers mapping
+        console: FALSE  // Symfony console command support
 ```
 
 ### Define routes
@@ -128,7 +129,20 @@ You could use [ipub/websockets-message](https://github.com/iPublikuj/websockets-
 
 The server side of WebSocket installation is now complete. You should be able to run this from the root of your nette project.
 
-This extension come with [Kdyby/Console](https://github.com/kdyby/console) support, so to start server just type:
+Server have to be started like other Nette apps. All what you have to do is create container like in yout normal nette bootstrap, get server service and start it.
+
+```php
+$configurator = new \Nette\Configurator;
+
+$container = $configurator->createContainer();
+
+$container->getByType(\IPub\WebSockets\Server\Server::class)->run();
+```
+
+More info in [example](https://github.com/ipublikuj/websockets/blob/master/docs/en/ExampleBootstrap.md)
+
+This extension come also with Symfony console support.
+All console commands are automatically registered as services. So with symfony command you could start server like this. 
 
 ```sh
 php web/index.php ipub:websockets:start

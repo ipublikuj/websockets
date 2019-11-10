@@ -19,8 +19,6 @@ namespace IPub\WebSockets\DI;
 use Nette;
 use Nette\DI;
 
-use Kdyby\Console;
-
 use Psr\Log;
 
 use React;
@@ -65,12 +63,13 @@ final class WebSocketsExtension extends DI\CompilerExtension
 			'port'     => 8080,
 			'address'  => '0.0.0.0',
 			'secured'  => [
-				'enable'    => FALSE,
+				'enable'      => FALSE,
 				'sslSettings' => [],
 			],
 		],
 		'routes'  => [],
 		'mapping' => [],
+		'console' => FALSE,
 	];
 
 	/**
@@ -163,7 +162,7 @@ final class WebSocketsExtension extends DI\CompilerExtension
 			->setType(React\EventLoop\LoopInterface::class)
 			->setFactory('React\EventLoop\Factory::create');
 
-		$configuration = new Server\Configuration(
+		$serverConfiguration = new Server\Configuration(
 			$configuration['server']['httpHost'],
 			$configuration['server']['port'],
 			$configuration['server']['address'],
@@ -182,18 +181,19 @@ final class WebSocketsExtension extends DI\CompilerExtension
 				$application,
 				$flashApplication,
 				$loop,
-				$configuration,
+				$serverConfiguration,
 			]);
 
-		// Define all console commands
-		$commands = [
-			'server' => Commands\ServerCommand::class,
-		];
+		if ($configuration['console'] === NULL) {
+			// Define all console commands
+			$commands = [
+				'server' => Commands\ServerCommand::class,
+			];
 
-		foreach ($commands as $name => $cmd) {
-			$builder->addDefinition($this->prefix('commands' . lcfirst($name)))
-				->setType($cmd)
-				->addTag(Console\DI\ConsoleExtension::TAG_COMMAND);
+			foreach ($commands as $name => $cmd) {
+				$builder->addDefinition($this->prefix('commands' . lcfirst($name)))
+					->setType($cmd);
+			}
 		}
 	}
 
