@@ -25,71 +25,71 @@ interface IWebSocket
 	 *
 	 * @return void
 	 */
-	function setEstablished(bool $state) : void;
+	public function setEstablished(bool $state) : void;
 
 	/**
 	 * @return bool
 	 */
-	function isEstablished() : bool;
+	public function isEstablished() : bool;
 
 	/**
 	 * @param bool $state
 	 *
 	 * @return void
 	 */
-	function setClosing(bool $state) : void;
+	public function setClosing(bool $state) : void;
 
 	/**
 	 * @return bool
 	 */
-	function isClosing() : bool;
+	public function isClosing() : bool;
 
 	/**
 	 * @return Protocols\IProtocol
 	 */
-	function getProtocol() : Protocols\IProtocol;
+	public function getProtocol() : Protocols\IProtocol;
 
 	/**
 	 * @param Protocols\IMessage $message
 	 *
 	 * @return void
 	 */
-	function setMessage(Protocols\IMessage $message) : void;
+	public function setMessage(Protocols\IMessage $message) : void;
 
 	/**
 	 * @return Protocols\IMessage
 	 */
-	function getMessage() : Protocols\IMessage;
+	public function getMessage() : Protocols\IMessage;
 
 	/**
 	 * @return void
 	 */
-	function destroyMessage() : void;
+	public function destroyMessage() : void;
 
 	/**
 	 * @return bool
 	 */
-	function hasMessage() : bool;
+	public function hasMessage() : bool;
 
 	/**
 	 * @param Protocols\IFrame $frame
 	 *
 	 * @return void
 	 */
-	function setFrame(Protocols\IFrame $frame) : void;
+	public function setFrame(Protocols\IFrame $frame) : void;
 
 	/**
 	 * @return Protocols\IFrame
 	 */
-	function getFrame() : Protocols\IFrame;
+	public function getFrame() : Protocols\IFrame;
 
 	/**
 	 * @return void
 	 */
-	function destroyFrame() : void;
+	public function destroyFrame() : void;
 
 	/**
 	 * @return bool
 	 */
-	function hasFrame() : bool;
+	public function hasFrame() : bool;
 }

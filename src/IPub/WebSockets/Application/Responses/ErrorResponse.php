@@ -114,8 +114,8 @@ class ErrorResponse implements IResponse
 		$headers = [];
 		$headers[] = 'HTTP/1.1 ' . $this->statusCode;
 
-		foreach ($this->headers as $key=>$value) {
-			$headers[] = $key .':'. $value;
+		foreach ($this->headers as $key => $value) {
+			$headers[] = $key . ':' . $value;
 		}
 
 		return $headers;

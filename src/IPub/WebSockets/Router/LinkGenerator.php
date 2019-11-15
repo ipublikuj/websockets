@@ -61,8 +61,8 @@ class LinkGenerator
 	/**
 	 * Generates URL to controller
 	 *
-	 * @param  string $destination in format "[[[module:]controller:]action] [#fragment]"
-	 * @param  array $params
+	 * @param string $destination in format "[[[module:]controller:]action] [#fragment]"
+	 * @param array $params
 	 *
 	 * @return string
 	 *

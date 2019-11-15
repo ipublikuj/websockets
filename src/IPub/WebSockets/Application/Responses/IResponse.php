@@ -30,5 +30,5 @@ interface IResponse
 	/**
 	 * @return mixed[]|NULL
 	 */
-	function create() : ?array;
+	public function create() : ?array;
 }

@@ -23,10 +23,13 @@ use Psr\Log;
 
 use React;
 
+use Symfony\Component\EventDispatcher;
+
 use IPub\WebSockets;
 use IPub\WebSockets\Application;
 use IPub\WebSockets\Clients;
 use IPub\WebSockets\Commands;
+use IPub\WebSockets\Events;
 use IPub\WebSockets\Logger;
 use IPub\WebSockets\Router;
 use IPub\WebSockets\Server;
@@ -52,13 +55,13 @@ final class WebSocketsExtension extends DI\CompilerExtension
 	 * @var array
 	 */
 	private $defaults = [
-		'clients' => [
+		'clients'       => [
 			'storage' => [
 				'driver' => '@clients.driver.memory',
 				'ttl'    => 0,
 			],
 		],
-		'server'  => [
+		'server'        => [
 			'httpHost' => 'localhost',
 			'port'     => 8080,
 			'address'  => '0.0.0.0',
@@ -67,9 +70,10 @@ final class WebSocketsExtension extends DI\CompilerExtension
 				'sslSettings' => [],
 			],
 		],
-		'routes'  => [],
-		'mapping' => [],
-		'console' => FALSE,
+		'routes'        => [],
+		'mapping'       => [],
+		'console'       => FALSE,
+		'symfonyEvents' => FALSE,
 	];
 
 	/**
@@ -184,7 +188,7 @@ final class WebSocketsExtension extends DI\CompilerExtension
 				$serverConfiguration,
 			]);
 
-		if ($configuration['console'] === NULL) {
+		if ($configuration['console'] === TRUE) {
 			// Define all console commands
 			$commands = [
 				'server' => Commands\ServerCommand::class,
@@ -204,8 +208,14 @@ final class WebSocketsExtension extends DI\CompilerExtension
 	{
 		parent::beforeCompile();
 
-		// Get container builder
+		/** @var DI\ContainerBuilder $builder */
 		$builder = $this->getContainerBuilder();
+		/** @var array $configuration */
+		if (method_exists($this, 'validateConfig')) {
+			$configuration = $this->validateConfig($this->defaults);
+		} else {
+			$configuration = $this->getConfig($this->defaults);
+		}
 
 		/**
 		 * ROUTER CREATION
@@ -260,6 +270,81 @@ final class WebSocketsExtension extends DI\CompilerExtension
 		foreach ($allControllers as $def) {
 			$def->addTag(Nette\DI\Extensions\InjectExtension::TAG_INJECT)
 				->addTag('ipub.websockets.controller', $def->getType());
+		}
+
+		/**
+		 * EVENTS
+		 */
+
+		if ($configuration['symfonyEvents'] === TRUE) {
+			$dispatcher = $builder->getDefinition($builder->getByType(EventDispatcher\EventDispatcherInterface::class));
+
+			$application = $builder->getDefinition($builder->getByType(Application\Application::class));
+			assert($application instanceof DI\ServiceDefinition);
+
+			$application->addSetup('?->onOpen[] = function() {?->dispatch(new ?(...func_get_args()));}', [
+				'@self',
+				$dispatcher,
+				new Nette\PhpGenerator\PhpLiteral(Events\Application\OpenEvent::class),
+			]);
+			$application->addSetup('?->onClose[] = function() {?->dispatch(new ?(...func_get_args()));}', [
+				'@self',
+				$dispatcher,
+				new Nette\PhpGenerator\PhpLiteral(Events\Application\CloseEvent::class),
+			]);
+			$application->addSetup('?->onMessage[] = function() {?->dispatch(new ?(...func_get_args()));}', [
+				'@self',
+				$dispatcher,
+				new Nette\PhpGenerator\PhpLiteral(Events\Application\MessageEvent::class),
+			]);
+			$application->addSetup('?->onError[] = function() {?->dispatch(new ?(...func_get_args()));}', [
+				'@self',
+				$dispatcher,
+				new Nette\PhpGenerator\PhpLiteral(Events\Application\ErrorEvent::class),
+			]);
+
+			$server = $builder->getDefinition($builder->getByType(Server\Server::class));
+			assert($server instanceof DI\ServiceDefinition);
+
+			$server->addSetup('?->onStart[] = function() {?->dispatch(new ?(...func_get_args()));}', [
+				'@self',
+				$dispatcher,
+				new Nette\PhpGenerator\PhpLiteral(Events\Server\StartEvent::class),
+			]);
+			$server->addSetup('?->onStop[] = function() {?->dispatch(new ?(...func_get_args()));}', [
+				'@self',
+				$dispatcher,
+				new Nette\PhpGenerator\PhpLiteral(Events\Server\StopEvent::class),
+			]);
+
+			$serverWrapper = $builder->getDefinition($builder->getByType(Server\Wrapper::class));
+			assert($serverWrapper instanceof DI\ServiceDefinition);
+
+			$serverWrapper->addSetup('?->onClientConnected[] = function() {?->dispatch(new ?(...func_get_args()));}', [
+				'@self',
+				$dispatcher,
+				new Nette\PhpGenerator\PhpLiteral(Events\Wrapper\ClientConnectEvent::class),
+			]);
+			$serverWrapper->addSetup('?->onClientDisconnected[] = function() {?->dispatch(new ?(...func_get_args()));}', [
+				'@self',
+				$dispatcher,
+				new Nette\PhpGenerator\PhpLiteral(Events\Wrapper\ClientDisconnectEvent::class),
+			]);
+			$serverWrapper->addSetup('?->onClientError[] = function() {?->dispatch(new ?(...func_get_args()));}', [
+				'@self',
+				$dispatcher,
+				new Nette\PhpGenerator\PhpLiteral(Events\Wrapper\ClientErrorEvent::class),
+			]);
+			$serverWrapper->addSetup('?->onIncomingMessage[] = function() {?->dispatch(new ?(...func_get_args()));}', [
+				'@self',
+				$dispatcher,
+				new Nette\PhpGenerator\PhpLiteral(Events\Wrapper\IncommingMessageEvent::class),
+			]);
+			$serverWrapper->addSetup('?->onAfterIncomingMessage[] = function() {?->dispatch(new ?(...func_get_args()));}', [
+				'@self',
+				$dispatcher,
+				new Nette\PhpGenerator\PhpLiteral(Events\Wrapper\AfterIncommingMessageEvent::class),
+			]);
 		}
 	}
 

@@ -35,7 +35,7 @@ interface IProtocol
 	 *
 	 * @return int
 	 */
-	function getVersion() : int;
+	public function getVersion() : int;
 
 	/**
 	 * Given an HTTP header, determine if this version should handle the protocol
@@ -44,7 +44,7 @@ interface IProtocol
 	 *
 	 * @return bool
 	 */
-	function isVersion(Http\IRequest $httpRequest) : bool;
+	public function isVersion(Http\IRequest $httpRequest) : bool;
 
 	/**
 	 * Perform the handshake and return the response headers
@@ -53,7 +53,7 @@ interface IProtocol
 	 *
 	 * @return Http\IResponse
 	 */
-	function doHandshake(Http\IRequest $httpRequest) : Http\IResponse;
+	public function doHandshake(Http\IRequest $httpRequest) : Http\IResponse;
 
 	/**
 	 * @param Entities\Clients\IClient $client
@@ -62,7 +62,7 @@ interface IProtocol
 	 *
 	 * @return void
 	 */
-	function handleMessage(Entities\Clients\IClient $client, Application\IApplication $application, string $message = '') : void;
+	public function handleMessage(Entities\Clients\IClient $client, Application\IApplication $application, string $message = '') : void;
 
 	/**
 	 * @param Entities\Clients\IClient $client
@@ -70,7 +70,7 @@ interface IProtocol
 	 *
 	 * @return void
 	 */
-	function send(Entities\Clients\IClient $client, $payload) : void;
+	public function send(Entities\Clients\IClient $client, $payload) : void;
 
 	/**
 	 * @param Entities\Clients\IClient $client
@@ -78,5 +78,5 @@ interface IProtocol
 	 *
 	 * @return void
 	 */
-	function close(Entities\Clients\IClient $client, ?int $code = NULL) : void;
+	public function close(Entities\Clients\IClient $client, ?int $code = NULL) : void;
 }

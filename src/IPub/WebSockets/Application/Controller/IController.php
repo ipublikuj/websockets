@@ -34,10 +34,10 @@ interface IController
 	 *
 	 * @return Responses\IResponse
 	 */
-	function run(Application\Request $request) : Responses\IResponse;
+	public function run(Application\Request $request) : Responses\IResponse;
 
 	/**
 	 * @return string
 	 */
-	function getName() : string;
+	public function getName() : string;
 }

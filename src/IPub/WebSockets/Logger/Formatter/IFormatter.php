@@ -31,25 +31,26 @@ interface IFormatter
 	 *
 	 * @return void
 	 */
-	function error(string $message) : void;
+	public function error(string $message) : void;
 
 	/**
 	 * @param string $message
 	 *
 	 * @return void
 	 */
-	function warning(string $message) : void;
-	/**
-	 * @param string $message
-	 *
-	 * @return void
-	 */
-	function note(string $message) : void;
+	public function warning(string $message) : void;
 
 	/**
 	 * @param string $message
 	 *
 	 * @return void
 	 */
-	function caution(string $message) : void;
+	public function note(string $message) : void;
+
+	/**
+	 * @param string $message
+	 *
+	 * @return void
+	 */
+	public function caution(string $message) : void;
 }

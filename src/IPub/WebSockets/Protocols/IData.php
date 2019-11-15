@@ -31,26 +31,26 @@ interface IData
 	 *
 	 * @return bool
 	 */
-	function isCoalesced() : bool;
+	public function isCoalesced() : bool;
 
 	/**
 	 * Get the number of bytes the payload is set to be
 	 *
 	 * @return int
 	 */
-	function getPayloadLength() : int;
+	public function getPayloadLength() : int;
 
 	/**
 	 * Get the payload (message) sent from peer
 	 *
 	 * @return string
 	 */
-	function getPayload() : string;
+	public function getPayload() : string;
 
 	/**
 	 * Get raw contents of the message
 	 *
 	 * @return string
 	 */
-	function getContents() : string;
+	public function getContents() : string;
 }
