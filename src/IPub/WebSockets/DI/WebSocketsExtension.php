@@ -208,8 +208,14 @@ final class WebSocketsExtension extends DI\CompilerExtension
 	{
 		parent::beforeCompile();
 
-		// Get container builder
+		/** @var DI\ContainerBuilder $builder */
 		$builder = $this->getContainerBuilder();
+		/** @var array $configuration */
+		if (method_exists($this, 'validateConfig')) {
+			$configuration = $this->validateConfig($this->defaults);
+		} else {
+			$configuration = $this->getConfig($this->defaults);
+		}
 
 		/**
 		 * ROUTER CREATION
