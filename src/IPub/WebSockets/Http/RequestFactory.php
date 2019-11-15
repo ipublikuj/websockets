@@ -312,7 +312,7 @@ final class RequestFactory
 		if (!$this->binary) {
 			$list = [&$cookies];
 
-			foreach ($list as $key=>$val) {
+			foreach ($list as $key => $val) {
 				foreach ($val as $k => $v) {
 					if (is_string($k) && (!preg_match($reChars, $k) || preg_last_error())) {
 						unset($list[$key][$k]);
@@ -342,7 +342,7 @@ final class RequestFactory
 	/**
 	 * Determine if the message has been buffered as per the HTTP specification
 	 *
-	 * @param  string $message
+	 * @param string $message
 	 *
 	 * @return bool
 	 */
@@ -436,13 +436,15 @@ final class RequestFactory
 	{
 		list($mask, $size) = explode('/', $mask . '/');
 
-		$tmp = function ($n) { return sprintf('%032b', $n); };
+		$tmp = function ($n) {
+			return sprintf('%032b', $n);
+		};
 		$ip = implode('', array_map($tmp, unpack('N*', inet_pton($ip))));
 		$mask = implode('', array_map($tmp, unpack('N*', inet_pton($mask))));
 		$max = strlen($ip);
 
 		if (!$max || $max !== strlen($mask) || (int) $size < 0 || (int) $size > $max) {
-			return false;
+			return FALSE;
 		}
 
 		return strncmp($ip, $mask, $size === '' ? $max : (int) $size) === 0;

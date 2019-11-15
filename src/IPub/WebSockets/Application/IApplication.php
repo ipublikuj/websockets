@@ -37,7 +37,7 @@ interface IApplication
 	 *
 	 * @return void
 	 */
-	function handleOpen(Entities\Clients\IClient $client, Http\IRequest $httpRequest) : void;
+	public function handleOpen(Entities\Clients\IClient $client, Http\IRequest $httpRequest) : void;
 
 	/**
 	 * This is called before or after a socket is closed (depends on how it's closed)
@@ -48,7 +48,7 @@ interface IApplication
 	 *
 	 * @return void
 	 */
-	function handleClose(Entities\Clients\IClient $client, Http\IRequest $httpRequest) : void;
+	public function handleClose(Entities\Clients\IClient $client, Http\IRequest $httpRequest) : void;
 
 	/**
 	 * If there is an error with one of the sockets, or somewhere in the application where an Exception is thrown,
@@ -60,7 +60,7 @@ interface IApplication
 	 *
 	 * @return void
 	 */
-	function handleError(Entities\Clients\IClient $client, Http\IRequest $httpRequest, \Exception $ex) : void;
+	public function handleError(Entities\Clients\IClient $client, Http\IRequest $httpRequest, \Exception $ex) : void;
 
 	/**
 	 * Triggered when a client sends data through the socket
@@ -71,14 +71,12 @@ interface IApplication
 	 *
 	 * @return void
 	 */
-	function handleMessage(Entities\Clients\IClient $from, Http\IRequest $httpRequest, string $message) : void;
+	public function handleMessage(Entities\Clients\IClient $from, Http\IRequest $httpRequest, string $message) : void;
 
 	/**
-	 * @todo This method may be removed in future version (note that will not break code, just make some code obsolete)
-	 *
-	 * If any component in a stack supports a WebSocket sub-protocol return each supported in an array
-	 *
 	 * @return array
+	 * @todo This method may be removed in future version (note that will not break code, just make some code obsolete)
+	 * If any component in a stack supports a WebSocket sub-protocol return each supported in an array
 	 */
-	function getSubProtocols() : array;
+	public function getSubProtocols() : array;
 }

@@ -37,60 +37,60 @@ interface IClient
 	/**
 	 * @return int
 	 */
-	function getId() : int;
+	public function getId() : int;
 
 	/**
 	 * @return Socket\ConnectionInterface
 	 */
-	function getConnection() : Socket\ConnectionInterface;
+	public function getConnection() : Socket\ConnectionInterface;
 
 	/**
 	 * @param bool $state
 	 *
 	 * @return void
 	 */
-	function setHTTPHeadersReceived(bool $state) : void;
+	public function setHTTPHeadersReceived(bool $state) : void;
 
 	/**
 	 * @return bool
 	 */
-	function isHTTPHeadersReceived() : bool;
+	public function isHTTPHeadersReceived() : bool;
 
 	/**
 	 * @param string $buffer
 	 *
 	 * @return void
 	 */
-	function setHttpBuffer(string $buffer) : void;
+	public function setHttpBuffer(string $buffer) : void;
 
 	/**
 	 * @return string
 	 */
-	function getHttpBuffer() : string;
+	public function getHttpBuffer() : string;
 
 	/**
 	 * @param Http\IRequest $httpRequest
 	 *
 	 * @return void
 	 */
-	function setRequest(Http\IRequest $httpRequest) : void;
+	public function setRequest(Http\IRequest $httpRequest) : void;
 
 	/**
 	 * @return Http\IRequest
 	 */
-	function getRequest() : Http\IRequest;
+	public function getRequest() : Http\IRequest;
 
 	/**
 	 * @param Entities\WebSockets\IWebSocket $webSocket
 	 *
 	 * @return void
 	 */
-	function setWebSocket(Entities\WebSockets\IWebSocket $webSocket) : void;
+	public function setWebSocket(Entities\WebSockets\IWebSocket $webSocket) : void;
 
 	/**
 	 * @return Entities\WebSockets\IWebSocket
 	 */
-	function getWebSocket() : Entities\WebSockets\IWebSocket;
+	public function getWebSocket() : Entities\WebSockets\IWebSocket;
 
 	/**
 	 * @param string $key
@@ -98,7 +98,7 @@ interface IClient
 	 *
 	 * @return void
 	 */
-	function addParameter(string $key, $value) : void;
+	public function addParameter(string $key, $value) : void;
 
 	/**
 	 * @param string $key
@@ -106,31 +106,31 @@ interface IClient
 	 *
 	 * @return mixed|NULL
 	 */
-	function getParameter(string $key, $default = NULL);
+	public function getParameter(string $key, $default = NULL);
 
 	/**
 	 * @param int|NULL $code
 	 *
 	 * @return void
 	 */
-	function close(?int $code = NULL) : void;
+	public function close(?int $code = NULL) : void;
 
 	/**
 	 * @param Responses\IResponse|string $response
 	 *
 	 * @return void
 	 */
-	function send($response) : void;
+	public function send($response) : void;
 
 	/**
 	 * @param NS\User $user
 	 *
 	 * @return void
 	 */
-	function setUser(NS\User $user) : void;
+	public function setUser(NS\User $user) : void;
 
 	/**
 	 * @return NS\User|NULL
 	 */
-	function getUser() : ?NS\User;
+	public function getUser() : ?NS\User;
 }

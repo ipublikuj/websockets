@@ -143,7 +143,7 @@ final class Server
 		});
 
 		$socket->on('error', function (\Exception $ex) {
-			$this->logger->error('Could not establish connection: '. $ex->getMessage());
+			$this->logger->error('Could not establish connection: ' . $ex->getMessage());
 		});
 
 		if ($this->configuration->getPort() === 80) {

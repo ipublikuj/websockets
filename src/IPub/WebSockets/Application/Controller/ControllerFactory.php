@@ -41,7 +41,7 @@ class ControllerFactory implements IControllerFactory
 	 * @var array[] of module => splited mask
 	 */
 	private $mapping = [
-		'*'           => ['', '*Module\\', '*Controller'],
+		'*'              => ['', '*Module\\', '*Controller'],
 		'IPubWebSockets' => ['IPubWebSocketsModule\\', '*\\', '*Controller'],
 	];
 
@@ -208,7 +208,7 @@ class ControllerFactory implements IControllerFactory
 
 			if (preg_match("#^\\\\?$mapping[0]((?:$mapping[1])*)$mapping[2]\\z#i", $class, $matches)) {
 				return ($module === '*' ? '' : $module . ':')
-				. preg_replace("#$mapping[1]#iA", '$1:', $matches[1]) . $matches[3];
+					. preg_replace("#$mapping[1]#iA", '$1:', $matches[1]) . $matches[3];
 			}
 		}
 

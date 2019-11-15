@@ -125,8 +125,10 @@ final class HandshakeVerifier
 	 *
 	 * @return bool
 	 *
-	 * @todo Find out if I can find the master socket, ensure the port is attached to header if not 80 or 443 - not sure if this is possible, as I tried to hide it
-	 * @todo Once I fix HTTP::getHeaders just verify this isn't NULL or empty...or maybe need to verify it's a valid domain??? Or should it equal $_SERVER['HOST'] ?
+	 * @todo Find out if I can find the master socket, ensure the port is attached to header if not 80 or 443 - not sure if this is possible, as I tried to
+	 *       hide it
+	 * @todo Once I fix HTTP::getHeaders just verify this isn't NULL or empty...or maybe need to verify it's a valid domain??? Or should it equal
+	 *       $_SERVER['HOST'] ?
 	 */
 	public function verifyHost(?string $val = NULL) : bool
 	{

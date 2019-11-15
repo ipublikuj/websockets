@@ -34,5 +34,5 @@ interface IValidator
 	 *
 	 * @return bool
 	 */
-	function checkEncoding(string $str, string $encoding) : bool;
+	public function checkEncoding(string $str, string $encoding) : bool;
 }

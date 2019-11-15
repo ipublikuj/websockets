@@ -31,10 +31,10 @@ interface IMessage extends IData
 	 *
 	 * @return void
 	 */
-	function addFrame(IFrame $fragment) : void;
+	public function addFrame(IFrame $fragment) : void;
 
 	/**
 	 * @return int
 	 */
-	function getOpCode() : int;
+	public function getOpCode() : int;
 }

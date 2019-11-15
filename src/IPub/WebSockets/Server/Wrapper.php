@@ -37,7 +37,7 @@ use IPub\WebSockets\Protocols;
  * @method onClientConnected(Entities\Clients\IClient $client, Http\IRequest $httpRequest)
  * @method onClientDisconnected(Entities\Clients\IClient $client, Http\IRequest $httpRequest)
  * @method onClientError(Entities\Clients\IClient $client, Http\IRequest $httpRequest)
- * @method onIncomingMessage(Entities\Clients\IClient $client, Http\IRequest $httpRequest, $message)
+ * @method onIncomingMessage(Entities\Clients\IClient $client, Http\IRequest $httpRequest, string $message)
  * @method onAfterIncomingMessage(Entities\Clients\IClient $client, Http\IRequest $httpRequest)
  */
 final class Wrapper implements IWrapper
@@ -267,11 +267,11 @@ final class Wrapper implements IWrapper
 
 	/**
 	 * @param Entities\Clients\IClient $client
-	 * @param $message
+	 * @param string $message
 	 *
 	 * @return void
 	 */
-	private function connectionMessage(Entities\Clients\IClient $client, $message) : void
+	private function connectionMessage(Entities\Clients\IClient $client, string $message) : void
 	{
 		$webSocket = $client->getWebSocket();
 

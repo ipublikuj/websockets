@@ -1,6 +1,7 @@
 <?php
 /**
  * Test: IPub\WebSockets\Libraries
+ *
  * @testCase
  *
  * @copyright      More in license.md

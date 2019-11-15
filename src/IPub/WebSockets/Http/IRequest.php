@@ -33,17 +33,17 @@ interface IRequest extends Http\IRequest
 	 *
 	 * @return void
 	 */
-	function setUrl(Http\UrlScript $url) : void;
+	public function setUrl(Http\UrlScript $url) : void;
 
 	/**
 	 * @param float $version
 	 *
 	 * @return void
 	 */
-	function setProtocolVersion(float $version) : void;
+	public function setProtocolVersion(float $version) : void;
 
 	/**
 	 * @return float|NULL
 	 */
-	function getProtocolVersion() : ?float;
+	public function getProtocolVersion() : ?float;
 }

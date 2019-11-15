@@ -33,31 +33,31 @@ interface IFrame extends IData
 	 *
 	 * @return void
 	 */
-	function addBuffer(string $buffer) : void;
+	public function addBuffer(string $buffer) : void;
 
 	/**
 	 * Is this the final frame in a fragmented message?
 	 *
 	 * @return bool
 	 */
-	function isFinal() : bool;
+	public function isFinal() : bool;
 
 	/**
 	 * Is the payload masked?
 	 *
 	 * @return bool
 	 */
-	function isMasked() : bool;
+	public function isMasked() : bool;
 
 	/**
 	 * @return int
 	 */
-	function getOpCode() : int;
+	public function getOpCode() : int;
 
 	/**
 	 * 32-bit string
 	 *
 	 * @return string
 	 */
-	function getMaskingKey() : string;
+	public function getMaskingKey() : string;
 }

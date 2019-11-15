@@ -33,19 +33,19 @@ interface IDriver
 	 *
 	 * @return Entities\Clients\IClient|bool
 	 */
-	function fetch(int $id);
+	public function fetch(int $id);
 
 	/**
 	 * @return Entities\Clients\IClient[]
 	 */
-	function fetchAll() : array;
+	public function fetchAll() : array;
 
 	/**
 	 * @param int $id
 	 *
 	 * @return bool
 	 */
-	function contains(int $id) : bool;
+	public function contains(int $id) : bool;
 
 	/**
 	 * @param int $id
@@ -54,12 +54,12 @@ interface IDriver
 	 *
 	 * @return bool True if saved, false otherwise
 	 */
-	function save(int $id, $data, int $lifeTime = 0) : bool;
+	public function save(int $id, $data, int $lifeTime = 0) : bool;
 
 	/**
 	 * @param int $id
 	 *
 	 * @return bool TRUE if the cache entry was successfully deleted, FALSE otherwise
 	 */
-	function delete(int $id) : bool;
+	public function delete(int $id) : bool;
 }

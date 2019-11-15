@@ -25,7 +25,7 @@ interface IWrapper
 	 *
 	 * @return void
 	 */
-	function handleOpen(Entities\Clients\IClient $client) : void;
+	public function handleOpen(Entities\Clients\IClient $client) : void;
 
 	/**
 	 * @param Entities\Clients\IClient $client
@@ -33,14 +33,14 @@ interface IWrapper
 	 *
 	 * @return void
 	 */
-	function handleMessage(Entities\Clients\IClient $client, string $message) : void;
+	public function handleMessage(Entities\Clients\IClient $client, string $message) : void;
 
 	/**
 	 * @param Entities\Clients\IClient $client
 	 *
 	 * @return void
 	 */
-	function handleClose(Entities\Clients\IClient $client) : void;
+	public function handleClose(Entities\Clients\IClient $client) : void;
 
 	/**
 	 * @param Entities\Clients\IClient $client
@@ -48,5 +48,5 @@ interface IWrapper
 	 *
 	 * @return void
 	 */
-	function handleError(Entities\Clients\IClient $client, \Exception $ex) : void;
+	public function handleError(Entities\Clients\IClient $client, \Exception $ex) : void;
 }

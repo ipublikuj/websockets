@@ -512,12 +512,12 @@ final class Frame implements Protocols\IFrame
 	}
 
 	/**
+	 * @return string
 	 * @todo Consider returning new Frame
 	 *
 	 * Sometimes clients will concatenate more than one frame over the wire
 	 * This method will take the extra bytes off the end and return them
 	 *
-	 * @return string
 	 */
 	public function extractOverflow() : string
 	{

@@ -97,24 +97,24 @@ interface IResponse
 	 *
 	 * @return void
 	 */
-	function setCode(int $code, ?string $reason = NULL) : void;
+	public function setCode(int $code, ?string $reason = NULL) : void;
 
 	/**
 	 * Returns HTTP response code
 	 *
 	 * @return int
 	 */
-	function getCode() : int;
+	public function getCode() : int;
 
 	/**
 	 * Adds HTTP header
 	 *
-	 * @param string $name header name
+	 * @param string $name  header name
 	 * @param string $value header value
 	 *
 	 * @return void
 	 */
-	function addHeader(string $name, string $value) : void;
+	public function addHeader(string $name, string $value) : void;
 
 	/**
 	 * Returns value of an HTTP header
@@ -124,24 +124,24 @@ interface IResponse
 	 *
 	 * @return mixed
 	 */
-	function getHeader($header, $default = NULL);
+	public function getHeader($header, $default = NULL);
 
 	/**
 	 * Returns a list of headers to sent
 	 *
 	 * @return array (name => value)
 	 */
-	function getHeaders() : array;
+	public function getHeaders() : array;
 
 	/**
 	 * @return string
 	 */
-	function getReason() : string;
+	public function getReason() : string;
 
 	/**
 	 * @param string|NULL $body
 	 *
 	 * @return void
 	 */
-	function setBody(string $body = NULL) : void;
+	public function setBody(string $body = NULL) : void;
 }

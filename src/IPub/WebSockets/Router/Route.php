@@ -425,7 +425,8 @@ class Route implements IRouter
 			}
 			$i--;
 
-			$name = $sequence[$i]; $i--; // parameter name
+			$name = $sequence[$i];
+			$i--; // parameter name
 
 			if ($name === ']') { // opening optional part
 				$brackets[] = $url;
@@ -868,7 +869,7 @@ class Route implements IRouter
 	{
 		$pos = strrpos($name, ':');
 
-		return $pos === false
+		return $pos === FALSE
 			? ['', $name, '']
 			: [substr($name, 0, $pos), (string) substr($name, $pos + 1), ':'];
 	}

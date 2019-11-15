@@ -208,7 +208,7 @@ abstract class Application implements IApplication
 	protected function close(Entities\Clients\IClient $client, int $code = 400, array $additionalHeaders = []) : void
 	{
 		$headers = array_merge([
-			'X-Powered-By' => Server\Server::VERSION
+			'X-Powered-By' => Server\Server::VERSION,
 		], $additionalHeaders);
 
 		$response = new Responses\ErrorResponse($code, $headers);

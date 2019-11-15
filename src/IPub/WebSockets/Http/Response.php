@@ -58,7 +58,7 @@ final class Response implements IResponse
 	/**
 	 * @var array Array of reason phrases and their corresponding status codes
 	 */
-	private static $statusTexts = array(
+	private static $statusTexts = [
 		100 => 'Continue',
 		101 => 'Switching Protocols',
 		102 => 'Processing',
@@ -117,7 +117,7 @@ final class Response implements IResponse
 		508 => 'Loop Detected',
 		510 => 'Not Extended',
 		511 => 'Network Authentication Required',
-	);
+	];
 
 	/**
 	 * @param int $code
