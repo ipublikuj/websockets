@@ -175,7 +175,7 @@ final class RequestFactory
 				$method = self::METHOD_EXTENDED;
 		}
 
-		$url = new Http\UrlScript($matches[2]);
+		$url = new Http\Url($matches[2]);
 
 		$httpVersion = (float) $matches[3];
 
@@ -330,7 +330,7 @@ final class RequestFactory
 			unset($list, $key, $val, $k, $v);
 		}
 
-		$request = new Request($url, NULL, NULL, NULL, $cookies, $headers, $method, $remoteAddr, $remoteHost, function () use ($rawBody) {
+		$request = new Request(new Http\UrlScript($url), NULL, NULL, $cookies, $headers, $method, $remoteAddr, $remoteHost, function () use ($rawBody) {
 			return $rawBody;
 		});
 

@@ -56,9 +56,9 @@
   },
 
   "require-dev" : {
-    "nette/bootstrap" : "~2.4 || ~3.0",
-    "nette/mail" : "~2.4 || ~3.0",
-    "nette/robot-loader" : "~2.4 || ~3.0",
+    "nette/bootstrap" : "~3.0",
+    "nette/mail" : "~3.0",
+    "nette/robot-loader" : "~3.0",
     "nette/safe-stream" : "~2.3",
     "nette/tester" : "~2.3",
 
