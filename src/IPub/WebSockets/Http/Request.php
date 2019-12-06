@@ -40,7 +40,6 @@ class Request extends Http\Request implements IRequest
 
 	/**
 	 * @param Http\UrlScript $url
-	 * @param null $query
 	 * @param array|NULL $post
 	 * @param array|NULL $files
 	 * @param array|NULL $cookies
@@ -52,7 +51,6 @@ class Request extends Http\Request implements IRequest
 	 */
 	public function __construct(
 		Http\UrlScript $url,
-		$query = NULL,
 		?array $post = NULL,
 		?array $files = NULL,
 		?array $cookies = NULL,
@@ -62,7 +60,7 @@ class Request extends Http\Request implements IRequest
 		?string $remoteHost = NULL,
 		$rawBodyCallback = NULL
 	) {
-		parent::__construct($url, $query, $post, $files, $cookies, $headers, $method, $remoteAddress, $remoteHost, $rawBodyCallback);
+		parent::__construct($url, $post, $files, $cookies, $headers, $method, $remoteAddress, $remoteHost, $rawBodyCallback);
 
 		$this->url = $url;
 	}

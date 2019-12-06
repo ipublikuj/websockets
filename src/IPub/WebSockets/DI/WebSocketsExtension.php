@@ -41,10 +41,6 @@ use IPub\WebSockets\Server;
  * @subpackage     DI
  *
  * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
- *
- * @method DI\ContainerBuilder getContainerBuilder()
- * @method array getConfig(array $default)
- * @method string prefix($id)
  */
 final class WebSocketsExtension extends DI\CompilerExtension
 {
@@ -86,11 +82,7 @@ final class WebSocketsExtension extends DI\CompilerExtension
 		/** @var DI\ContainerBuilder $builder */
 		$builder = $this->getContainerBuilder();
 		/** @var array $configuration */
-		if (method_exists($this, 'validateConfig')) {
-			$configuration = $this->validateConfig($this->defaults);
-		} else {
-			$configuration = $this->getConfig($this->defaults);
-		}
+		$configuration = $this->validateConfig($this->defaults);
 
 		/**
 		 * CONTROLLERS
@@ -211,11 +203,7 @@ final class WebSocketsExtension extends DI\CompilerExtension
 		/** @var DI\ContainerBuilder $builder */
 		$builder = $this->getContainerBuilder();
 		/** @var array $configuration */
-		if (method_exists($this, 'validateConfig')) {
-			$configuration = $this->validateConfig($this->defaults);
-		} else {
-			$configuration = $this->getConfig($this->defaults);
-		}
+		$configuration = $this->validateConfig($this->defaults);
 
 		/**
 		 * ROUTER CREATION
