@@ -353,7 +353,7 @@ final class WebSocketsExtension extends DI\CompilerExtension
 	 */
 	public static function register(
 		Nette\Configurator $config,
-		string $extensionName = 'websockets'
+		string $extensionName = 'webSockets'
 	) : void {
 		$config->onCompile[] = function (Nette\Configurator $config, DI\Compiler $compiler) use ($extensionName) {
 			$compiler->addExtension($extensionName, new WebSocketsExtension());
