@@ -60,7 +60,7 @@ class RFC6455 implements IProtocol
 	private $closeCodes = [];
 
 	/**
-	 * @var \WebSockets\WebSocket\Encoding\ValidatorInterface
+	 * @var Encoding\IValidator
 	 */
 	private $validator;
 

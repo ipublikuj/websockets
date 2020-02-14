@@ -34,11 +34,6 @@ final class Configuration
 	use Nette\SmartObject;
 
 	/**
-	 * @var string
-	 */
-	private $httpHost;
-
-	/**
 	 * @var int
 	 */
 	private $port;
@@ -59,20 +54,17 @@ final class Configuration
 	private $sslSettings = [];
 
 	/**
-	 * @param string $httpHost
 	 * @param int $port
 	 * @param string $address
 	 * @param bool $enableSSL
 	 * @param array $sslSettings
 	 */
 	public function __construct(
-		string $httpHost = 'localhost',
 		int $port = 8080,
 		string $address = '0.0.0.0',
-		bool $enableSSL,
-		array $sslSettings
+		bool $enableSSL = FALSE,
+		array $sslSettings = []
 	) {
-		$this->httpHost = $httpHost;
 		$this->port = $port;
 		$this->address = $address;
 		$this->enableSSL = $enableSSL;
@@ -80,11 +72,13 @@ final class Configuration
 	}
 
 	/**
-	 * @return string
+	 * @param int $port
+	 *
+	 * @return void
 	 */
-	public function getHttpHost() : string
+	public function setPort(int $port) : void
 	{
-		return $this->httpHost;
+		$this->port = $port;
 	}
 
 	/**
@@ -93,6 +87,16 @@ final class Configuration
 	public function getPort() : int
 	{
 		return $this->port;
+	}
+
+	/**
+	 * @param string $address
+	 *
+	 * @return void
+	 */
+	public function setAddress(string $address) : void
+	{
+		$this->address = $address;
 	}
 
 	/**

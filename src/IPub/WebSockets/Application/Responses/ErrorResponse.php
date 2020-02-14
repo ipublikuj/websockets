@@ -46,7 +46,13 @@ class ErrorResponse implements IResponse
 	 */
 	private $statusCode;
 
-	public function __construct($statusCode, $headers = NULL, $body = NULL)
+	/**
+	 * @param int $statusCode
+	 * @param Utils\ArrayHash|array|NULL $headers
+	 *
+	 * @throws Exceptions\InvalidArgumentException
+	 */
+	public function __construct(int $statusCode, $headers = NULL)
 	{
 		$this->headers = new Utils\ArrayHash;
 

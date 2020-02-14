@@ -33,15 +33,17 @@
   "extra" : {
     "ipub" : {
       "configuration" : {
-        "extensions" : {
-          "webSockets" : "IPub\\WebSockets\\DI\\WebSocketsExtension"
-        }
+        "extension" : "IPub\\WebSockets\\DI\\WebSocketsExtension"
       }
     }
   },
 
   "require" : {
-    "php" : ">=7.2.0",
+    "php" : ">=7.3.0",
+
+    "ext-simplexml" : "*",
+    "ext-mbstring" : "*",
+    "ext-iconv" : "*",
 
     "react/socket" : "~1.2",
 
@@ -51,8 +53,8 @@
 
     "nette/di" : "~3.0",
     "nette/http" : "~3.0",
-    "nette/reflection" : "~2.4",
-    "nette/utils" : "~3.0"
+    "nette/utils" : "~3.0",
+    "nette/security" : "~3.0"
   },
 
   "require-dev" : {

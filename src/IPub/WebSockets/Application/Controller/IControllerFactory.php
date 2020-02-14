@@ -37,7 +37,7 @@ interface IControllerFactory
 	 *
 	 * @throws Exceptions\InvalidControllerException
 	 */
-	public function getControllerClass(string &$name);
+	public function getControllerClass(string &$name) : string;
 
 	/**
 	 * Creates new controller instance

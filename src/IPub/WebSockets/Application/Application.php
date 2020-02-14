@@ -16,6 +16,8 @@ declare(strict_types = 1);
 
 namespace IPub\WebSockets\Application;
 
+use Closure;
+
 use Nette;
 
 use Psr\Log;
@@ -51,22 +53,22 @@ abstract class Application implements IApplication
 	use Nette\SmartObject;
 
 	/**
-	 * @var \Closure
+	 * @var Closure
 	 */
 	public $onOpen = [];
 
 	/**
-	 * @var \Closure
+	 * @var Closure
 	 */
 	public $onClose = [];
 
 	/**
-	 * @var \Closure
+	 * @var Closure
 	 */
 	public $onMessage = [];
 
 	/**
-	 * @var \Closure
+	 * @var Closure
 	 */
 	public $onError = [];
 
@@ -172,6 +174,7 @@ abstract class Application implements IApplication
 	 * @return Responses\IResponse|NULL
 	 *
 	 * @throws Exceptions\BadRequestException
+	 * @throws Exceptions\InvalidControllerException
 	 */
 	protected function processMessage(Http\IRequest $httpRequest, array $parameters) : ?Responses\IResponse
 	{

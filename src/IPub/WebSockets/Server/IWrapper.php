@@ -16,6 +16,8 @@ declare(strict_types = 1);
 
 namespace IPub\WebSockets\Server;
 
+use Throwable;
+
 use IPub\WebSockets\Entities;
 
 interface IWrapper
@@ -44,9 +46,9 @@ interface IWrapper
 
 	/**
 	 * @param Entities\Clients\IClient $client
-	 * @param \Exception $ex
+	 * @param Throwable $ex
 	 *
 	 * @return void
 	 */
-	public function handleError(Entities\Clients\IClient $client, \Exception $ex) : void;
+	public function handleError(Entities\Clients\IClient $client, Throwable $ex) : void;
 }

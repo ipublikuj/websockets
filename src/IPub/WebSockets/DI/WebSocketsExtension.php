@@ -18,6 +18,7 @@ namespace IPub\WebSockets\DI;
 
 use Nette;
 use Nette\DI;
+use Nette\Schema;
 
 use Psr\Log;
 
@@ -48,29 +49,31 @@ final class WebSocketsExtension extends DI\CompilerExtension
 	const TAG_WEBSOCKETS_ROUTES = 'ipub.websockets.routes';
 
 	/**
-	 * @var array
+	 * {@inheritdoc}
 	 */
-	private $defaults = [
-		'clients'       => [
-			'storage' => [
-				'driver' => '@clients.driver.memory',
-				'ttl'    => 0,
-			],
-		],
-		'server'        => [
-			'httpHost' => 'localhost',
-			'port'     => 8080,
-			'address'  => '0.0.0.0',
-			'secured'  => [
-				'enable'      => FALSE,
-				'sslSettings' => [],
-			],
-		],
-		'routes'        => [],
-		'mapping'       => [],
-		'console'       => FALSE,
-		'symfonyEvents' => FALSE,
-	];
+	public function getConfigSchema() : Schema\Schema
+	{
+		return Schema\Expect::structure([
+			'clients' => Schema\Expect::structure([
+				'storage' => Schema\Expect::structure([
+					'driver' => Schema\Expect::string('@clients.driver.memory'),
+					'ttl'    => Schema\Expect::int(0),
+				]),
+			]),
+			'server'  => Schema\Expect::structure([
+				'httpHost' => Schema\Expect::string('localhost'),
+				'port'     => Schema\Expect::int(8080),
+				'address'  => Schema\Expect::string('0.0.0.0'),
+				'secured'  => Schema\Expect::structure([
+					'enable'      => Schema\Expect::bool(FALSE),
+					'sslSettings' => Schema\Expect::array([]),
+				]),
+			]),
+			'routes'  => Schema\Expect::array([]),
+			'mapping' => Schema\Expect::array([]),
+			'loop'    => Schema\Expect::anyOf(Schema\Expect::string(), Schema\Expect::type(DI\Definitions\Statement::class))->nullable(),
+		]);
+	}
 
 	/**
 	 * {@inheritdoc}
@@ -79,10 +82,8 @@ final class WebSocketsExtension extends DI\CompilerExtension
 	{
 		parent::loadConfiguration();
 
-		/** @var DI\ContainerBuilder $builder */
 		$builder = $this->getContainerBuilder();
-		/** @var array $configuration */
-		$configuration = $this->validateConfig($this->defaults);
+		$configuration = $this->getConfig();
 
 		/**
 		 * CONTROLLERS
@@ -92,8 +93,8 @@ final class WebSocketsExtension extends DI\CompilerExtension
 			->setType(Application\Controller\IControllerFactory::class)
 			->setFactory(Application\Controller\ControllerFactory::class);
 
-		if ($configuration['mapping']) {
-			$controllerFactory->addSetup('setMapping', [$configuration['mapping']]);
+		if ($configuration->mapping) {
+			$controllerFactory->addSetup('setMapping', [$configuration->mapping]);
 		}
 
 		/**
@@ -106,14 +107,14 @@ final class WebSocketsExtension extends DI\CompilerExtension
 		$builder->addDefinition($this->prefix('clients.driver.memory'))
 			->setType(Clients\Drivers\InMemory::class);
 
-		$storageDriver = $configuration['clients']['storage']['driver'] === '@clients.driver.memory' ?
+		$storageDriver = $configuration->clients->storage->driver === '@clients.driver.memory' ?
 			$builder->getDefinition($this->prefix('clients.driver.memory')) :
-			$builder->getDefinition($configuration['clients']['storage']['driver']);
+			$builder->getDefinition($configuration->clients->storage->driver);
 
 		$builder->addDefinition($this->prefix('clients.storage'))
 			->setType(Clients\Storage::class)
 			->setArguments([
-				'ttl' => $configuration['clients']['storage']['ttl'],
+				'ttl' => $configuration->clients->storage->ttl,
 			])
 			->addSetup('?->setStorageDriver(?)', ['@' . $this->prefix('clients.storage'), $storageDriver]);
 
@@ -126,7 +127,7 @@ final class WebSocketsExtension extends DI\CompilerExtension
 			->setType(Router\IRouter::class)
 			->setFactory(Router\RouteList::class);
 
-		foreach ($configuration['routes'] as $mask => $action) {
+		foreach ($configuration->routes as $mask => $action) {
 			$router->addSetup('$service[] = new IPub\WebSockets\Router\Route(?, ?);', [$mask, $action]);
 		}
 
@@ -146,25 +147,36 @@ final class WebSocketsExtension extends DI\CompilerExtension
 
 		$flashApplication->addSetup('?->addAllowedAccess(?, 80)', [
 			$flashApplication,
-			$configuration['server']['httpHost'],
+			$configuration->server->httpHost,
 		]);
 		$flashApplication->addSetup('?->addAllowedAccess(?, ?)', [
 			$flashApplication,
-			$configuration['server']['httpHost'],
-			$configuration['server']['port'],
+			$configuration->server->httpHost,
+			$configuration->server->port,
 		]);
 
-		$loop = $builder->addDefinition($this->prefix('server.loop'))
-			->setType(React\EventLoop\LoopInterface::class)
-			->setFactory('React\EventLoop\Factory::create');
+		if ($configuration->loop === NULL) {
+			if ($builder->getByType(React\EventLoop\LoopInterface::class) === NULL) {
+				$loop = $builder->addDefinition($this->prefix('server.loop'))
+					->setType(React\EventLoop\LoopInterface::class)
+					->setFactory('React\EventLoop\Factory::create');
 
-		$serverConfiguration = new Server\Configuration(
-			$configuration['server']['httpHost'],
-			$configuration['server']['port'],
-			$configuration['server']['address'],
-			$configuration['server']['secured']['enable'],
-			$configuration['server']['secured']['sslSettings']
-		);
+			} else {
+				$loop = $builder->getDefinitionByType(React\EventLoop\LoopInterface::class);
+			}
+
+		} else {
+			$loop = is_string($configuration->loop) ? new DI\Definitions\Statement($configuration->loop) : $configuration->loop;
+		}
+
+		$serverConfiguration = $builder->addDefinition($this->prefix('server.configuration'))
+			->setType(Server\Configuration::class)
+			->setArguments([
+				'port'        => $configuration->server->port,
+				'address'     => $configuration->server->address,
+				'enableSSL'   => $configuration->server->secured->enable,
+				'sslSettings' => $configuration->server->secured->sslSettings,
+			]);
 
 		if ($builder->findByType(Log\LoggerInterface::class) === []) {
 			$builder->addDefinition($this->prefix('server.logger'))
@@ -180,14 +192,14 @@ final class WebSocketsExtension extends DI\CompilerExtension
 				$serverConfiguration,
 			]);
 
-		if ($configuration['console'] === TRUE) {
+		if (class_exists('Symfony\Component\Console\Command\Command')) {
 			// Define all console commands
 			$commands = [
 				'server' => Commands\ServerCommand::class,
 			];
 
 			foreach ($commands as $name => $cmd) {
-				$builder->addDefinition($this->prefix('commands' . lcfirst($name)))
+				$builder->addDefinition($this->prefix('commands.' . lcfirst($name)))
 					->setType($cmd);
 			}
 		}
@@ -200,10 +212,7 @@ final class WebSocketsExtension extends DI\CompilerExtension
 	{
 		parent::beforeCompile();
 
-		/** @var DI\ContainerBuilder $builder */
 		$builder = $this->getContainerBuilder();
-		/** @var array $configuration */
-		$configuration = $this->validateConfig($this->defaults);
 
 		/**
 		 * ROUTER CREATION
@@ -238,7 +247,7 @@ final class WebSocketsExtension extends DI\CompilerExtension
 			foreach ($routersFactories as $priority => $items) {
 				// ...and by service name...
 				foreach ($items as $routerService) {
-					$factory = new DI\Statement(['@' . $routerService, 'createRouter']);
+					$factory = new DI\Definitions\Statement(['@' . $routerService, 'createRouter']);
 
 					$router->addSetup('offsetSet', [NULL, $factory]);
 				}
@@ -264,11 +273,11 @@ final class WebSocketsExtension extends DI\CompilerExtension
 		 * EVENTS
 		 */
 
-		if ($configuration['symfonyEvents'] === TRUE) {
+		if (interface_exists('Symfony\Component\EventDispatcher\EventDispatcherInterface')) {
 			$dispatcher = $builder->getDefinition($builder->getByType(EventDispatcher\EventDispatcherInterface::class));
 
 			$application = $builder->getDefinition($builder->getByType(Application\Application::class));
-			assert($application instanceof DI\ServiceDefinition);
+			assert($application instanceof DI\Definitions\ServiceDefinition);
 
 			$application->addSetup('?->onOpen[] = function() {?->dispatch(new ?(...func_get_args()));}', [
 				'@self',
@@ -342,8 +351,10 @@ final class WebSocketsExtension extends DI\CompilerExtension
 	 *
 	 * @return void
 	 */
-	public static function register(Nette\Configurator $config, string $extensionName = 'websockets') : void
-	{
+	public static function register(
+		Nette\Configurator $config,
+		string $extensionName = 'websockets'
+	) : void {
 		$config->onCompile[] = function (Nette\Configurator $config, DI\Compiler $compiler) use ($extensionName) {
 			$compiler->addExtension($extensionName, new WebSocketsExtension());
 		};

@@ -16,19 +16,20 @@ declare(strict_types = 1);
 
 namespace IPub\WebSockets\Application;
 
+use ReflectionException;
+use ReflectionParameter;
+use ReflectionFunctionAbstract;
+
 use Nette;
-use Nette\Reflection\ClassType;
 
 use IPub\WebSockets\Exceptions;
 
 /**
  * Helpers for Controllers
  *
- * @property-read string $name
- * @property-read string $fileName
  * @internal
  */
-class Reflection extends \ReflectionClass
+class Reflection
 {
 	/**
 	 * Implement nette smart magic
@@ -36,16 +37,22 @@ class Reflection extends \ReflectionClass
 	use Nette\SmartObject;
 
 	/**
+	 * @param ReflectionFunctionAbstract $method
+	 * @param mixed[] $args
+	 *
 	 * @return array
+	 *
+	 * @throws Exceptions\BadRequestException
+	 * @throws ReflectionException
 	 */
-	public static function combineArgs(\ReflectionFunctionAbstract $method, $args)
+	public static function combineArgs(ReflectionFunctionAbstract $method, array $args)
 	{
 		$res = [];
 
 		foreach ($method->getParameters() as $i => $param) {
 			$name = $param->getName();
 
-			list($type, $isClass) = self::getParameterType($param);
+			[$type, $isClass] = self::getParameterType($param);
 
 			if (isset($args[$name])) {
 				$res[$i] = $args[$name];
@@ -84,12 +91,13 @@ class Reflection extends \ReflectionClass
 	/**
 	 * Non data-loss type conversion.
 	 *
-	 * @param mixed
-	 * @param string
+	 * @param mixed $val
+	 * @param string $type
+	 * @param bool $isClass
 	 *
 	 * @return bool
 	 */
-	public static function convertType(&$val, $type, $isClass = FALSE)
+	public static function convertType(&$val, string $type, bool $isClass = FALSE)
 	{
 		if ($isClass) {
 			return $val instanceof $type;
@@ -128,93 +136,16 @@ class Reflection extends \ReflectionClass
 	}
 
 	/**
-	 * Returns an annotation value.
+	 * @param ReflectionParameter $param
 	 *
-	 * @return array|false
-	 */
-	public static function parseAnnotation(\Reflector $ref, $name)
-	{
-		if (!preg_match_all('#[\\s*]@' . preg_quote($name, '#') . '(?:\(\\s*([^)]*)\\s*\)|\\s|$)#', $ref->getDocComment(), $m)) {
-			return FALSE;
-		}
-
-		static $tokens = ['true' => TRUE, 'false' => FALSE, 'null' => NULL];
-
-		$res = [];
-
-		foreach ($m[1] as $s) {
-			foreach (preg_split('#\s*,\s*#', $s, -1, PREG_SPLIT_NO_EMPTY) ?: ['true'] as $item) {
-				$res[] = array_key_exists($tmp = strtolower($item), $tokens) ? $tokens[$tmp] : $item;
-			}
-		}
-
-		return $res;
-	}
-
-	/**
 	 * @return array [string|null, bool]
+	 *
+	 * @throws ReflectionException
 	 */
-	public static function getParameterType(\ReflectionParameter $param)
+	public static function getParameterType(ReflectionParameter $param)
 	{
 		$def = gettype($param->isDefaultValueAvailable() ? $param->getDefaultValue() : NULL);
 
-		if (PHP_VERSION_ID >= 70000) {
-			return $param->hasType()
-				? [PHP_VERSION_ID >= 70100 ? $param->getType()->getName() : (string) $param->getType(), !$param->getType()->isBuiltin()]
-				: [$def, FALSE];
-
-		} elseif ($param->isArray() || $param->isCallable()) {
-			return [$param->isArray() ? 'array' : 'callable', FALSE];
-
-		} else {
-			try {
-				return ($ref = $param->getClass()) ? [$ref->getName(), TRUE] : [$def, FALSE];
-
-			} catch (\ReflectionException $e) {
-				if (preg_match('#Class (.+) does not exist#', $e->getMessage(), $m)) {
-					throw new \LogicException(sprintf(
-						"Class %s not found. Check type hint of parameter $%s in %s() or 'use' statements.",
-						$m[1],
-						$param->getName(),
-						$param->getDeclaringFunction()->getDeclaringClass()->getName() . '::' . $param->getDeclaringFunction()->getName()
-					));
-				}
-
-				throw $e;
-			}
-		}
-	}
-
-	/**
-	 * @return Nette\Reflection\Method
-	 */
-	public function getMethod($name)
-	{
-		return new Nette\Reflection\Method($this->getName(), $name);
-	}
-
-	public function __toString()
-	{
-		trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-
-		return $this->getName();
-	}
-
-	public function __get($name)
-	{
-		trigger_error("getReflection()->$name is deprecated.", E_USER_DEPRECATED);
-
-		return (new ClassType($this->getName()))->$name;
-	}
-
-	public function __call($name, $args)
-	{
-		if (method_exists(ClassType::class, $name)) {
-			trigger_error("getReflection()->$name() is deprecated, use Nette\\Reflection\\ClassType::from(\$presenter)->$name()", E_USER_DEPRECATED);
-
-			return call_user_func_array([new ClassType($this->getName()), $name], $args);
-		}
-
-		Nette\Utils\ObjectMixin::strictCall(get_class($this), $name);
+		return $param->hasType() ? [$param->getType()->getName(), !$param->getType()->isBuiltin()] : [$def, FALSE];
 	}
 }
