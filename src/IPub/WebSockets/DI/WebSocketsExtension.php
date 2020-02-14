@@ -54,8 +54,8 @@ final class WebSocketsExtension extends DI\CompilerExtension
 	public function getConfigSchema() : Schema\Schema
 	{
 		return Schema\Expect::structure([
-			'clients' => Schema\Expect::structure([
-				'storage' => Schema\Expect::structure([
+			'storage' => Schema\Expect::structure([
+				'clients' => Schema\Expect::structure([
 					'driver' => Schema\Expect::string('@clients.driver.memory'),
 					'ttl'    => Schema\Expect::int(0),
 				]),
@@ -101,20 +101,22 @@ final class WebSocketsExtension extends DI\CompilerExtension
 		 * CLIENTS
 		 */
 
-		$builder->addDefinition($this->prefix('clients.factory'))
-			->setType(Clients\ClientFactory::class);
+		if ($builder->getByType(Clients\IClientFactory::class) === NULL) {
+			$builder->addDefinition($this->prefix('clients.factory'))
+				->setType(Clients\ClientFactory::class);
+		}
 
 		$builder->addDefinition($this->prefix('clients.driver.memory'))
 			->setType(Clients\Drivers\InMemory::class);
 
-		$storageDriver = $configuration->clients->storage->driver === '@clients.driver.memory' ?
+		$storageDriver = $configuration->storage->clients->driver === '@clients.driver.memory' ?
 			$builder->getDefinition($this->prefix('clients.driver.memory')) :
-			$builder->getDefinition($configuration->clients->storage->driver);
+			$builder->getDefinition($configuration->storage->clients->driver);
 
 		$builder->addDefinition($this->prefix('clients.storage'))
 			->setType(Clients\Storage::class)
 			->setArguments([
-				'ttl' => $configuration->clients->storage->ttl,
+				'ttl' => $configuration->storage->clients->ttl,
 			])
 			->addSetup('?->setStorageDriver(?)', ['@' . $this->prefix('clients.storage'), $storageDriver]);
 
