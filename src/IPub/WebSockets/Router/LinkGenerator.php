@@ -16,6 +16,8 @@ declare(strict_types = 1);
 
 namespace IPub\WebSockets\Router;
 
+use ReflectionException;
+
 use Nette;
 
 use IPub\WebSockets\Application;
@@ -67,6 +69,7 @@ class LinkGenerator
 	 * @return string
 	 *
 	 * @throws Exceptions\InvalidLinkException
+	 * @throws ReflectionException
 	 */
 	public function link(string $destination, array $params = []) : string
 	{
@@ -74,10 +77,9 @@ class LinkGenerator
 			throw new Exceptions\InvalidLinkException(sprintf('Invalid link destination "%s".', $destination));
 		}
 
-		list(, $controller, $action, $frag) = $m;
+		[, $controller, $action, $frag] = $m;
 
 		try {
-			/** @var Controller\Controller $class */
 			$class = $this->controllerFactory ? $this->controllerFactory->getControllerClass($controller) : NULL;
 
 		} catch (Exceptions\InvalidControllerException $ex) {

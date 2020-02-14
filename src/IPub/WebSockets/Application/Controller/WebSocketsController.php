@@ -16,6 +16,8 @@ declare(strict_types = 1);
 
 namespace IPubModule;
 
+use ReflectionException;
+
 use Nette;
 use Nette\DI;
 use Nette\Utils;
@@ -88,6 +90,7 @@ class WebSocketsController implements Controller\IController
 	 *
 	 * @throws Exceptions\BadRequestException
 	 * @throws Exceptions\InvalidStateException
+	 * @throws ReflectionException
 	 */
 	public function run(Application\Request $request) : Responses\IResponse
 	{

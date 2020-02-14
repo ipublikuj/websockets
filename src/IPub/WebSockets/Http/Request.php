@@ -84,13 +84,13 @@ class Request extends Http\Request implements IRequest
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getQuery($key = NULL, $default = NULL)
+	public function getQuery(string $key = NULL)
 	{
 		if (func_num_args() === 0) {
 			return $this->url->getQueryParameters();
 
 		} else {
-			return $this->url->getQueryParameter($key, $default);
+			return $this->url->getQueryParameter($key);
 		}
 	}
 

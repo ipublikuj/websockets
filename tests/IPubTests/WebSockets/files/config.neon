@@ -1,5 +1,2 @@
-extensions:
-	webSockets : IPub\WebSockets\DI\WebSocketsExtension
-
 services:
 	- IPubTests\WebSockets\Libraries\Application

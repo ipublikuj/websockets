@@ -180,7 +180,7 @@ class Route implements IRouter
 	public function __construct(string $mask, $metadata)
 	{
 		if (is_string($metadata)) {
-			list($controller, $action) = $this->splitName($metadata);
+			[$controller, $action] = $this->splitName($metadata);
 
 			if (!$controller) {
 				throw new Exceptions\InvalidArgumentException(sprintf('Second argument must be array or string in format Controller:action, "%s" given.', $metadata));
@@ -497,7 +497,7 @@ class Route implements IRouter
 		// Detect '//host/path' vs. '/abs. path' vs. 'relative path'
 		if (preg_match('#(?:(https?):)?(//.*)#A', $mask, $m)) {
 			$this->type = self::HOST;
-			list(, $this->scheme, $mask) = $m;
+			[, $this->scheme, $mask] = $m;
 
 		} elseif (substr($mask, 0, 1) === '/') {
 			$this->type = self::PATH;
@@ -539,7 +539,7 @@ class Route implements IRouter
 			// name=<parameter-name [pattern]>
 			$matches = Utils\Strings::matchAll($parts[$i - 1], '/(?:([a-zA-Z0-9_.-]+)=)?<([^> ]+) *([^>]*)>/');
 
-			foreach ($matches as list(, $param, $name, $pattern)) { // $pattern is not used
+			foreach ($matches as [, $param, $name, $pattern]) { // $pattern is not used
 				if (isset(static::$styles['?' . $name])) {
 					$meta = static::$styles['?' . $name];
 

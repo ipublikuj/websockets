@@ -16,6 +16,11 @@ declare(strict_types = 1);
 
 namespace IPub\WebSockets\Server;
 
+use Closure;
+use Throwable;
+use OverflowException;
+use UnderflowException;
+
 use Nette;
 
 use IPub\WebSockets\Application;
@@ -48,27 +53,27 @@ final class Wrapper implements IWrapper
 	use Nette\SmartObject;
 
 	/**
-	 * @var \Closure
+	 * @var Closure
 	 */
 	public $onClientConnected = [];
 
 	/**
-	 * @var \Closure
+	 * @var Closure
 	 */
 	public $onClientDisconnected = [];
 
 	/**
-	 * @var \Closure
+	 * @var Closure
 	 */
 	public $onClientError = [];
 
 	/**
-	 * @var \Closure
+	 * @var Closure
 	 */
 	public $onIncomingMessage = [];
 
 	/**
-	 * @var \Closure
+	 * @var Closure
 	 */
 	public $onAfterIncomingMessage = [];
 
@@ -134,6 +139,8 @@ final class Wrapper implements IWrapper
 
 	/**
 	 * {@inheritdoc}
+	 *
+	 * @throws Throwable
 	 */
 	public function handleMessage(Entities\Clients\IClient $client, string $message) : void
 	{
@@ -148,7 +155,7 @@ final class Wrapper implements IWrapper
 				$client->setRequest($httpRequest);
 				$client->setHttpBuffer('');
 
-			} catch (\OverflowException $ex) {
+			} catch (OverflowException $ex) {
 				$this->close($client, Http\IResponse::S413_REQUEST_ENTITY_TOO_LARGE);
 
 				return;
@@ -177,7 +184,7 @@ final class Wrapper implements IWrapper
 	/**
 	 * {@inheritdoc}
 	 */
-	public function handleError(Entities\Clients\IClient $client, \Exception $ex) : void
+	public function handleError(Entities\Clients\IClient $client, Throwable $ex) : void
 	{
 		if ($client->isHTTPHeadersReceived()) {
 			$this->connectionError($client, $ex);
@@ -193,6 +200,8 @@ final class Wrapper implements IWrapper
 	 * @param Http\IRequest $httpRequest
 	 *
 	 * @return void
+	 *
+	 * @throws Exceptions\InvalidArgumentException
 	 */
 	private function connectionOpen(Entities\Clients\IClient $client, Http\IRequest $httpRequest) : void
 	{
@@ -239,11 +248,11 @@ final class Wrapper implements IWrapper
 
 	/**
 	 * @param Entities\Clients\IClient $client
-	 * @param \Exception $ex
+	 * @param Throwable $ex
 	 *
 	 * @return void
 	 */
-	public function connectionError(Entities\Clients\IClient $client, \Exception $ex) : void
+	public function connectionError(Entities\Clients\IClient $client, Throwable $ex) : void
 	{
 		try {
 			$webSocket = $client->getWebSocket();
@@ -312,7 +321,7 @@ final class Wrapper implements IWrapper
 		try {
 			$response = $webSocket->getProtocol()->doHandshake($httpRequest);
 
-		} catch (\UnderflowException $e) {
+		} catch (UnderflowException $e) {
 			return NULL;
 		}
 

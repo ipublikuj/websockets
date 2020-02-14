@@ -123,6 +123,8 @@ final class Response implements IResponse
 	 * @param int $code
 	 * @param array $headers
 	 * @param string|NULL $body
+	 *
+	 * @throws Exceptions\InvalidArgumentException
 	 */
 	public function __construct(int $code, array $headers = [], ?string $body = NULL)
 	{
@@ -134,6 +136,8 @@ final class Response implements IResponse
 
 	/**
 	 * {@inheritdoc}
+	 *
+	 * @throws Exceptions\InvalidArgumentException
 	 */
 	public function setCode(int $code, ?string $reason = NULL) : void
 	{

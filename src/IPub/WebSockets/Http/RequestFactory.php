@@ -16,6 +16,8 @@ declare(strict_types = 1);
 
 namespace IPub\WebSockets\Http;
 
+use Throwable;
+
 use Fig\Http\Message;
 
 use Nette;
@@ -125,6 +127,8 @@ final class RequestFactory
 	 * @param string $packet
 	 *
 	 * @return IRequest|NULL
+	 *
+	 * @throws Throwable
 	 */
 	public function createHttpRequest(string $packet) : ?IRequest
 	{
@@ -182,7 +186,7 @@ final class RequestFactory
 		$headers = [];
 
 		foreach ($parsedHeaders as $header) {
-			list($name, $value) = explode(':', $header, 2);
+			[$name, $value] = explode(':', $header, 2);
 			$headers[strtolower($name)] = trim($value);
 		}
 
@@ -227,7 +231,7 @@ final class RequestFactory
 				$forwardParams = preg_split('/[,;]/', $headers['http_forwarded']);
 
 				foreach ($forwardParams as $forwardParam) {
-					list($key, $value) = explode('=', $forwardParam, 2) + [1 => NULL];
+					[$key, $value] = explode('=', $forwardParam, 2) + [1 => NULL];
 					$proxyParams[strtolower(trim($key))][] = trim($value, " \t\"");
 				}
 
@@ -257,7 +261,7 @@ final class RequestFactory
 							$url->setPort((int) $remoteHostArr[1]);
 						}
 
-						//IPv6
+					//IPv6
 					} else {
 						$endingDelimiterPosition = strpos($host, ']');
 						$remoteHost = substr($host, strpos($host, '[') + 1, $endingDelimiterPosition - 1);
@@ -434,7 +438,7 @@ final class RequestFactory
 	 */
 	private function ipMatch($ip, $mask)
 	{
-		list($mask, $size) = explode('/', $mask . '/');
+		[$mask, $size] = explode('/', $mask . '/');
 
 		$tmp = function ($n) {
 			return sprintf('%032b', $n);

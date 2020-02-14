@@ -16,6 +16,9 @@ declare(strict_types = 1);
 
 namespace IPub\WebSockets\Protocols\RFC6455;
 
+use OutOfBoundsException;
+use UnderflowException;
+
 use Nette;
 
 use IPub\WebSockets\Exceptions;
@@ -151,7 +154,7 @@ final class Frame implements Protocols\IFrame
 			$payload_length = $this->getPayloadLength();
 			$payload_start = $this->getPayloadStartingByte();
 
-		} catch (\UnderflowException $e) {
+		} catch (UnderflowException $e) {
 			return FALSE;
 		}
 
@@ -185,7 +188,7 @@ final class Frame implements Protocols\IFrame
 	public function isFinal() : bool
 	{
 		if ($this->firstByte === -1) {
-			throw new \UnderflowException('Not enough bytes received to determine if this is the final frame in message');
+			throw new UnderflowException('Not enough bytes received to determine if this is the final frame in message');
 		}
 
 		return ($this->firstByte & 128) === 128;
@@ -194,12 +197,12 @@ final class Frame implements Protocols\IFrame
 	/**
 	 * @return bool
 	 *
-	 * @throws \UnderflowException
+	 * @throws UnderflowException
 	 */
 	public function getRsv1() : bool
 	{
 		if ($this->firstByte === -1) {
-			throw new \UnderflowException('Not enough bytes received to determine reserved bit');
+			throw new UnderflowException('Not enough bytes received to determine reserved bit');
 		}
 
 		return ($this->firstByte & 64) === 64;
@@ -208,12 +211,12 @@ final class Frame implements Protocols\IFrame
 	/**
 	 * @return bool
 	 *
-	 * @throws \UnderflowException
+	 * @throws UnderflowException
 	 */
 	public function getRsv2() : bool
 	{
 		if ($this->firstByte === -1) {
-			throw new \UnderflowException('Not enough bytes received to determine reserved bit');
+			throw new UnderflowException('Not enough bytes received to determine reserved bit');
 		}
 
 		return ($this->firstByte & 32) === 32;
@@ -222,12 +225,12 @@ final class Frame implements Protocols\IFrame
 	/**
 	 * @return bool
 	 *
-	 * @throws \UnderflowException
+	 * @throws UnderflowException
 	 */
 	public function getRsv3() : bool
 	{
 		if ($this->firstByte === -1) {
-			throw new \UnderflowException('Not enough bytes received to determine reserved bit');
+			throw new UnderflowException('Not enough bytes received to determine reserved bit');
 		}
 
 		return ($this->firstByte & 16) === 16;
@@ -239,7 +242,7 @@ final class Frame implements Protocols\IFrame
 	public function isMasked() : bool
 	{
 		if ($this->secondByte === -1) {
-			throw new \UnderflowException("Not enough bytes received ({$this->bytesReceived}) to determine if mask is set");
+			throw new UnderflowException("Not enough bytes received ({$this->bytesReceived}) to determine if mask is set");
 		}
 
 		return ($this->secondByte & 128) === 128;
@@ -257,7 +260,7 @@ final class Frame implements Protocols\IFrame
 		$start = 1 + $this->getNumPayloadBytes();
 
 		if ($this->bytesReceived < $start + self::MASK_LENGTH) {
-			throw new \UnderflowException('Not enough data buffered to calculate the masking key');
+			throw new UnderflowException('Not enough data buffered to calculate the masking key');
 		}
 
 		return substr($this->data, $start, self::MASK_LENGTH);
@@ -286,7 +289,7 @@ final class Frame implements Protocols\IFrame
 	 *
 	 * @return void
 	 *
-	 * @throws \OutOfBoundsException
+	 * @throws OutOfBoundsException
 	 * @throws Exceptions\InvalidArgumentException If there is an issue with the given masking key
 	 */
 	public function maskPayload(?string $maskingKey = NULL)
@@ -300,7 +303,7 @@ final class Frame implements Protocols\IFrame
 		}
 
 		if (extension_loaded('mbstring') && TRUE !== mb_check_encoding($maskingKey, 'US-ASCII')) {
-			throw new \OutOfBoundsException('Masking key MUST be ASCII');
+			throw new OutOfBoundsException('Masking key MUST be ASCII');
 		}
 
 		$this->unMaskPayload();
@@ -324,7 +327,7 @@ final class Frame implements Protocols\IFrame
 	public function unMaskPayload() : void
 	{
 		if (!$this->isCoalesced()) {
-			throw new \UnderflowException('Frame must be coalesced before applying mask');
+			throw new UnderflowException('Frame must be coalesced before applying mask');
 		}
 
 		if ($this->isMasked()) {
@@ -348,13 +351,13 @@ final class Frame implements Protocols\IFrame
 	 *
 	 * @return string
 	 *
-	 * @throws \UnderflowException If using the payload but enough hasn't been buffered
+	 * @throws UnderflowException If using the payload but enough hasn't been buffered
 	 */
 	public function applyMask(string $maskingKey, ?string $payload = NULL) : string
 	{
 		if ($payload === NULL) {
 			if (!$this->isCoalesced()) {
-				throw new \UnderflowException('Frame must be coalesced to apply a mask');
+				throw new UnderflowException('Frame must be coalesced to apply a mask');
 			}
 
 			$payload = substr($this->data, $this->getPayloadStartingByte(), $this->getPayloadLength());
@@ -375,7 +378,7 @@ final class Frame implements Protocols\IFrame
 	public function getOpCode() : int
 	{
 		if (-1 === $this->firstByte) {
-			throw new \UnderflowException('Not enough bytes received to determine opCode');
+			throw new UnderflowException('Not enough bytes received to determine opCode');
 		}
 
 		return ($this->firstByte & ~240);
@@ -386,12 +389,12 @@ final class Frame implements Protocols\IFrame
 	 *
 	 * @return int
 	 *
-	 * @throws \UnderflowException If the buffer doesn't have enough data to determine this
+	 * @throws UnderflowException If the buffer doesn't have enough data to determine this
 	 */
 	private function getFirstPayloadVal() : int
 	{
 		if (-1 === $this->secondByte) {
-			throw new \UnderflowException('Not enough bytes received');
+			throw new UnderflowException('Not enough bytes received');
 		}
 
 		return $this->secondByte & 127;
@@ -400,12 +403,12 @@ final class Frame implements Protocols\IFrame
 	/**
 	 * @return int (7|23|71) Number of bits defined for the payload length in the fame
 	 *
-	 * @throws \UnderflowException
+	 * @throws UnderflowException
 	 */
 	private function getNumPayloadBits() : int
 	{
 		if ($this->secondByte === -1) {
-			throw new \UnderflowException('Not enough bytes received');
+			throw new UnderflowException('Not enough bytes received');
 		}
 
 		// By default 7 bits are used to describe the payload length
@@ -458,7 +461,7 @@ final class Frame implements Protocols\IFrame
 
 		if ($this->bytesReceived < 1 + $byte_length) {
 			$this->defPayLen = -1;
-			throw new \UnderflowException('Not enough data buffered to determine payload length');
+			throw new UnderflowException('Not enough data buffered to determine payload length');
 		}
 
 		$len = 0;
@@ -489,7 +492,7 @@ final class Frame implements Protocols\IFrame
 	public function getPayload() : string
 	{
 		if (!$this->isCoalesced()) {
-			throw new \UnderflowException('Can not return partial message');
+			throw new UnderflowException('Can not return partial message');
 		}
 
 		$payload = substr($this->data, $this->getPayloadStartingByte(), $this->getPayloadLength());

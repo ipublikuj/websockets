@@ -47,7 +47,6 @@ This extension has a lot of configuration options:
             address:    0.0.0.0
         routes: []      // Routes definition
         mapping: []     // Controllers mapping
-        console: FALSE  // Symfony console command support
 ```
 
 ### Define routes

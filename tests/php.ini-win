@@ -2,3 +2,6 @@
 extension_dir = "./ext"
 extension = php_xdebug.dll
 extension = php_json.dll
+extension = php_simplexml.dll
+extension = php_mbstring.dll
+extension = php_iconv.dll

@@ -16,6 +16,12 @@ declare(strict_types = 1);
 
 namespace IPub\WebSockets\Application\Controller;
 
+use stdClass;
+use Reflector;
+use ReflectionClass;
+use ReflectionException;
+use ReflectionMethod;
+
 use Fig\Http;
 
 use Nette;
@@ -34,7 +40,7 @@ use IPub\WebSockets\Router;
  *
  * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  *
- * @property-read \stdClass $payload
+ * @property-read stdClass $payload
  * @property-read NS\User $user
  */
 abstract class Controller implements IController
@@ -64,7 +70,7 @@ abstract class Controller implements IController
 	private $response;
 
 	/**
-	 * @var \stdClass
+	 * @var stdClass
 	 */
 	private $payload;
 
@@ -150,7 +156,7 @@ abstract class Controller implements IController
 
 	public function __construct()
 	{
-		$this->payload = new \stdClass;
+		$this->payload = new stdClass;
 	}
 
 	/**
@@ -158,26 +164,28 @@ abstract class Controller implements IController
 	 *
 	 * @return Responses\IResponse
 	 *
+	 * @throws Exceptions\BadRequestException
 	 * @throws Exceptions\BadSignalException
 	 * @throws Exceptions\ForbiddenRequestException
 	 * @throws Exceptions\InvalidStateException
+	 * @throws ReflectionException
 	 */
 	public function run(Application\Request $request) : Responses\IResponse
 	{
 		try {
 			// STARTUP
 			$this->request = $request;
-			$this->payload = $this->payload ?: new \stdClass;
+			$this->payload = $this->payload ?: new stdClass;
 			$this->name = $request->getControllerName();
 
 			$this->initGlobalParameters();
 
-			$this->checkRequirements(new Application\Reflection($this));
+			$this->checkRequirements(new ReflectionClass($this));
 
 			$this->startup();
 
 			if (!$this->startupCheck) {
-				$class = (new \ReflectionClass($this))->getMethod('startup')->getDeclaringClass()->getName();
+				$class = (new ReflectionClass($this))->getMethod('startup')->getDeclaringClass()->getName();
 
 				throw new Exceptions\InvalidStateException(sprintf('Method %s::startup() or its descendant doesn\'t call parent::startup().', $class));
 			}
@@ -198,9 +206,9 @@ abstract class Controller implements IController
 		} catch (Exceptions\AbortException $ex) {
 			// SHUTDOWN
 			$this->shutdown($this->response);
-
-			return $this->response;
 		}
+
+		return  $this->response;
 	}
 
 	/**
@@ -219,10 +227,11 @@ abstract class Controller implements IController
 	 * @return void
 	 *
 	 * @throws Exceptions\ForbiddenRequestException
+	 * @throws Exceptions\InvalidStateException
 	 */
 	public function checkRequirements($element) : void
 	{
-		$user = (array) Application\Reflection::parseAnnotation($element, 'User');
+		$user = (array) $this->parseAnnotation($element, 'User');
 
 		if (in_array('loggedIn', $user, TRUE) && !$this->getUser()->isLoggedIn()) {
 			throw new Exceptions\ForbiddenRequestException;
@@ -230,9 +239,9 @@ abstract class Controller implements IController
 	}
 
 	/**
-	 * @return \stdClass
+	 * @return stdClass
 	 */
-	public function getPayload() : \stdClass
+	public function getPayload() : stdClass
 	{
 		return $this->payload;
 	}
@@ -243,7 +252,6 @@ abstract class Controller implements IController
 	 * @return void
 	 *
 	 * @throws Exceptions\AbortException
-	 * @throws Exceptions\BadRequestException
 	 */
 	public function sendPayload() : void
 	{
@@ -289,6 +297,7 @@ abstract class Controller implements IController
 	 * @return string
 	 *
 	 * @throws Exceptions\InvalidLinkException
+	 * @throws ReflectionException
 	 */
 	public function link(string $destination, array $args = []) : string
 	{
@@ -364,17 +373,17 @@ abstract class Controller implements IController
 	 * @return void
 	 *
 	 * @throws Exceptions\InvalidLinkException
-	 * @throws \ReflectionException
+	 * @throws ReflectionException
 	 *
 	 * @internal
 	 */
 	public static function argsToParams(string $class, string $method, array &$args, array $supplemental = [], array &$missing = []) : void
 	{
 		$i = 0;
-		$rm = new \ReflectionMethod($class, $method);
+		$rm = new ReflectionMethod($class, $method);
 
 		foreach ($rm->getParameters() as $param) {
-			list($type, $isClass) = Application\Reflection::getParameterType($param);
+			[$type, $isClass] = Application\Reflection::getParameterType($param);
 			$name = $param->getName();
 
 			if (array_key_exists($i, $args)) {
@@ -443,17 +452,22 @@ abstract class Controller implements IController
 	 * @param array $params
 	 *
 	 * @return bool
+	 *
+	 * @throws Exceptions\BadRequestException
+	 * @throws Exceptions\ForbiddenRequestException
+	 * @throws Exceptions\InvalidStateException
+	 * @throws ReflectionException
 	 */
 	protected function tryCall($method, array $params) : bool
 	{
-		$rc = new Application\Reflection($this);
+		$rc = new ReflectionClass($this);
 
 		if ($rc->hasMethod($method)) {
 			$rm = $rc->getMethod($method);
 
 			if ($rm->isPublic() && !$rm->isAbstract() && !$rm->isStatic()) {
 				$this->checkRequirements($rm);
-				$rm->invokeArgs($this, $rc->combineArgs($rm, $params));
+				$rm->invokeArgs($this, Application\Reflection::combineArgs($rm, $params));
 
 				return TRUE;
 			}
@@ -466,6 +480,8 @@ abstract class Controller implements IController
 	 * Initializes $this->globalParams, $this->action. Called by run()
 	 *
 	 * @return void
+	 *
+	 * @throws Exceptions\BadRequestException
 	 */
 	private function initGlobalParameters() : void
 	{
@@ -496,5 +512,29 @@ abstract class Controller implements IController
 		if (isset($selfParams[self::SIGNAL_KEY])) {
 			$this->signal = $selfParams[self::SIGNAL_KEY];
 		}
+	}
+
+	/**
+	 * Returns an annotation value.
+	 *
+	 * @return array|false
+	 */
+	private function parseAnnotation(Reflector $ref, $name)
+	{
+		if (!preg_match_all('#[\\s*]@' . preg_quote($name, '#') . '(?:\(\\s*([^)]*)\\s*\)|\\s|$)#', $ref->getDocComment(), $m)) {
+			return FALSE;
+		}
+
+		static $tokens = ['true' => TRUE, 'false' => FALSE, 'null' => NULL];
+
+		$res = [];
+
+		foreach ($m[1] as $s) {
+			foreach (preg_split('#\s*,\s*#', $s, -1, PREG_SPLIT_NO_EMPTY) ?: ['true'] as $item) {
+				$res[] = array_key_exists($tmp = strtolower($item), $tokens) ? $tokens[$tmp] : $item;
+			}
+		}
+
+		return $res;
 	}
 }

@@ -16,6 +16,9 @@ declare(strict_types = 1);
 
 namespace IPub\WebSockets\Server;
 
+use SimpleXMLElement;
+use Throwable;
+
 use IPub\WebSockets\Entities;
 use IPub\WebSockets\Exceptions;
 
@@ -144,7 +147,7 @@ final class FlashWrapper implements IWrapper
 	/**
 	 * {@inheritdoc}
 	 */
-	public function handleError(Entities\Clients\IClient $client, \Exception $ex) : void
+	public function handleError(Entities\Clients\IClient $client, Throwable $ex) : void
 	{
 		$client->getConnection()->end();
 	}
@@ -152,13 +155,13 @@ final class FlashWrapper implements IWrapper
 	/**
 	 * Builds the crossdomain file based on the template policy
 	 *
-	 * @return \SimpleXMLElement
+	 * @return SimpleXMLElement
 	 *
 	 * @throws Exceptions\UnexpectedValueException
 	 */
-	public function renderPolicy() : \SimpleXMLElement
+	public function renderPolicy() : SimpleXMLElement
 	{
-		$policy = new \SimpleXMLElement($this->policy);
+		$policy = new SimpleXMLElement($this->policy);
 
 		$siteControl = $policy->addChild('site-control');
 

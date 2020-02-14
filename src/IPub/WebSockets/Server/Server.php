@@ -16,6 +16,9 @@ declare(strict_types = 1);
 
 namespace IPub\WebSockets\Server;
 
+use Closure;
+use Throwable;
+
 use Nette;
 
 use Psr\Log;
@@ -48,12 +51,12 @@ final class Server
 	const VERSION = 'IPub/WebSockets/1.0.0';
 
 	/**
-	 * @var \Closure
+	 * @var Closure
 	 */
 	public $onStart = [];
 
 	/**
-	 * @var \Closure
+	 * @var Closure
 	 */
 	public $onStop = [];
 
@@ -142,7 +145,7 @@ final class Server
 			$this->handleConnect($connection, $this->application);
 		});
 
-		$socket->on('error', function (\Exception $ex) {
+		$socket->on('error', function (Throwable $ex) {
 			$this->logger->error('Could not establish connection: ' . $ex->getMessage());
 		});
 
@@ -160,7 +163,7 @@ final class Server
 		});
 
 		$this->logger->debug('Starting IPub\WebSockets');
-		$this->logger->debug(sprintf('Launching WebSockets WS Server on: %s:%s', $this->configuration->getHttpHost(), $this->configuration->getPort()));
+		$this->logger->debug(sprintf('Launching WebSockets WS Server on: %s:%s', $this->configuration->getAddress(), $this->configuration->getPort()));
 
 		$this->onStart($this->loop, $this);
 
@@ -188,6 +191,8 @@ final class Server
 	 * @param Log\LoggerInterface $logger
 	 *
 	 * @return void
+	 *
+	 * @throws Exceptions\InvalidStateException
 	 */
 	public function setLogger(Log\LoggerInterface $logger) : void
 	{
@@ -203,6 +208,8 @@ final class Server
 	 * @param IWrapper $application
 	 *
 	 * @return void
+	 *
+	 * @throws Exceptions\StorageException
 	 */
 	private function handleConnect(React\Socket\ConnectionInterface $connection, IWrapper $application) : void
 	{
@@ -221,11 +228,11 @@ final class Server
 				$this->handleEnd($connection, $application);
 			});
 
-			$connection->on('error', function (\Exception $ex) use ($connection, $application) {
+			$connection->on('error', function (Throwable $ex) use ($connection, $application) {
 				$this->handleError($ex, $connection, $application);
 			});
 
-		} catch (\Exception $ex) {
+		} catch (Throwable $ex) {
 			$context = [
 				'code'   => $ex->getCode(),
 				'file'   => $ex->getFile(),
@@ -252,7 +259,7 @@ final class Server
 
 			$application->handleMessage($client, $data);
 
-		} catch (\Exception $ex) {
+		} catch (Throwable $ex) {
 			$this->handleError($ex, $connection, $application);
 		}
 	}
@@ -270,19 +277,19 @@ final class Server
 
 			$application->handleClose($client);
 
-		} catch (\Exception $ex) {
+		} catch (Throwable $ex) {
 			$this->handleError($ex, $connection, $application);
 		}
 	}
 
 	/**
-	 * @param \Exception $ex
+	 * @param Throwable $ex
 	 * @param React\Socket\ConnectionInterface $connection
 	 * @param IWrapper $application
 	 *
 	 * @return void
 	 */
-	private function handleError(\Exception $ex, React\Socket\ConnectionInterface $connection, IWrapper $application) : void
+	private function handleError(Throwable $ex, React\Socket\ConnectionInterface $connection, IWrapper $application) : void
 	{
 		try {
 			$client = $this->clientStorage->getClient((int) $connection->stream);
@@ -298,7 +305,7 @@ final class Server
 
 			$application->handleError($client, $ex);
 
-		} catch (\Exception $ex) {
+		} catch (Throwable $ex) {
 			$context = [
 				'code'   => $ex->getCode(),
 				'file'   => $ex->getFile(),

@@ -68,6 +68,8 @@ class ExtensionTest extends Tester\TestCase
 
 		$config->addConfig(__DIR__ . DS . 'files' . DS . 'config.neon');
 
+		WebSockets\DI\WebSocketsExtension::register($config);
+
 		return $config->createContainer();
 	}
 }

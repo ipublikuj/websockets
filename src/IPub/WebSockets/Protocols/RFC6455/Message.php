@@ -16,6 +16,9 @@ declare(strict_types = 1);
 
 namespace IPub\WebSockets\Protocols\RFC6455;
 
+use SplDoublyLinkedList;
+use UnderflowException;
+
 use Nette;
 
 use IPub\WebSockets\Protocols;
@@ -36,13 +39,13 @@ final class Message implements Protocols\IMessage, \Countable
 	use Nette\SmartObject;
 
 	/**
-	 * @var \SplDoublyLinkedList
+	 * @var SplDoublyLinkedList
 	 */
 	private $frames;
 
 	public function __construct()
 	{
-		$this->frames = new \SplDoublyLinkedList;
+		$this->frames = new SplDoublyLinkedList;
 	}
 
 	/**
@@ -83,7 +86,7 @@ final class Message implements Protocols\IMessage, \Countable
 	public function getOpCode() : int
 	{
 		if (count($this->frames) == 0) {
-			throw new \UnderflowException('No frames have been added to this message');
+			throw new UnderflowException('No frames have been added to this message');
 		}
 
 		return $this->frames->bottom()->getOpCode();
@@ -100,7 +103,7 @@ final class Message implements Protocols\IMessage, \Countable
 			try {
 				$len += $frame->getPayloadLength();
 
-			} catch (\UnderflowException $e) {
+			} catch (UnderflowException $e) {
 				// Not an error, want the current amount buffered
 			}
 		}
@@ -114,7 +117,7 @@ final class Message implements Protocols\IMessage, \Countable
 	public function getPayload() : string
 	{
 		if (!$this->isCoalesced()) {
-			throw new \UnderflowException('Message has not been put back together yet');
+			throw new UnderflowException('Message has not been put back together yet');
 		}
 
 		$buffer = '';
@@ -132,7 +135,7 @@ final class Message implements Protocols\IMessage, \Countable
 	public function getContents() : string
 	{
 		if (!$this->isCoalesced()) {
-			throw new \UnderflowException("Message has not been put back together yet");
+			throw new UnderflowException("Message has not been put back together yet");
 		}
 
 		$buffer = '';

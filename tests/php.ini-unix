@@ -1,5 +1,8 @@
 extension = xdebug.so
 extension = json.so
+extension = simplexml.so
+extension = mbstring.so
+extension = iconv.so
 
 [xdebug]
 xdebug.enable = On
