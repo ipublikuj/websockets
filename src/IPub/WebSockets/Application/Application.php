@@ -17,6 +17,7 @@ declare(strict_types = 1);
 namespace IPub\WebSockets\Application;
 
 use Closure;
+use Throwable;
 
 use Nette;
 
@@ -43,7 +44,7 @@ use IPub\WebSockets\Server;
  * @method onOpen(IApplication $application, Entities\Clients\IClient $client, Http\IRequest $httpRequest)
  * @method onClose(IApplication $application, Entities\Clients\IClient $client, Http\IRequest $httpRequest)
  * @method onMessage(IApplication $application, Entities\Clients\IClient $client, Http\IRequest $httpRequest, string $message)
- * @method onError(IApplication $application, Entities\Clients\IClient $client, Http\IRequest $httpRequest, \Exception $ex)
+ * @method onError(IApplication $application, Entities\Clients\IClient $client, Http\IRequest $httpRequest, Throwable $ex)
  */
 abstract class Application implements IApplication
 {
@@ -132,8 +133,10 @@ abstract class Application implements IApplication
 
 	/**
 	 * {@inheritdoc}
+	 *
+	 * @throws Exceptions\InvalidArgumentException
 	 */
-	public function handleError(Entities\Clients\IClient $client, Http\IRequest $httpRequest, \Exception $ex) : void
+	public function handleError(Entities\Clients\IClient $client, Http\IRequest $httpRequest, Throwable $ex) : void
 	{
 		$this->logger->info(sprintf('An error (%s) has occurred: %s', $ex->getCode(), $ex->getMessage()));
 
@@ -207,6 +210,8 @@ abstract class Application implements IApplication
 	 * @param array $additionalHeaders
 	 *
 	 * @return void
+	 *
+	 * @throws Exceptions\InvalidArgumentException
 	 */
 	protected function close(Entities\Clients\IClient $client, int $code = 400, array $additionalHeaders = []) : void
 	{

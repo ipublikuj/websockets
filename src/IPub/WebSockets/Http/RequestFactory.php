@@ -16,7 +16,9 @@ declare(strict_types = 1);
 
 namespace IPub\WebSockets\Http;
 
+use Exception;
 use Throwable;
+use OverflowException;
 
 use Fig\Http\Message;
 
@@ -133,7 +135,7 @@ final class RequestFactory
 	public function createHttpRequest(string $packet) : ?IRequest
 	{
 		if (strlen($packet) > $this->maxSize) {
-			throw new \OverflowException("Maximum buffer size of {$this->maxSize} exceeded parsing HTTP header");
+			throw new OverflowException("Maximum buffer size of {$this->maxSize} exceeded parsing HTTP header");
 		}
 
 		if (!$this->isEom($packet)) {
@@ -157,7 +159,7 @@ final class RequestFactory
 		}
 
 		if (preg_match('#^([^\s]+)\s+([^\s]+)\s+HTTP/(1\.(?:0|1))$#i', $http, $matches) === 0) {
-			throw new \Exception(
+			throw new Exception(
 				'HTTP headers are not well-formed: %s',
 				0,
 				$http

@@ -16,6 +16,8 @@ declare(strict_types = 1);
 
 namespace IPub\WebSockets\Application;
 
+use Throwable;
+
 use IPub\WebSockets\Entities;
 use IPub\WebSockets\Http;
 
@@ -56,11 +58,11 @@ interface IApplication
 	 *
 	 * @param Entities\Clients\IClient $client
 	 * @param Http\IRequest $httpRequest
-	 * @param \Exception $ex
+	 * @param Throwable $ex
 	 *
 	 * @return void
 	 */
-	public function handleError(Entities\Clients\IClient $client, Http\IRequest $httpRequest, \Exception $ex) : void;
+	public function handleError(Entities\Clients\IClient $client, Http\IRequest $httpRequest, Throwable $ex) : void;
 
 	/**
 	 * Triggered when a client sends data through the socket

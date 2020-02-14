@@ -16,6 +16,9 @@ declare(strict_types = 1);
 
 namespace IPub\WebSockets\Application\Controller;
 
+use ReflectionClass;
+use ReflectionException;
+
 use Nette;
 use Nette\DI;
 use Nette\Utils;
@@ -89,6 +92,9 @@ class ControllerFactory implements IControllerFactory
 
 	/**
 	 * {@inheritdoc}
+	 *
+	 * @throws Exceptions\InvalidControllerException
+	 * @throws ReflectionException
 	 */
 	public function createController(string $name) : IController
 	{
@@ -103,6 +109,7 @@ class ControllerFactory implements IControllerFactory
 	 * @return string class name
 	 *
 	 * @throws Exceptions\InvalidControllerException
+	 * @throws ReflectionException
 	 */
 	public function getControllerClass(string &$name) : string
 	{
@@ -120,7 +127,7 @@ class ControllerFactory implements IControllerFactory
 			throw new Exceptions\InvalidControllerException(sprintf('Cannot load controller "%s", class "%s" was not found.', $name, $class));
 		}
 
-		$reflection = new \ReflectionClass($class);
+		$reflection = new ReflectionClass($class);
 		$class = $reflection->getName();
 
 		if (!$reflection->implementsInterface(IController::class)) {

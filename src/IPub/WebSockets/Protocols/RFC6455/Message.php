@@ -16,6 +16,7 @@ declare(strict_types = 1);
 
 namespace IPub\WebSockets\Protocols\RFC6455;
 
+use Countable;
 use SplDoublyLinkedList;
 use UnderflowException;
 
@@ -31,7 +32,7 @@ use IPub\WebSockets\Protocols;
  *
  * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  */
-final class Message implements Protocols\IMessage, \Countable
+final class Message implements Protocols\IMessage, Countable
 {
 	/**
 	 * Implement nette smart magic

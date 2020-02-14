@@ -173,6 +173,8 @@ final class Wrapper implements IWrapper
 
 	/**
 	 * {@inheritdoc}
+	 *
+	 * @throws Exceptions\InvalidArgumentException
 	 */
 	public function handleClose(Entities\Clients\IClient $client) : void
 	{
@@ -183,6 +185,8 @@ final class Wrapper implements IWrapper
 
 	/**
 	 * {@inheritdoc}
+	 *
+	 * @throws Exceptions\InvalidArgumentException
 	 */
 	public function handleError(Entities\Clients\IClient $client, Throwable $ex) : void
 	{
@@ -229,6 +233,8 @@ final class Wrapper implements IWrapper
 	 * @param Entities\Clients\IClient $client
 	 *
 	 * @return void
+	 *
+	 * @throws Exceptions\InvalidArgumentException
 	 */
 	private function connectionClose(Entities\Clients\IClient $client) : void
 	{
@@ -251,6 +257,8 @@ final class Wrapper implements IWrapper
 	 * @param Throwable $ex
 	 *
 	 * @return void
+	 *
+	 * @throws Exceptions\InvalidArgumentException
 	 */
 	public function connectionError(Entities\Clients\IClient $client, Throwable $ex) : void
 	{
@@ -300,18 +308,16 @@ final class Wrapper implements IWrapper
 			return;
 		}
 
-		$this->attemptUpgrade($client, $message);
+		$this->attemptUpgrade($client);
 	}
 
 	/**
 	 * @param Entities\Clients\IClient $client
-	 * @param string $data
 	 *
 	 * @return mixed
 	 */
 	private function attemptUpgrade(
-		Entities\Clients\IClient $client,
-		string $data = ''
+		Entities\Clients\IClient $client
 	) {
 		/** @var Http\IRequest $httpRequest */
 		$httpRequest = $client->getRequest();
@@ -404,6 +410,8 @@ final class Wrapper implements IWrapper
 	 * @param mixed $body
 	 *
 	 * @return void
+	 *
+	 * @throws Exceptions\InvalidArgumentException
 	 */
 	private function close(Entities\Clients\IClient $client, $code = 400, $body = NULL)
 	{

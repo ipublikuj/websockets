@@ -16,6 +16,8 @@ declare(strict_types = 1);
 
 namespace IPub\WebSockets\Router;
 
+use Closure;
+
 use Nette;
 use Nette\Utils;
 
@@ -192,7 +194,7 @@ class Route implements IRouter
 				$metadata[Application\Controller\Controller::ACTION_KEY] = $action;
 			}
 
-		} elseif ($metadata instanceof \Closure) {
+		} elseif ($metadata instanceof Closure) {
 			$metadata = [
 				self::CONTROLLER_KEY => 'IPub:WebSocket',
 				'callback'           => $metadata,

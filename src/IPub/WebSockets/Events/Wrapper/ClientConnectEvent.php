@@ -16,8 +16,6 @@ namespace IPub\WebSockets\Events\Wrapper;
 
 use Symfony\Contracts\EventDispatcher;
 
-use React\EventLoop;
-
 use IPub\WebSockets\Entities;
 use IPub\WebSockets\Http;
 
@@ -42,8 +40,8 @@ final class ClientConnectEvent extends EventDispatcher\Event
 	private $httpRequest;
 
 	/**
-	 * @param EventLoop\LoopInterface $eventLoop
-	 * @param Server\Server $server
+	 * @param Entities\Clients\IClient $client
+	 * @param Http\IRequest $httpRequest
 	 */
 	public function __construct(
 		Entities\Clients\IClient $client,

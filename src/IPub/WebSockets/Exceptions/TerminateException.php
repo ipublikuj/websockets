@@ -16,6 +16,8 @@ declare(strict_types = 1);
 
 namespace IPub\WebSockets\Exceptions;
 
-class TerminateException extends \Exception implements IException
+use Exception;
+
+class TerminateException extends Exception implements IException
 {
 }

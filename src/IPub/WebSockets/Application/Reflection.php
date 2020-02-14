@@ -17,6 +17,7 @@ declare(strict_types = 1);
 namespace IPub\WebSockets\Application;
 
 use ReflectionException;
+use ReflectionMethod;
 use ReflectionParameter;
 use ReflectionFunctionAbstract;
 
@@ -61,7 +62,7 @@ class Reflection
 					throw new Exceptions\BadRequestException(sprintf(
 						'Argument $%s passed to %s() must be %s, %s given.',
 						$name,
-						($method instanceof \ReflectionMethod ? $method->getDeclaringClass()->getName() . '::' : '') . $method->getName(),
+						($method instanceof ReflectionMethod ? $method->getDeclaringClass()->getName() . '::' : '') . $method->getName(),
 						$type === 'NULL' ? 'scalar' : $type,
 						is_object($args[$name]) ? get_class($args[$name]) : gettype($args[$name])
 					));
@@ -80,7 +81,7 @@ class Reflection
 				throw new Exceptions\BadRequestException(sprintf(
 					'Missing parameter $%s required by %s()',
 					$name,
-					($method instanceof \ReflectionMethod ? $method->getDeclaringClass()->getName() . '::' : '') . $method->getName()
+					($method instanceof ReflectionMethod ? $method->getDeclaringClass()->getName() . '::' : '') . $method->getName()
 				));
 			}
 		}

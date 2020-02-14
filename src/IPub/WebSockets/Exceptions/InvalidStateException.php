@@ -16,6 +16,8 @@ declare(strict_types = 1);
 
 namespace IPub\WebSockets\Exceptions;
 
-class InvalidStateException extends \Exception implements IException
+use Exception;
+
+class InvalidStateException extends Exception implements IException
 {
 }

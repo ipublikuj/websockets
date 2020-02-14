@@ -16,8 +16,6 @@ namespace IPub\WebSockets\Events\Wrapper;
 
 use Symfony\Contracts\EventDispatcher;
 
-use React\EventLoop;
-
 use IPub\WebSockets\Entities;
 use IPub\WebSockets\Http;
 

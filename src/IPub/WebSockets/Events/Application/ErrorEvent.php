@@ -14,7 +14,7 @@
 
 namespace IPub\WebSockets\Events\Application;
 
-use Exception;
+use Throwable;
 
 use Symfony\Contracts\EventDispatcher;
 
@@ -48,7 +48,7 @@ final class ErrorEvent extends EventDispatcher\Event
 	private $httpRequest;
 
 	/**
-	 * @var Exception
+	 * @var Throwable
 	 */
 	private $exception;
 
@@ -56,12 +56,13 @@ final class ErrorEvent extends EventDispatcher\Event
 	 * @param Application\IApplication $application
 	 * @param Entities\Clients\IClient $client
 	 * @param Http\IRequest $httpRequest
+	 * @param Throwable $ex
 	 */
 	public function __construct(
 		Application\IApplication $application,
 		Entities\Clients\IClient $client,
 		Http\IRequest $httpRequest,
-		Exception $ex
+		Throwable $ex
 	) {
 		$this->application = $application;
 		$this->client = $client;
@@ -94,9 +95,9 @@ final class ErrorEvent extends EventDispatcher\Event
 	}
 
 	/**
-	 * @return Exception
+	 * @return Throwable
 	 */
-	public function getException() : Exception
+	public function getException() : Throwable
 	{
 		return $this->exception;
 	}

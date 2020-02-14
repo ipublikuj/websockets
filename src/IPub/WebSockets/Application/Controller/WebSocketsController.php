@@ -121,7 +121,7 @@ class WebSocketsController implements Controller\IController
 
 		$response = call_user_func_array($callback, $params);
 
-		if (is_string($response)) {
+		if (is_array($response)) {
 			$response = new Responses\MessageResponse($response);
 
 		} elseif (!$response instanceof Responses\IResponse) {

@@ -21,6 +21,7 @@ use Nette;
 use IPub\WebSockets\Application;
 use IPub\WebSockets\Encoding;
 use IPub\WebSockets\Entities;
+use IPub\WebSockets\Exceptions;
 use IPub\WebSockets\Http;
 
 /**
@@ -93,6 +94,8 @@ class RFC6455 implements IProtocol
 
 	/**
 	 * {@inheritdoc}
+	 *
+	 * @throws Exceptions\InvalidArgumentException
 	 */
 	public function doHandshake(Http\IRequest $httpRequest) : Http\IResponse
 	{
@@ -172,7 +175,7 @@ class RFC6455 implements IProtocol
 						}
 
 						if (strlen($bin) >= 2) {
-							list($closeCode) = array_merge(unpack('n*', substr($bin, 0, 2)));
+							[$closeCode] = array_merge(unpack('n*', substr($bin, 0, 2)));
 						}
 
 						if (!$this->isValidCloseCode($closeCode)) {

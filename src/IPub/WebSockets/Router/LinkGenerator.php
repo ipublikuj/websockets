@@ -17,6 +17,7 @@ declare(strict_types = 1);
 namespace IPub\WebSockets\Router;
 
 use ReflectionException;
+use ReflectionParameter;
 
 use Nette;
 
@@ -93,7 +94,7 @@ class LinkGenerator
 				Controller\Controller::argsToParams($class, $method, $params, [], $missing);
 
 				if ($missing !== []) {
-					/** @var \ReflectionParameter $rp */
+					/** @var ReflectionParameter $rp */
 					$rp = $missing[0];
 
 					throw new Exceptions\InvalidLinkException(sprintf('Missing parameter $%s required by %s::%s()', $rp->getName(), $rp->getDeclaringClass()->getName(), $rp->getDeclaringFunction()->getName()));

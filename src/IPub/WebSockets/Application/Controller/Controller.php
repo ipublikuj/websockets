@@ -354,11 +354,11 @@ abstract class Controller implements IController
 	 *
 	 * @param string $signal
 	 *
-	 * @return string
+	 * @return string|NULL
 	 */
-	public static function formatSignalMethod($signal) : string
+	public static function formatSignalMethod($signal) : ?string
 	{
-		return $signal == NULL ? NULL : 'handle' . $signal; // intentionally ==
+		return $signal === NULL ? NULL : 'handle' . $signal; // intentionally ==
 	}
 
 	/**
@@ -515,11 +515,14 @@ abstract class Controller implements IController
 	}
 
 	/**
-	 * Returns an annotation value.
+	 * Returns an annotation value
 	 *
-	 * @return array|false
+	 * @param Reflector $ref
+	 * @param string $name
+	 *
+	 * @return array|bool
 	 */
-	private function parseAnnotation(Reflector $ref, $name)
+	private function parseAnnotation(Reflector $ref, string $name)
 	{
 		if (!preg_match_all('#[\\s*]@' . preg_quote($name, '#') . '(?:\(\\s*([^)]*)\\s*\)|\\s|$)#', $ref->getDocComment(), $m)) {
 			return FALSE;

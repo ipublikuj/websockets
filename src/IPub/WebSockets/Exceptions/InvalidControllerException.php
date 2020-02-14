@@ -16,6 +16,8 @@ declare(strict_types = 1);
 
 namespace IPub\WebSockets\Exceptions;
 
-class InvalidControllerException extends \Exception implements IException
+use Exception;
+
+class InvalidControllerException extends Exception implements IException
 {
 }

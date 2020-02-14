@@ -303,7 +303,7 @@ final class WebSocketsExtension extends DI\CompilerExtension
 			]);
 
 			$server = $builder->getDefinition($builder->getByType(Server\Server::class));
-			assert($server instanceof DI\ServiceDefinition);
+			assert($server instanceof DI\Definitions\ServiceDefinition);
 
 			$server->addSetup('?->onStart[] = function() {?->dispatch(new ?(...func_get_args()));}', [
 				'@self',
@@ -317,7 +317,7 @@ final class WebSocketsExtension extends DI\CompilerExtension
 			]);
 
 			$serverWrapper = $builder->getDefinition($builder->getByType(Server\Wrapper::class));
-			assert($serverWrapper instanceof DI\ServiceDefinition);
+			assert($serverWrapper instanceof DI\Definitions\ServiceDefinition);
 
 			$serverWrapper->addSetup('?->onClientConnected[] = function() {?->dispatch(new ?(...func_get_args()));}', [
 				'@self',

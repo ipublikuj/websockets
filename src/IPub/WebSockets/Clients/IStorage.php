@@ -16,6 +16,8 @@ declare(strict_types = 1);
 
 namespace IPub\WebSockets\Clients;
 
+use IteratorAggregate;
+
 use IPub\WebSockets\Clients\Drivers;
 use IPub\WebSockets\Entities;
 
@@ -27,7 +29,7 @@ use IPub\WebSockets\Entities;
  *
  * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  */
-interface IStorage extends \IteratorAggregate
+interface IStorage extends IteratorAggregate
 {
 	/**
 	 * @param Drivers\IDriver $driver
