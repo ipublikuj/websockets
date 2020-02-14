@@ -18,6 +18,8 @@ declare(strict_types = 1);
 
 namespace IPubTests\WebSockets\Libraries;
 
+use Throwable;
+
 use IPub\WebSockets;
 use IPub\WebSockets\Application\IApplication;
 use IPub\WebSockets\Entities;
@@ -44,7 +46,7 @@ class Application implements IApplication
 	/**
 	 * {@inheritdoc}
 	 */
-	function handleError(Entities\Clients\IClient $client, Http\IRequest $httpRequest, \Exception $ex) : void
+	function handleError(Entities\Clients\IClient $client, Http\IRequest $httpRequest, Throwable $ex) : void
 	{
 
 	}
