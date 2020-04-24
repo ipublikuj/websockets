@@ -36,8 +36,8 @@ This extension has a lot of configuration options:
 ```php
     # WebSockets server
     webSockets:
-        storage:
-            clients:
+        clients:
+            storage:
                 driver: @clients.driver.memory  // Here you can pass service name of your clients storage driver implementation
                 ttl:    0                       // If your driver support TTL, here you can define it
         // Main server configuration
