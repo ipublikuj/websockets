@@ -186,13 +186,4 @@ final class Storage implements IStorage
 		return new ArrayIterator($this->driver->fetchAll());
 	}
 
-	/**
-	 * @param Log\LoggerInterface $logger
-	 *
-	 * @return void
-	 */
-	public function setLogger(Log\LoggerInterface $logger) : void
-	{
-		$this->logger = $logger;
-	}
 }

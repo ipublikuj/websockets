@@ -61,24 +61,9 @@ final class Server
 	public $onStop = [];
 
 	/**
-	 * @var IWrapper
+	 * @var Handlers
 	 */
-	private $application;
-
-	/**
-	 * @var FlashWrapper
-	 */
-	private $flashApplication;
-
-	/**
-	 * @var Clients\Storage
-	 */
-	private $clientStorage;
-
-	/**
-	 * @var Clients\IClientFactory
-	 */
-	private $clientFactory;
+	private $handlers;
 
 	/**
 	 * @var EventLoop\LoopInterface
@@ -101,29 +86,20 @@ final class Server
 	private $isRunning = FALSE;
 
 	/**
-	 * @param Wrapper $application
-	 * @param FlashWrapper $flashApplication
+	 * @param Handlers $handlers
 	 * @param EventLoop\LoopInterface $loop
 	 * @param Configuration $configuration
-	 * @param Clients\Storage $clientStorage
-	 * @param Clients\IClientFactory $clientFactory
 	 * @param Log\LoggerInterface|NULL $logger
 	 */
 	public function __construct(
-		Wrapper $application,
-		FlashWrapper $flashApplication,
+		Handlers $handlers,
 		EventLoop\LoopInterface $loop,
 		Configuration $configuration,
-		Clients\Storage $clientStorage,
-		Clients\IClientFactory $clientFactory,
 		?Log\LoggerInterface $logger = NULL
 	) {
-		$this->clientStorage = $clientStorage;
-		$this->clientFactory = $clientFactory;
 		$this->loop = $loop;
 		$this->configuration = $configuration;
-		$this->application = $application;
-		$this->flashApplication = $flashApplication;
+		$this->handlers = $handlers;
 		$this->logger = $logger === NULL ? new Log\NullLogger : $logger;
 	}
 
@@ -142,7 +118,7 @@ final class Server
 		}
 
 		$socket->on('connection', function (React\Socket\ConnectionInterface $connection) {
-			$this->handleConnect($connection, $this->application);
+			$this->handlers->handleConnect($connection);
 		});
 
 		$socket->on('error', function (Throwable $ex) {
@@ -159,7 +135,7 @@ final class Server
 		$flashSocket = new React\Socket\Server($client, $this->loop);
 
 		$flashSocket->on('connection', function (React\Socket\ConnectionInterface $connection) {
-			$this->handleConnect($connection, $this->flashApplication);
+			$this->handlers->handleFlashConnect($connection);
 		});
 
 		$this->logger->debug('Starting IPub\WebSockets');
@@ -187,134 +163,4 @@ final class Server
 		$this->isRunning = FALSE;
 	}
 
-	/**
-	 * @param Log\LoggerInterface $logger
-	 *
-	 * @return void
-	 *
-	 * @throws Exceptions\InvalidStateException
-	 */
-	public function setLogger(Log\LoggerInterface $logger) : void
-	{
-		if ($this->isRunning) {
-			throw new Exceptions\InvalidStateException('Server is running, logger could not be set.');
-		}
-
-		$this->logger = $logger;
-	}
-
-	/**
-	 * @param React\Socket\ConnectionInterface $connection
-	 * @param IWrapper $application
-	 *
-	 * @return void
-	 *
-	 * @throws Exceptions\StorageException
-	 */
-	private function handleConnect(React\Socket\ConnectionInterface $connection, IWrapper $application) : void
-	{
-		$client = $this->clientFactory->create((int) $connection->stream, $connection);
-
-		$this->clientStorage->addClient($client->getId(), $client);
-
-		try {
-			$application->handleOpen($client);
-
-			$connection->on('data', function (string $chunk) use ($connection, $application) {
-				$this->handleData($chunk, $connection, $application);
-			});
-
-			$connection->on('end', function () use ($connection, $application) {
-				$this->handleEnd($connection, $application);
-			});
-
-			$connection->on('error', function (Throwable $ex) use ($connection, $application) {
-				$this->handleError($ex, $connection, $application);
-			});
-
-		} catch (Throwable $ex) {
-			$context = [
-				'code'   => $ex->getCode(),
-				'file'   => $ex->getFile(),
-				'client' => (int) $connection->stream,
-			];
-
-			$this->logger->error($ex->getMessage(), $context);
-
-			$connection->end();
-		}
-	}
-
-	/**
-	 * @param string $data
-	 * @param React\Socket\ConnectionInterface $connection
-	 * @param IWrapper $application
-	 *
-	 * @return void
-	 */
-	private function handleData(string $data, React\Socket\ConnectionInterface $connection, IWrapper $application) : void
-	{
-		try {
-			$client = $this->clientStorage->getClient((int) $connection->stream);
-
-			$application->handleMessage($client, $data);
-
-		} catch (Throwable $ex) {
-			$this->handleError($ex, $connection, $application);
-		}
-	}
-
-	/**
-	 * @param React\Socket\ConnectionInterface $connection
-	 * @param IWrapper $application
-	 *
-	 * @return void
-	 */
-	private function handleEnd(React\Socket\ConnectionInterface $connection, IWrapper $application) : void
-	{
-		try {
-			$client = $this->clientStorage->getClient((int) $connection->stream);
-
-			$application->handleClose($client);
-
-		} catch (Throwable $ex) {
-			$this->handleError($ex, $connection, $application);
-		}
-	}
-
-	/**
-	 * @param Throwable $ex
-	 * @param React\Socket\ConnectionInterface $connection
-	 * @param IWrapper $application
-	 *
-	 * @return void
-	 */
-	private function handleError(Throwable $ex, React\Socket\ConnectionInterface $connection, IWrapper $application) : void
-	{
-		try {
-			$client = $this->clientStorage->getClient((int) $connection->stream);
-
-			$context = [
-				'code'    => $ex->getCode(),
-				'file'    => $ex->getFile(),
-				'client'  => (int) $connection->stream,
-				'request' => $client->getRequest(),
-			];
-
-			$this->logger->error($ex->getMessage(), $context);
-
-			$application->handleError($client, $ex);
-
-		} catch (Throwable $ex) {
-			$context = [
-				'code'   => $ex->getCode(),
-				'file'   => $ex->getFile(),
-				'client' => (int) $connection->stream,
-			];
-
-			$this->logger->error($ex->getMessage(), $context);
-
-			$connection->end();
-		}
-	}
 }

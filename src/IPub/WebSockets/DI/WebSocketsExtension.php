@@ -151,11 +151,15 @@ final class WebSocketsExtension extends DI\CompilerExtension
 			$flashApplication,
 			$configuration->server->httpHost,
 		]);
+
 		$flashApplication->addSetup('?->addAllowedAccess(?, ?)', [
 			$flashApplication,
 			$configuration->server->httpHost,
 			$configuration->server->port,
 		]);
+
+		$builder->addDefinition($this->prefix('server.handlers'))
+			->setType(Server\Handlers::class);
 
 		if ($configuration->loop === NULL) {
 			if ($builder->getByType(React\EventLoop\LoopInterface::class) === NULL) {
