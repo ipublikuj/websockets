@@ -158,7 +158,7 @@ final class WebSocketsExtension extends DI\CompilerExtension
 			$configuration->server->port,
 		]);
 
-		$builder->addDefinition($this->prefix('server.handlers'))
+		$handlers = $builder->addDefinition($this->prefix('server.handlers'))
 			->setType(Server\Handlers::class);
 
 		if ($configuration->loop === NULL) {
@@ -192,8 +192,7 @@ final class WebSocketsExtension extends DI\CompilerExtension
 		$builder->addDefinition($this->prefix('server.server'))
 			->setType(Server\Server::class)
 			->setArguments([
-				$application,
-				$flashApplication,
+				$handlers,
 				$loop,
 				$serverConfiguration,
 			]);
