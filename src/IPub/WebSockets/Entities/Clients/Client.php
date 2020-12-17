@@ -24,6 +24,7 @@ use React\Socket;
 
 use IPub\WebSockets\Application\Responses;
 use IPub\WebSockets\Entities;
+use IPub\WebSockets\Exceptions;
 use IPub\WebSockets\Http;
 use IPub\WebSockets\Protocols;
 
@@ -178,6 +179,10 @@ class Client implements IClient
 	 */
 	public function getWebSocket() : Entities\WebSockets\IWebSocket
 	{
+		if ($this->webSocket === null) {
+			throw new Exceptions\InvalidStateException('Socket is not defined');
+		}
+
 		return $this->webSocket;
 	}
 

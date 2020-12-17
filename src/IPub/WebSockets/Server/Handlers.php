@@ -118,7 +118,7 @@ final class Handlers
 			});
 
 			$connection->on('error', function (Throwable $ex) use ($connection) {
-				$this->handleError($ex, $connection);
+				$this->handleError($ex, $connection, $this->application);
 			});
 
 		} catch (Throwable $ex) {
@@ -159,7 +159,7 @@ final class Handlers
 			});
 
 			$connection->on('error', function (Throwable $ex) use ($connection) {
-				$this->handleError($ex, $connection);
+				$this->handleError($ex, $connection, $this->flashApplication);
 			});
 
 		} catch (Throwable $ex) {
@@ -190,7 +190,7 @@ final class Handlers
 			$application->handleMessage($client, $data);
 
 		} catch (Throwable $ex) {
-			$this->handleError($ex, $connection);
+			$this->handleError($ex, $connection, $application);
 		}
 	}
 
@@ -208,7 +208,7 @@ final class Handlers
 			$application->handleClose($client);
 
 		} catch (Throwable $ex) {
-			$this->handleError($ex, $connection);
+			$this->handleError($ex, $connection, $application);
 		}
 	}
 
