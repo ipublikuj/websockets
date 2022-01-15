@@ -129,7 +129,7 @@ final class WebSocketsExtension extends DI\CompilerExtension
 		$flashApplication = $builder->addDefinition($this->prefix('server.flashWrapper'))
 			->setType(Server\FlashWrapper::class);
 
-		$flashApplication->addSetup('?->addAllowedAccess(?, 80)', [
+		$flashApplication->addSetup('?->addAllowedAccess(?, \'80\')', [
 			$flashApplication,
 			$configuration->server->httpHost,
 		]);
@@ -137,7 +137,7 @@ final class WebSocketsExtension extends DI\CompilerExtension
 		$flashApplication->addSetup('?->addAllowedAccess(?, ?)', [
 			$flashApplication,
 			$configuration->server->httpHost,
-			$configuration->server->port,
+			strval($configuration->server->port),
 		]);
 
 		$handlers = $builder->addDefinition($this->prefix('server.handlers'))
@@ -259,7 +259,10 @@ final class WebSocketsExtension extends DI\CompilerExtension
 		 * EVENTS
 		 */
 
-		if (interface_exists('Symfony\Component\EventDispatcher\EventDispatcherInterface')) {
+		if (
+			interface_exists('Symfony\Component\EventDispatcher\EventDispatcherInterface')
+			&& $builder->getByType(EventDispatcher\EventDispatcherInterface::class) !== null
+		) {
 			$dispatcher = $builder->getDefinition($builder->getByType(EventDispatcher\EventDispatcherInterface::class));
 
 			$application = $builder->getDefinition($builder->getByType(Application\Application::class));
