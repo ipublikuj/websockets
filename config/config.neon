@@ -1,2 +1,2 @@
 extensions:
-	webSockets: IPub\WebSockets\DI\WebSocketsExtension
+    webSockets: IPub\WebSockets\DI\WebSocketsExtension

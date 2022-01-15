@@ -1,0 +1,5 @@
+php:
+    date.timezone: Europe/Prague
+
+services:
+    - {factory: Tests\Libs\Application\Application}

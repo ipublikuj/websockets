@@ -2,7 +2,7 @@
 /**
  * websockets-server.php
  *
- * @copyright      More in license.md
+ * @copyright      More in LICENSE.md
  * @license        https://www.ipublikuj.eu
  * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  * @package        iPublikuj:WebSockets!
