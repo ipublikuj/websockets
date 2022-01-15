@@ -1,11 +1,13 @@
 # WebSockets
 
-[![Build Status](https://img.shields.io/travis/ipublikuj/websockets.svg?style=flat-square)](https://travis-ci.org/ipublikuj/websockets)
-[![Scrutinizer Code Coverage](https://img.shields.io/scrutinizer/coverage/g/ipublikuj/websockets.svg?style=flat-square)](https://scrutinizer-ci.com/g/ipublikuj/websockets/?branch=master)
-[![Scrutinizer Code Quality](https://img.shields.io/scrutinizer/g/ipublikuj/websockets.svg?style=flat-square)](https://scrutinizer-ci.com/g/ipublikuj/websockets/?branch=master)
-[![Latest Stable Version](https://img.shields.io/packagist/v/ipub/websockets.svg?style=flat-square)](https://packagist.org/packages/ipub/websockets)
-[![Composer Downloads](https://img.shields.io/packagist/dt/ipub/websockets.svg?style=flat-square)](https://packagist.org/packages/ipub/websockets)
-[![License](https://img.shields.io/packagist/l/ipub/websockets.svg?style=flat-square)](https://packagist.org/packages/ipub/websockets)
+[![Build Status](https://badgen.net/github/checks/ipublikuj/websockets/master?cache=300&style=flast-square)](https://github.com/ipublikuj/websockets)
+[![Licence](https://badgen.net/packagist/license/ipub/websockets?cache=300&style=flast-square)](https://github.com/ipublikuj/websockets/blob/master/LICENSE.md)
+[![Code coverage](https://badgen.net/coveralls/c/github/ipublikuj/websockets?cache=300&style=flast-square)](https://coveralls.io/github/ipublikuj/websockets)
+
+![PHP](https://badgen.net/packagist/php/ipub/websockets?cache=300&style=flast-square)
+[![Downloads total](https://badgen.net/packagist/dt/ipub/websockets?cache=300&style=flast-square)](https://packagist.org/packages/ipub/websockets)
+[![Latest stable](https://badgen.net/packagist/v/ipub/websockets/latest?cache=300&style=flast-square)](https://packagist.org/packages/ipub/websockets)
+[![PHPStan](https://img.shields.io/badge/PHPStan-enabled-brightgreen.svg?style=flat-square)](https://github.com/phpstan/phpstan)
 
 An extension for implementing WebSockets into the [Nette Framework](http://nette.org/)
 
