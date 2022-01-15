@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Tests\Libs\Application;
+namespace Tests\Libs;
 
 use IPub\WebSockets\Application\IApplication;
 use IPub\WebSockets\Entities;
