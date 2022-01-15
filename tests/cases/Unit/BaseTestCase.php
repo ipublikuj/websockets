@@ -2,11 +2,9 @@
 
 namespace Tests\Cases;
 
-use Doctrine\ORM;
 use IPub\WebSockets;
 use Nette;
 use Nette\DI;
-use Nettrine;
 use Ninjify\Nunjuck\TestCase\BaseMockeryTestCase;
 
 abstract class BaseTestCase extends BaseMockeryTestCase
@@ -17,9 +15,6 @@ abstract class BaseTestCase extends BaseMockeryTestCase
 
 	/** @var DI\Container */
 	private DI\Container $container;
-
-	/** @var ORM\EntityManagerInterface|null */
-	private ?ORM\EntityManagerInterface $em = null;
 
 	/**
 	 * {@inheritDoc}
@@ -37,31 +32,6 @@ abstract class BaseTestCase extends BaseMockeryTestCase
 	protected function getContainer(): DI\Container
 	{
 		return $this->container;
-	}
-
-	/**
-	 * @return ORM\EntityManagerInterface
-	 */
-	protected function getEntityManager(): ORM\EntityManagerInterface
-	{
-		if ($this->em === null) {
-			/** @var ORM\EntityManagerInterface $em */
-			$em = $this->getContainer()->getByType(Nettrine\ORM\EntityManagerDecorator::class);
-
-			$this->em = $em;
-		}
-
-		return $this->em;
-	}
-
-	/**
-	 * @return void
-	 */
-	protected function generateDbSchema(): void
-	{
-		$schema = new ORM\Tools\SchemaTool($this->getEntityManager());
-		$schema->createSchema($this->getEntityManager()->getMetadataFactory()
-			->getAllMetadata());
 	}
 
 	/**
