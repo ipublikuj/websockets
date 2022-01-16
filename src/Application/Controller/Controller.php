@@ -480,7 +480,7 @@ abstract class Controller implements IController
 	 */
 	private function parseAnnotation(Reflector $ref, string $name)
 	{
-		if (!preg_match_all('#[\\s*]@' . preg_quote($name, '#') . '(?:\(\\s*([^)]*)\\s*\)|\\s|$)#', $ref->getDocComment(), $m)) {
+		if (!$ref->getDocComment() || !preg_match_all('#[\\s*]@' . preg_quote($name, '#') . '(?:\(\\s*([^)]*)\\s*\)|\\s|$)#', $ref->getDocComment(), $m)) {
 			return false;
 		}
 
