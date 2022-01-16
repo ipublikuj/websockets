@@ -142,7 +142,7 @@ class ControllerFactory implements IControllerFactory
 					throw new Exceptions\InvalidStateException(sprintf('Invalid mapping mask "%s".', $mask));
 				}
 
-				$this->mapping[$module] = [$m[1], $m[2] ?? '*Module\\', $m[3]];
+				$this->mapping[$module] = [$m[1], $m[2] !== '' ? $m[2] : '*Module\\', $m[3]];
 
 			} elseif (is_array($mask) && count($mask) === 3) {
 				$this->mapping[$module] = [$mask[0] ? $mask[0] . '\\' : '', $mask[1] . '\\', $mask[2]];

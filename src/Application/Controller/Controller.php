@@ -489,7 +489,9 @@ abstract class Controller implements IController
 		$res = [];
 
 		foreach ($m[1] as $s) {
-			foreach (preg_split('#\s*,\s*#', $s, -1, PREG_SPLIT_NO_EMPTY) ?? ['true'] as $item) {
+			$parts = preg_split('#\s*,\s*#', $s, -1, PREG_SPLIT_NO_EMPTY);
+
+			foreach ($parts !== [] ? $parts : ['true'] as $item) {
 				$res[] = array_key_exists($tmp = strtolower($item), $tokens) ? $tokens[$tmp] : $item;
 			}
 		}
