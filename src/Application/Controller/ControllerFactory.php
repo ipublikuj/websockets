@@ -44,7 +44,7 @@ class ControllerFactory implements IControllerFactory
 	 * @param callable|null $factory
 	 * @param DI\Container $container
 	 */
-	public function __construct(?callable $factory, Nette\DI\Container $container)
+	public function __construct(Nette\DI\Container $container, ?callable $factory = null)
 	{
 		$this->container = $container;
 
