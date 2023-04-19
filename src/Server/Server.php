@@ -127,7 +127,7 @@ final class Server
 			$flashSocket = new React\Socket\SocketServer($flashClient, [], $this->loop);
 		}
 
-		$flashSocket->on('connection', function (React\Socket\ConnectionInterface $connection) use($flashPort): void {
+		$flashSocket->on('connection', function (React\Socket\ConnectionInterface $connection) use ($flashPort): void {
 			if ($connection->getLocalAddress() === null) {
 				return;
 			}
