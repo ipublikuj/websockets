@@ -4,6 +4,7 @@ namespace IPub\WebSockets\Server;
 
 use Closure;
 use Nette;
+use Nette\Utils;
 use Psr\Log;
 use React;
 use React\EventLoop;
@@ -91,26 +92,54 @@ final class Server
 		}
 
 		$socket->on('connection', function (React\Socket\ConnectionInterface $connection): void {
-			$this->handlers->handleConnect($connection);
+			if ($connection->getLocalAddress() === null) {
+				return;
+			}
+
+			$parsed = Utils\ArrayHash::from((array) parse_url($connection->getLocalAddress()));
+
+			if (
+				property_exists($parsed, 'port')
+				&& $parsed->offsetGet('port') === $this->configuration->getPort()
+			) {
+				$this->handlers->handleConnect($connection);
+			}
 		});
 
 		$socket->on('error', function (Throwable $ex): void {
 			$this->logger->error('Could not establish connection: ' . $ex->getMessage());
 		});
 
+		$flashPort = 8843;
+
+		if ($this->configuration->getPort() === 80) {
+			$flashPort = 843;
+		}
+
 		if ($flashSocket === null) {
 			if ($this->configuration->getPort() === 80) {
-				$flashClient = '0.0.0.0:843';
+				$flashClient = '0.0.0.0:' . $flashPort;
 
 			} else {
-				$flashClient = $this->configuration->getAddress() . ':8843';
+				$flashClient = $this->configuration->getAddress() . ':' . $flashPort;
 			}
 
 			$flashSocket = new React\Socket\SocketServer($flashClient, [], $this->loop);
 		}
 
-		$flashSocket->on('connection', function (React\Socket\ConnectionInterface $connection): void {
-			$this->handlers->handleFlashConnect($connection);
+		$flashSocket->on('connection', function (React\Socket\ConnectionInterface $connection) use($flashPort): void {
+			if ($connection->getLocalAddress() === null) {
+				return;
+			}
+
+			$parsed = Utils\ArrayHash::from((array) parse_url($connection->getLocalAddress()));
+
+			if (
+				property_exists($parsed, 'port')
+				&& $parsed->offsetGet('port') === $flashPort
+			) {
+				$this->handlers->handleFlashConnect($connection);
+			}
 		});
 
 		$flashSocket->on('error', function (Throwable $ex): void {
