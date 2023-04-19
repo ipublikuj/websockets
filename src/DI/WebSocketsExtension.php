@@ -251,7 +251,7 @@ final class WebSocketsExtension extends DI\CompilerExtension
 		}
 
 		foreach ($allControllers as $def) {
-			$def->addTag(Nette\DI\Extensions\InjectExtension::TAG_INJECT)
+			$def->addTag('nette.inject')
 				->addTag('ipub.websockets.controller', $def->getType());
 		}
 
