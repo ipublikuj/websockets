@@ -74,10 +74,11 @@ final class Server
 	 * Run IO server
 	 *
 	 * @param React\Socket\SocketServer|null $socket
+	 * @param React\Socket\SocketServer|null $flashSocket
 	 *
 	 * @return void
 	 */
-	public function create($socket = null): void
+	public function create($socket = null, $flashSocket = null): void
 	{
 		$client = $this->configuration->getAddress() . ':' . $this->configuration->getPort();
 
@@ -97,14 +98,16 @@ final class Server
 			$this->logger->error('Could not establish connection: ' . $ex->getMessage());
 		});
 
-		if ($this->configuration->getPort() === 80) {
-			$flashClient = '0.0.0.0:843';
+		if ($flashSocket === null) {
+			if ($this->configuration->getPort() === 80) {
+				$flashClient = '0.0.0.0:843';
 
-		} else {
-			$flashClient = $this->configuration->getAddress() . ':8843';
+			} else {
+				$flashClient = $this->configuration->getAddress() . ':8843';
+			}
+
+			$flashSocket = new React\Socket\SocketServer($flashClient, [], $this->loop);
 		}
-
-		$flashSocket = new React\Socket\SocketServer($flashClient, [], $this->loop);
 
 		$flashSocket->on('connection', function (React\Socket\ConnectionInterface $connection): void {
 			$this->handlers->handleFlashConnect($connection);
