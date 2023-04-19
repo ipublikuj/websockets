@@ -87,13 +87,6 @@ final class Server
 			if ($this->configuration->isSslEnabled()) {
 				$socket = new React\Socket\SecureServer($socket, $this->loop, $this->configuration->getSslConfiguration());
 			}
-
-			if ($this->configuration->getPort() === 80) {
-				$client = '0.0.0.0:843';
-
-			} else {
-				$client = $this->configuration->getAddress() . ':8843';
-			}
 		}
 
 		$socket->on('connection', function (React\Socket\ConnectionInterface $connection): void {
@@ -104,14 +97,22 @@ final class Server
 			$this->logger->error('Could not establish connection: ' . $ex->getMessage());
 		});
 
-		$flashSocket = new React\Socket\SocketServer($client, [], $this->loop);
+		if ($this->configuration->getPort() === 80) {
+			$flashClient = '0.0.0.0:843';
+
+		} else {
+			$flashClient = $this->configuration->getAddress() . ':8843';
+		}
+
+		$flashSocket = new React\Socket\SocketServer($flashClient, [], $this->loop);
 
 		$flashSocket->on('connection', function (React\Socket\ConnectionInterface $connection): void {
 			$this->handlers->handleFlashConnect($connection);
 		});
 
-		$this->logger->debug('Starting IPub\WebSockets');
-		$this->logger->debug(sprintf('Launching WebSockets WS Server on: %s:%s', $this->configuration->getAddress(), $this->configuration->getPort()));
+		$flashSocket->on('error', function (Throwable $ex): void {
+			$this->logger->error('Could not establish connection: ' . $ex->getMessage());
+		});
 
 		$this->onCreate($this);
 	}
@@ -119,6 +120,9 @@ final class Server
 	public function run(): void
 	{
 		$this->onStart($this->loop, $this);
+
+		$this->logger->debug('Starting IPub\WebSockets');
+		$this->logger->debug(sprintf('Launching WebSockets WS Server on: %s:%s', $this->configuration->getAddress(), $this->configuration->getPort()));
 
 		$this->loop->run();
 	}
