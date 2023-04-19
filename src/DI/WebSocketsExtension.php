@@ -16,6 +16,10 @@ use Psr\Log;
 use React;
 use Symfony\Component\EventDispatcher;
 
+if (!class_exists('Nette\PhpGenerator\Literal')) {
+	class_alias('Nette\PhpGenerator\PhpLiteral', 'Nette\PhpGenerator\Literal');
+}
+
 /**
  * WebSockets extension container
  *
@@ -271,22 +275,22 @@ final class WebSocketsExtension extends DI\CompilerExtension
 			$application->addSetup('?->onOpen[] = function() {?->dispatch(new ?(...func_get_args()));}', [
 				'@self',
 				$dispatcher,
-				new Nette\PhpGenerator\PhpLiteral(Events\Application\OpenEvent::class),
+				new Nette\PhpGenerator\Literal(Events\Application\OpenEvent::class),
 			]);
 			$application->addSetup('?->onClose[] = function() {?->dispatch(new ?(...func_get_args()));}', [
 				'@self',
 				$dispatcher,
-				new Nette\PhpGenerator\PhpLiteral(Events\Application\CloseEvent::class),
+				new Nette\PhpGenerator\Literal(Events\Application\CloseEvent::class),
 			]);
 			$application->addSetup('?->onMessage[] = function() {?->dispatch(new ?(...func_get_args()));}', [
 				'@self',
 				$dispatcher,
-				new Nette\PhpGenerator\PhpLiteral(Events\Application\MessageEvent::class),
+				new Nette\PhpGenerator\Literal(Events\Application\MessageEvent::class),
 			]);
 			$application->addSetup('?->onError[] = function() {?->dispatch(new ?(...func_get_args()));}', [
 				'@self',
 				$dispatcher,
-				new Nette\PhpGenerator\PhpLiteral(Events\Application\ErrorEvent::class),
+				new Nette\PhpGenerator\Literal(Events\Application\ErrorEvent::class),
 			]);
 
 			$server = $builder->getDefinition($builder->getByType(Server\Server::class));
@@ -295,17 +299,17 @@ final class WebSocketsExtension extends DI\CompilerExtension
 			$server->addSetup('?->onCreate[] = function() {?->dispatch(new ?(...func_get_args()));}', [
 				'@self',
 				$dispatcher,
-				new Nette\PhpGenerator\PhpLiteral(Events\Server\CreateEvent::class),
+				new Nette\PhpGenerator\Literal(Events\Server\CreateEvent::class),
 			]);
 			$server->addSetup('?->onStart[] = function() {?->dispatch(new ?(...func_get_args()));}', [
 				'@self',
 				$dispatcher,
-				new Nette\PhpGenerator\PhpLiteral(Events\Server\StartEvent::class),
+				new Nette\PhpGenerator\Literal(Events\Server\StartEvent::class),
 			]);
 			$server->addSetup('?->onStop[] = function() {?->dispatch(new ?(...func_get_args()));}', [
 				'@self',
 				$dispatcher,
-				new Nette\PhpGenerator\PhpLiteral(Events\Server\StopEvent::class),
+				new Nette\PhpGenerator\Literal(Events\Server\StopEvent::class),
 			]);
 
 			$serverWrapper = $builder->getDefinition($builder->getByType(Server\Wrapper::class));
@@ -314,27 +318,27 @@ final class WebSocketsExtension extends DI\CompilerExtension
 			$serverWrapper->addSetup('?->onClientConnected[] = function() {?->dispatch(new ?(...func_get_args()));}', [
 				'@self',
 				$dispatcher,
-				new Nette\PhpGenerator\PhpLiteral(Events\Wrapper\ClientConnectEvent::class),
+				new Nette\PhpGenerator\Literal(Events\Wrapper\ClientConnectEvent::class),
 			]);
 			$serverWrapper->addSetup('?->onClientDisconnected[] = function() {?->dispatch(new ?(...func_get_args()));}', [
 				'@self',
 				$dispatcher,
-				new Nette\PhpGenerator\PhpLiteral(Events\Wrapper\ClientDisconnectEvent::class),
+				new Nette\PhpGenerator\Literal(Events\Wrapper\ClientDisconnectEvent::class),
 			]);
 			$serverWrapper->addSetup('?->onClientError[] = function() {?->dispatch(new ?(...func_get_args()));}', [
 				'@self',
 				$dispatcher,
-				new Nette\PhpGenerator\PhpLiteral(Events\Wrapper\ClientErrorEvent::class),
+				new Nette\PhpGenerator\Literal(Events\Wrapper\ClientErrorEvent::class),
 			]);
 			$serverWrapper->addSetup('?->onIncomingMessage[] = function() {?->dispatch(new ?(...func_get_args()));}', [
 				'@self',
 				$dispatcher,
-				new Nette\PhpGenerator\PhpLiteral(Events\Wrapper\IncommingMessageEvent::class),
+				new Nette\PhpGenerator\Literal(Events\Wrapper\IncommingMessageEvent::class),
 			]);
 			$serverWrapper->addSetup('?->onAfterIncomingMessage[] = function() {?->dispatch(new ?(...func_get_args()));}', [
 				'@self',
 				$dispatcher,
-				new Nette\PhpGenerator\PhpLiteral(Events\Wrapper\AfterIncommingMessageEvent::class),
+				new Nette\PhpGenerator\Literal(Events\Wrapper\AfterIncommingMessageEvent::class),
 			]);
 		}
 	}
