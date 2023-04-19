@@ -74,6 +74,7 @@ class ServerCommand extends Console\Command\Command
 		}
 
 		try {
+			$this->server->create();
 			$this->server->run();
 
 		} catch (Exceptions\TerminateException $ex) {

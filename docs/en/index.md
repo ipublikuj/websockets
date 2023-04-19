@@ -135,7 +135,9 @@ $configurator = new \Nette\Configurator;
 
 $container = $configurator->createContainer();
 
-$container->getByType(\IPub\WebSockets\Server\Server::class)->run();
+$server = $container->getByType(\IPub\WebSockets\Server\Server::class);
+$server->create();
+$server->run();
 ```
 
 More info in [example](https://github.com/ipublikuj/websockets/blob/master/docs/en/ExampleBootstrap.md)

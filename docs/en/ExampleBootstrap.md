@@ -44,7 +44,9 @@ $configurator->addParameters([
 $container = $configurator->createContainer();
 
 // Run server
-$container->getByType(WebSockets\Server\Server::class)->run();
+$server = $container->getByType(WebSockets\Server\Server::class);
+$server->create();
+$server->run();
 ```
 
 NOTE: This is only example, you have to change it according your server/application configuration.

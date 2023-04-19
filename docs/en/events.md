@@ -63,7 +63,9 @@ IPub\WebSockets\Server\Wrapper::onClientDisconnected(IPub\WebSockets\Entities\Cl
 IPub\WebSockets\Server\Wrapper::onIncomingMessage(IPub\WebSockets\Entities\Clients\IClient $client, IPub\WebSockets\Http\IRequest $httpRequest, string $message)
 IPub\WebSockets\Server\Wrapper::onAfterIncomingMessage(IPub\WebSockets\Entities\Clients\IClient $client, IPub\WebSockets\Http\IRequest $httpRequest)
 IPub\WebSockets\Server\Wrapper::onClientError(IPub\WebSockets\Entities\Clients\IClient $client, IPub\WebSockets\Http\IRequest $httpRequest)
+IPub\WebSockets\Server\Server::onCreate(IPub\WebSockets\Server\Server $server)
 IPub\WebSockets\Server\Server::onStart(React\EventLoop\LoopInterface $eventLoop, IPub\WebSockets\Server\Server $server)
+IPub\WebSockets\Server\Server::onStop(React\EventLoop\LoopInterface $eventLoop, IPub\WebSockets\Server\Server $server)
 ```
 
 Where:
