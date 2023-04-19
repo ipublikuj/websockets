@@ -14,6 +14,7 @@
 
 declare(strict_types = 1);
 
+use Nette\Configurator;
 use IPub\WebSockets;
 
 $rootDir = getcwd();
@@ -33,18 +34,20 @@ if (!file_exists($libsDir . DIRECTORY_SEPARATOR . 'autoload.php')) {
 
 require_once $libsDir . DIRECTORY_SEPARATOR . 'autoload.php';
 
-$configurator = new Nette\Configurator;
+$configurator = new Configurator;
 $configurator->addParameters([
 	'appDir' => $appDir,
 	'wwwDir' => $wwwDir,
 ]);
 
 //$configurator->setDebugMode(TRUE);  // Debug mode HAVE TO BE enabled on production server
-$configurator->enableDebugger($packagesDir . DIRECTORY_SEPARATOR . 'log');
+$configurator->enableDebugger($rootDir . DIRECTORY_SEPARATOR . 'log');
 
-$configurator->setTempDirectory($packagesDir . DIRECTORY_SEPARATOR . 'temp');
+$configurator->setTempDirectory($rootDir . DIRECTORY_SEPARATOR . 'temp');
 $configurator->addConfig(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'config.neon');
 
 $container = $configurator->createContainer();
 
-$container->getByType(WebSockets\Server\Server::class)->run();
+$server = $container->getByType(WebSockets\Server\Server::class);
+$server->create();
+$server->run();

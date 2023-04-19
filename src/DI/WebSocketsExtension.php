@@ -292,6 +292,11 @@ final class WebSocketsExtension extends DI\CompilerExtension
 			$server = $builder->getDefinition($builder->getByType(Server\Server::class));
 			assert($server instanceof DI\Definitions\ServiceDefinition);
 
+			$server->addSetup('?->onCreate[] = function() {?->dispatch(new ?(...func_get_args()));}', [
+				'@self',
+				$dispatcher,
+				new Nette\PhpGenerator\PhpLiteral(Events\Server\CreateEvent::class),
+			]);
 			$server->addSetup('?->onStart[] = function() {?->dispatch(new ?(...func_get_args()));}', [
 				'@self',
 				$dispatcher,

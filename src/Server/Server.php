@@ -17,8 +17,9 @@ use Throwable;
  *
  * @author         Adam Kadlec <adam.kadlec@ipublikuj.eu>
  *
- * @method onStart(EventLoop\LoopInterface $eventLoop, Server $server)
- * @method onStop(EventLoop\LoopInterface $eventLoop, Server $server)
+ * @method onCreate(Server $server)
+ * @method onStart(EventLoop\LoopInterface $loop, Server $server)
+ * @method onStop(EventLoop\LoopInterface $loop, Server $server)
  */
 final class Server
 {
@@ -29,6 +30,9 @@ final class Server
 	use Nette\SmartObject;
 
 	public const VERSION = 'IPub/WebSockets/1.0.0';
+
+	/** @var Closure */
+	public $onCreate = [];
 
 	/** @var Closure */
 	public $onStart = [];
@@ -47,9 +51,6 @@ final class Server
 
 	/** @var Log\LoggerInterface|Log\NullLogger|null */
 	private $logger;
-
-	/** @var bool */
-	private $isRunning = false;
 
 	/**
 	 * @param Handlers $handlers
@@ -72,15 +73,27 @@ final class Server
 	/**
 	 * Run IO server
 	 *
+	 * @param React\Socket\SocketServer|null $socket
+	 *
 	 * @return void
 	 */
-	public function run(): void
+	public function create($socket = null): void
 	{
 		$client = $this->configuration->getAddress() . ':' . $this->configuration->getPort();
-		$socket = new React\Socket\SocketServer($client, [], $this->loop);
 
-		if ($this->configuration->isSslEnabled()) {
-			$socket = new React\Socket\SecureServer($socket, $this->loop, $this->configuration->getSslConfiguration());
+		if ($socket === null) {
+			$socket = new React\Socket\SocketServer($client, [], $this->loop);
+
+			if ($this->configuration->isSslEnabled()) {
+				$socket = new React\Socket\SecureServer($socket, $this->loop, $this->configuration->getSslConfiguration());
+			}
+
+			if ($this->configuration->getPort() === 80) {
+				$client = '0.0.0.0:843';
+
+			} else {
+				$client = $this->configuration->getAddress() . ':8843';
+			}
 		}
 
 		$socket->on('connection', function (React\Socket\ConnectionInterface $connection): void {
@@ -91,13 +104,6 @@ final class Server
 			$this->logger->error('Could not establish connection: ' . $ex->getMessage());
 		});
 
-		if ($this->configuration->getPort() === 80) {
-			$client = '0.0.0.0:843';
-
-		} else {
-			$client = $this->configuration->getAddress() . ':8843';
-		}
-
 		$flashSocket = new React\Socket\SocketServer($client, [], $this->loop);
 
 		$flashSocket->on('connection', function (React\Socket\ConnectionInterface $connection): void {
@@ -107,26 +113,21 @@ final class Server
 		$this->logger->debug('Starting IPub\WebSockets');
 		$this->logger->debug(sprintf('Launching WebSockets WS Server on: %s:%s', $this->configuration->getAddress(), $this->configuration->getPort()));
 
-		$this->onStart($this->loop, $this);
+		$this->onCreate($this);
+	}
 
-		$this->isRunning = true;
+	public function run(): void
+	{
+		$this->onStart($this->loop, $this);
 
 		$this->loop->run();
 	}
 
-
-	/**
-	 * Stop IO server
-	 *
-	 * @return void
-	 */
 	public function stop(): void
 	{
 		$this->onStop($this->loop, $this);
 
 		$this->loop->stop();
-
-		$this->isRunning = false;
 	}
 
 }
