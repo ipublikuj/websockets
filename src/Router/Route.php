@@ -520,7 +520,13 @@ class Route implements IRouter
 
 				unset($meta['pattern']);
 
-				$meta['filterTable2'] = $meta[self::FILTER_TABLE] === [] ? null : array_flip($meta[self::FILTER_TABLE]);
+				$meta['filterTable2'] = (
+					!array_key_exists(self::FILTER_TABLE, $meta)
+					|| $meta[self::FILTER_TABLE] === []
+					|| $meta[self::FILTER_TABLE] === null
+				)
+					? null
+					: array_flip($meta[self::FILTER_TABLE]);
 
 				$metadata[$name] = $meta;
 				if ($param !== '') {
@@ -607,7 +613,13 @@ class Route implements IRouter
 				$meta['fixity'] = self::PATH_OPTIONAL;
 			}
 
-			$meta['filterTable2'] = ($meta[self::FILTER_TABLE] === [] || $meta[self::FILTER_TABLE] === null) ? null : array_flip($meta[self::FILTER_TABLE]);
+			$meta['filterTable2'] = (
+				!array_key_exists(self::FILTER_TABLE, $meta)
+				|| $meta[self::FILTER_TABLE] === []
+				|| $meta[self::FILTER_TABLE] === null
+			)
+				? null
+				: array_flip($meta[self::FILTER_TABLE]);
 			if (array_key_exists(self::VALUE, $meta)) {
 				if (isset($meta['filterTable2'][$meta[self::VALUE]])) {
 					$meta['defOut'] = $meta['filterTable2'][$meta[self::VALUE]];
