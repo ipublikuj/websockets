@@ -21,7 +21,8 @@ use Symfony\Component\Console\Style;
  */
 class ServerCommand extends Console\Command\Command
 {
-
+    protected static $defaultName = 'ipub:websockets:start';
+	
 	/** @var Server\Server */
 	private $server;
 
@@ -50,7 +51,7 @@ class ServerCommand extends Console\Command\Command
 	protected function configure(): void
 	{
 		$this
-			->setName('ipub:websockets:start')
+			->setName(self::$defaultName)
 			->setDescription('Start WebSocket server.');
 	}
 
