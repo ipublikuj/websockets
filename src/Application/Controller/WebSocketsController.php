@@ -11,6 +11,7 @@ use Nette;
 use Nette\DI;
 use Nette\Utils;
 use ReflectionException;
+use ReflectionNamedType;
 
 /**
  * WebSockets micro controller
@@ -87,8 +88,10 @@ class WebSocketsController implements Controller\IController
 
 		if ($this->context) {
 			foreach ($reflection->getParameters() as $param) {
-				if ($param->getClass()) {
-					$params[$param->getName()] = $this->context->getByType($param->getClass()->getName(), false);
+				$type = $param->getType();
+
+				if ($type instanceof ReflectionNamedType && !$type->isBuiltin()) {
+					$params[$param->getName()] = $this->context->getByType($type->getName(), false);
 				}
 			}
 		}

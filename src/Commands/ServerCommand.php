@@ -57,7 +57,7 @@ class ServerCommand extends Console\Command\Command
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function execute(Input\InputInterface $input, Output\OutputInterface $output): void
+	protected function execute(Input\InputInterface $input, Output\OutputInterface $output): int
 	{
 		$io = new Style\SymfonyStyle($input, $output);
 
@@ -79,7 +79,11 @@ class ServerCommand extends Console\Command\Command
 
 		} catch (Exceptions\TerminateException $ex) {
 			$this->server->stop();
+
+			return self::FAILURE;
 		}
+
+		return self::SUCCESS;
 	}
 
 }
