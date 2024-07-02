@@ -23,22 +23,22 @@ class Request extends Http\Request implements IRequest
 
 	/**
 	 * @param Http\UrlScript $url
-	 * @param array|null $post
-	 * @param array|null $files
-	 * @param array|null $cookies
-	 * @param array|null $headers
-	 * @param string|null $method
+	 * @param array $post
+	 * @param array $files
+	 * @param array $cookies
+	 * @param array $headers
+	 * @param string $method
 	 * @param string|null $remoteAddress
 	 * @param string|null $remoteHost
 	 * @param null $rawBodyCallback
 	 */
 	public function __construct(
 		Http\UrlScript $url,
-		?array $post = null,
-		?array $files = null,
-		?array $cookies = null,
-		?array $headers = null,
-		?string $method = null,
+		array $post = [],
+		array $files = [],
+		array $cookies = [],
+		array $headers = [],
+		string $method = 'GET',
 		?string $remoteAddress = null,
 		?string $remoteHost = null,
 		$rawBodyCallback = null
@@ -67,7 +67,7 @@ class Request extends Http\Request implements IRequest
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getQuery(?string $key = null)
+	public function getQuery(?string $key = null): mixed
 	{
 		if (func_num_args() === 0) {
 			return $this->url->getQueryParameters();

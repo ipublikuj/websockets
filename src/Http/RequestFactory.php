@@ -317,7 +317,7 @@ final class RequestFactory
 			unset($list, $key, $val, $k, $v);
 		}
 
-		$request = new Request(new Http\UrlScript($url), null, null, $cookies, $headers, $method, $remoteAddr, $remoteHost, function () use ($rawBody): ?string {
+		$request = new Request(new Http\UrlScript($url), [], [], $cookies, $headers, $method, $remoteAddr, $remoteHost, function () use ($rawBody): ?string {
 			return $rawBody;
 		});
 
